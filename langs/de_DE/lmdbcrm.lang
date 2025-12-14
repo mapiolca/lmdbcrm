@@ -1,42 +1,22 @@
-# Translation file
+# Übersetzungsdatei
 
 #
-# Generic
+# Allgemein
 #
-
-# Module label 'ModuleLmdbCrmName'
 ModuleLmdbCrmName = LmdbCrm
-# Module description 'ModuleLmdbCrmDesc'
-ModuleLmdbCrmDesc = LmdbCrm description
+ModuleLmdbCrmDesc = Podium der besten Vertriebsmitarbeiter nach unterschriebenen Angeboten der letzten 30 Tage.
 
 #
-# Admin page
+# Admin-Seite
 #
-LmdbCrmSetup = LmdbCrm setup
-Settings = Settings
-LmdbCrmSetupPage = LmdbCrm setup page
-NewSection=New section
-LMDBCRM_MYPARAM1 = My param 1
-LMDBCRM_MYPARAM1Tooltip = My param 1 tooltip
-LMDBCRM_MYPARAM2=My param 2
-LMDBCRM_MYPARAM2Tooltip=My param 2 tooltip
+LmdbCrmSetup = LmdbCrm Konfiguration
+LmdbCrmNoSetupNeeded = Für dieses Modul ist keine zusätzliche Konfiguration erforderlich.
 
-
-#
-# About page
-#
-About = About
-LmdbCrmAbout = About LmdbCrm
-LmdbCrmAboutPage = LmdbCrm about page
-
-#
-# Sample page
-#
-LmdbCrmArea = Home LmdbCrm
-MyPageName = My page name
-
-#
-# Sample widget
-#
-MyWidget = My widget
-MyWidgetDescription = My widget description
+# Widget Podium unterschriebene Angebote
+LmdbCrmSignedQuotesPodiumTitle = Top 3 Verkäufer (unterschriebene Angebote - letzte 30 Tage)
+LmdbCrmSignedQuotesPodiumDescription = Podium der Verkäufer nach Anzahl unterschriebener Angebote über die letzten 30 gleitenden Tage.
+LmdbCrmSignedQuotesPodiumCount = %s unterschriebene Angebote
+LmdbCrmSignedQuotesPodiumRank = Platzierung
+LmdbCrmSignedQuotesPodiumUser = Foto + Vorname + Nachname
+LmdbCrmSignedQuotesPodiumCountTitle = Anzahl unterschriebener Angebote
+LmdbCrmSignedQuotesPodiumEmpty = Keine unterschriebenen Angebote in den letzten 30 Tagen

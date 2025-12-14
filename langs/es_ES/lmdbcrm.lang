@@ -1,42 +1,22 @@
-# Translation file
+# Archivo de traducción
 
 #
-# Generic
+# Genérico
 #
-
-# Module label 'ModuleLmdbCrmName'
 ModuleLmdbCrmName = LmdbCrm
-# Module description 'ModuleLmdbCrmDesc'
-ModuleLmdbCrmDesc = LmdbCrm description
+ModuleLmdbCrmDesc = Podio de los mejores comerciales por presupuestos firmados en los últimos 30 días.
 
 #
-# Admin page
+# Página de administración
 #
-LmdbCrmSetup = LmdbCrm setup
-Settings = Settings
-LmdbCrmSetupPage = LmdbCrm setup page
-NewSection=New section
-LMDBCRM_MYPARAM1 = My param 1
-LMDBCRM_MYPARAM1Tooltip = My param 1 tooltip
-LMDBCRM_MYPARAM2=My param 2
-LMDBCRM_MYPARAM2Tooltip=My param 2 tooltip
+LmdbCrmSetup = Configuración de LmdbCrm
+LmdbCrmNoSetupNeeded = No se requiere configuración adicional para este módulo.
 
-
-#
-# About page
-#
-About = About
-LmdbCrmAbout = About LmdbCrm
-LmdbCrmAboutPage = LmdbCrm about page
-
-#
-# Sample page
-#
-LmdbCrmArea = Home LmdbCrm
-MyPageName = My page name
-
-#
-# Sample widget
-#
-MyWidget = My widget
-MyWidgetDescription = My widget description
+# Widget podio de presupuestos firmados
+LmdbCrmSignedQuotesPodiumTitle = Top 3 comerciales (presupuestos firmados - últimos 30 días)
+LmdbCrmSignedQuotesPodiumDescription = Podio de comerciales según el número de presupuestos firmados en los últimos 30 días móviles.
+LmdbCrmSignedQuotesPodiumCount = %s presupuestos firmados
+LmdbCrmSignedQuotesPodiumRank = Posición en la clasificación
+LmdbCrmSignedQuotesPodiumUser = Foto + Nombre + Apellidos
+LmdbCrmSignedQuotesPodiumCountTitle = Número de presupuestos firmados
+LmdbCrmSignedQuotesPodiumEmpty = Ningún presupuesto firmado en los últimos 30 días

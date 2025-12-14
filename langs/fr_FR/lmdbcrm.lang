@@ -1,42 +1,22 @@
-# Translation file
+# Fichier de traduction
 
 #
-# Generic
+# Générique
 #
-
-# Module label 'ModuleLmdbCrmName'
 ModuleLmdbCrmName = LmdbCrm
-# Module description 'ModuleLmdbCrmDesc'
-ModuleLmdbCrmDesc = LmdbCrm description
+ModuleLmdbCrmDesc = Podium des meilleurs commerciaux par devis signés sur les 30 derniers jours.
 
 #
-# Admin page
+# Page admin
 #
-LmdbCrmSetup = LmdbCrm setup
-Settings = Settings
-LmdbCrmSetupPage = LmdbCrm setup page
-NewSection=New section
-LMDBCRM_MYPARAM1 = My param 1
-LMDBCRM_MYPARAM1Tooltip = My param 1 tooltip
-LMDBCRM_MYPARAM2=My param 2
-LMDBCRM_MYPARAM2Tooltip=My param 2 tooltip
+LmdbCrmSetup = Paramétrage LmdbCrm
+LmdbCrmNoSetupNeeded = Aucun paramétrage supplémentaire n'est requis pour ce module.
 
-
-#
-# About page
-#
-About = About
-LmdbCrmAbout = About LmdbCrm
-LmdbCrmAboutPage = LmdbCrm about page
-
-#
-# Sample page
-#
-LmdbCrmArea = Home LmdbCrm
-MyPageName = My page name
-
-#
-# Sample widget
-#
-MyWidget = My widget
-MyWidgetDescription = My widget description
+# Widget podium devis signés
+LmdbCrmSignedQuotesPodiumTitle = Top 3 commerciaux (devis signés - 30 jours glissants)
+LmdbCrmSignedQuotesPodiumDescription = Podium des commerciaux selon le nombre de devis signés sur 30 jours glissants.
+LmdbCrmSignedQuotesPodiumCount = %s devis signés
+LmdbCrmSignedQuotesPodiumRank = Position dans le classement
+LmdbCrmSignedQuotesPodiumUser = Photo + Nom + Prénom
+LmdbCrmSignedQuotesPodiumCountTitle = Nombre de devis signés
+LmdbCrmSignedQuotesPodiumEmpty = Aucun devis signé sur les 30 derniers jours
