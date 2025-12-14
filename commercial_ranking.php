@@ -185,28 +185,27 @@ print '<div class="div-table-responsive">';
 print '<table class="tagtable liste">';
 
 print '<tr class="liste_titre">';
-print '<td class="liste_titre">'.$langs->trans('DateStart').'</td>';
-print '<td class="liste_titre">'.$langs->trans('DateEnd').'</td>';
-print '<td class="liste_titre center" colspan="4">';
-print '<div class="nowraponall">';
-print $form->selectDate($dateStartForSelect, 'search_date_start', 0, 0, 1, '', 1, 1, 1);
-print ' ';
-print $form->selectDate($dateEndForSelect, 'search_date_end', 0, 0, 1, '', 1, 1, 1);
-print '</div>';
-print '<div class="liste_titre right">';
-print '<input type="submit" class="button" name="button_search" value="'.$langs->trans('Search').'">';
-print ' <a class="reposition" href="'.$_SERVER['PHP_SELF'].'">'.img_picto($langs->trans('Reset'), 'searchclear').' '.$langs->trans('RemoveFilter').'</a>';
-print '</div>';
-print '</td>';
-print '</tr>';
-
-print '<tr class="liste_titre">';
 print_liste_field_titre($langs->trans('LmdbCrmSalesRep'), $_SERVER['PHP_SELF'], 'userid', '', $param, '', $sortfield, $sortorder);
 print_liste_field_titre($langs->trans('LmdbCrmProposalsCount'), $_SERVER['PHP_SELF'], 'total_count', '', $param, '', $sortfield, $sortorder, 'center ');
 print_liste_field_titre($langs->trans('LmdbCrmSignedProposalsCount'), $_SERVER['PHP_SELF'], 'signed_count', '', $param, '', $sortfield, $sortorder, 'center ');
 print_liste_field_titre($langs->trans('LmdbCrmQuotedAmount'), $_SERVER['PHP_SELF'], 'total_amount', '', $param, '', $sortfield, $sortorder, 'right ');
 print_liste_field_titre($langs->trans('LmdbCrmSignedAmount'), $_SERVER['PHP_SELF'], 'signed_amount', '', $param, '', $sortfield, $sortorder, 'right ');
 print_liste_field_titre($langs->trans('LmdbCrmConversionRate'), $_SERVER['PHP_SELF'], 'conversion_rate', '', $param, '', $sortfield, $sortorder, 'center ');
+print '</tr>';
+
+print '<tr class="liste_titre">';
+print '<td class="liste_titre">';
+print $form->selectDate($dateStartForSelect, 'search_date_start', 0, 0, 1, '', 1, 1, 1);
+print '</td>';
+print '<td class="liste_titre">';
+print $form->selectDate($dateEndForSelect, 'search_date_end', 0, 0, 1, '', 1, 1, 1);
+print '</td>';
+print '<td class="liste_titre right" colspan="4">';
+print '<div class="nowraponall">';
+print '<input type="submit" class="button" name="button_search" value="'.$langs->trans('Search').'">';
+print ' <a class="reposition" href="'.$_SERVER['PHP_SELF'].'">'.img_picto($langs->trans('Reset'), 'searchclear').' '.$langs->trans('RemoveFilter').'</a>';
+print '</div>';
+print '</td>';
 print '</tr>';
 
 
