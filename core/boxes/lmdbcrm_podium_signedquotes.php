@@ -23,9 +23,9 @@
  * \brief   Podium widget for signed proposals on last 30 days.
  */
 
-dol_include_once('/core/boxes/modules_boxes.php');
-dol_include_once('/comm/propal/class/propal.class.php');
-dol_include_once('/user/class/user.class.php');
+require_once DOL_DOCUMENT_ROOT . '/core/boxes/modules_boxes.php';
+require_once DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php';
+require_once DOL_DOCUMENT_ROOT . '/user/class/user.class.php';
 
 /**
  * Class to manage the signed proposals podium box
@@ -69,6 +69,7 @@ class lmdbcrm_podium_signedquotes extends ModeleBoxes
 
 		parent::__construct($db, $param);
 
+		$this->db = $db;
 		$this->param = $param;
 		$this->hidden = empty($user->rights->propal->lire);
 	}
@@ -196,10 +197,23 @@ class lmdbcrm_podium_signedquotes extends ModeleBoxes
 				0 => array(
 					'td' => 'class=\"center\" colspan=\"3\"',
 					'asis' => 1,
-					'text' => $this->db->lasterror(),
+					'text' => dol_escape_htmltag($this->db->lasterror()),
 				),
 			);
 		}
+	}
+
+	/**
+	 * Method to show box. Called when the box needs to be displayed.
+	 *
+	 * @param ?array<array{text?:string,sublink?:string,subtext?:string,subpicto?:?string,picto?:string,nbcol?:int,limit?:int,subclass?:string,graph?:int<0,1>,target?:string}> $head Array with properties of box title
+	 * @param ?array<array{tr?:string,td?:string,target?:string,text?:string,text2?:string,textnoformat?:string,tooltip?:string,logo?:string,url?:string,maxlength?:int,asis?:int<0,1>,asis2?:int<0,1>,align?:string,css?:string,color?:string}> $contents Array with properties of box lines
+	 * @param int<0,1> $nooutput No print, only return string
+	 * @return string
+	 */
+	public function showBox($head = null, $contents = null, $nooutput = 0)
+	{
+		return parent::showBox($this->info_box_head, $this->info_box_contents, $nooutput);
 	}
 
 }
