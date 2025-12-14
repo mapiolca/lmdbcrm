@@ -146,7 +146,6 @@ llxHeader('', $title, '', '', 0, 0, '', '', '', 'mod-lmdbcrm page-commercial-ran
 // Title bar following Dolibarr list layout
 print load_fiche_titre($title, '', 'chart');
 print '<br>';
-print_barre_liste('', 0, $_SERVER['PHP_SELF'], $param, $sortfield, $sortorder, '', 0, -1, '', 0, '', '', 0, 1, 1);
 
 // Build SQL request for ranking
 $sql = "SELECT u.rowid as userid, u.lastname, u.firstname, u.login, u.photo, u.email";
@@ -193,18 +192,17 @@ print_liste_field_titre($langs->trans('LmdbCrmSignedAmount'), $_SERVER['PHP_SELF
 print_liste_field_titre($langs->trans('LmdbCrmConversionRate'), $_SERVER['PHP_SELF'], 'conversion_rate', '', $param, '', $sortfield, $sortorder, 'center ');
 print '</tr>';
 
-print '<tr class="liste_titre">';
-print '<td class="liste_titre">';
-print $form->selectDate($dateStartForSelect, 'search_date_start', 0, 0, 1, '', 1, 1, 1);
-print '</td>';
-print '<td class="liste_titre">';
-print $form->selectDate($dateEndForSelect, 'search_date_end', 0, 0, 1, '', 1, 1, 1);
-print '</td>';
-print '<td class="liste_titre right" colspan="4">';
+print '<tr class="liste_titre_filter">';
+print '<td class="liste_titre" colspan="2">';
 print '<div class="nowraponall">';
-print '<input type="submit" class="button" name="button_search" value="'.$langs->trans('Search').'">';
-print ' <a class="reposition" href="'.$_SERVER['PHP_SELF'].'">'.img_picto($langs->trans('Reset'), 'searchclear').' '.$langs->trans('RemoveFilter').'</a>';
+print $form->selectDate($dateStartForSelect, 'search_date_start', 0, 0, 1, '', 1, 1, 1);
+print ' - ';
+print $form->selectDate($dateEndForSelect, 'search_date_end', 0, 0, 1, '', 1, 1, 1);
 print '</div>';
+print '</td>';
+print '<td class="liste_titre" colspan="3"></td>';
+print '<td class="liste_titre center">';
+print $form->showFilterButtons('left');
 print '</td>';
 print '</tr>';
 
