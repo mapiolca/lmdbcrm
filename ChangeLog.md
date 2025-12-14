@@ -2,4 +2,6 @@
 
 ## 1.0
 
-Initial version
+- Nettoyage des menus et fonctionnalités non utilisés
+- Simplification de la page de configuration et du module
+- Ajout des traductions DE, ES, IT

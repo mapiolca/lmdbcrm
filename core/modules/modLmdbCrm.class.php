@@ -64,19 +64,19 @@ class modLmdbCrm extends DolibarrModules
 		// Module label (no space allowed), used if translation string 'ModuleLmdbCrmName' not found (LmdbCrm is name of module).
 		$this->name = preg_replace('/^mod/i', '', get_class($this));
 
-		// DESCRIPTION_FLAG
-		// Module description, used if translation string 'ModuleLmdbCrmDesc' not found (LmdbCrm is name of module).
-		$this->description = "LmdbCrmDescription";
-		// Used only if file README.md and README-LL.md not found.
-		$this->descriptionlong = "LmdbCrmDescription";
+// DESCRIPTION_FLAG
+// Module description, used if translation string 'ModuleLmdbCrmDesc' not found (LmdbCrm is name of module).
+$this->description = "ModuleLmdbCrmDesc";
+// Used only if file README.md and README-LL.md not found.
+$this->descriptionlong = "ModuleLmdbCrmDesc";
 
 		// Author
 		$this->editor_name = 'Les Métiers du Bâtiment';
 		$this->editor_url = 'lesmetiersdubatiment.fr';		// Must be an external online web site
 		$this->editor_squarred_logo = '';					// Must be image filename into the module/img directory followed with @modulename. Example: 'myimage.png@lmdbcrm'
 
-		// Possible values for version are: 'development', 'experimental', 'dolibarr', 'dolibarr_deprecated', 'experimental_deprecated' or a version string like 'x.y.z'
-		$this->version = '1.0';
+// Possible values for version are: 'development', 'experimental', 'dolibarr', 'dolibarr_deprecated', 'experimental_deprecated' or a version string like 'x.y.z'
+$this->version = '1.1';
 		// Url to the file with your last numberversion of this module
 		//$this->url_last_version = 'http://www.example.com/versionmodule.txt';
 
@@ -91,52 +91,24 @@ class modLmdbCrm extends DolibarrModules
 
 		// Define some features supported by module (triggers, login, substitutions, menus, css, etc...)
 		$this->module_parts = array(
-			// Set this to 1 if module has its own trigger directory (core/triggers)
 			'triggers' => 0,
-			// Set this to 1 if module has its own login method file (core/login)
 			'login' => 0,
-			// Set this to 1 if module has its own substitution function file (core/substitutions)
 			'substitutions' => 0,
-			// Set this to 1 if module has its own menus handler directory (core/menus)
 			'menus' => 0,
-			// Set this to 1 if module overwrite template dir (core/tpl)
 			'tpl' => 0,
-			// Set this to 1 if module has its own barcode directory (core/modules/barcode)
 			'barcode' => 0,
-			// Set this to 1 if module has its own models directory (core/modules/xxx)
 			'models' => 0,
-			// Set this to 1 if module has its own printing directory (core/modules/printing)
 			'printing' => 0,
-			// Set this to 1 if module has its own theme directory (theme)
 			'theme' => 0,
-			// Set this to relative path of css file if module has its own css file
-			'css' => array(
-				//    '/lmdbcrm/css/lmdbcrm.css.php',
-			),
-			// Set this to relative path of js file if module must load a js on all pages
-			'js' => array(
-				//   '/lmdbcrm/js/lmdbcrm.js.php',
-			),
-			// Set here all hooks context managed by module. To find available hook context, make a "grep -r '>initHooks(' *" on source code. You can also set hook context to 'all'
-			/* BEGIN MODULEBUILDER HOOKSCONTEXTS */
-			'hooks' => array(
-				//   'data' => array(
-				//       'hookcontext1',
-				//       'hookcontext2',
-				//   ),
-				//   'entity' => '0',
-			),
-			/* END MODULEBUILDER HOOKSCONTEXTS */
-			// Set this to 1 if features of module are opened to external users
+			'css' => array(),
+			'js' => array(),
+			'hooks' => array(),
 			'moduleforexternal' => 0,
-			// Set this to 1 if the module provides a website template into doctemplates/websites/website_template-mytemplate
 			'websitetemplates' => 0,
-			// Set this to 1 if the module provides a captcha driver
 			'captcha' => 0
 		);
 
 		// Data directories to create when module is enabled.
-		// Example: this->dirs = array("/lmdbcrm/temp","/lmdbcrm/subdir");
 		$this->dirs = array("/lmdbcrm/temp");
 
 		// Config pages. Put here list of php page, stored into lmdbcrm/admin directory, to use to setup module.
@@ -253,210 +225,53 @@ class modLmdbCrm extends DolibarrModules
 		/* END MODULEBUILDER DICTIONARIES */
 
 		// Boxes/Widgets
-		// Add here list of php file(s) stored in lmdbcrm/core/boxes that contains a class to show a widget.
-		/* BEGIN MODULEBUILDER WIDGETS */
 		$this->boxes = array(
-			//  0 => array(
-			//      'file' => 'lmdbcrmwidget1.php@lmdbcrm',
-			//      'note' => 'Widget provided by LmdbCrm',
-			//      'enabledbydefaulton' => 'Home',
-			//  ),
-			//  ...
+			0 => array(
+				'file' => 'lmdbcrm_podium_signedquotes.php@lmdbcrm',
+				'note' => 'LmdbCrmSignedQuotesPodiumDescription',
+				'enabledbydefaulton' => 'Home',
+			),
 		);
-		/* END MODULEBUILDER WIDGETS */
 
-		// Cronjobs (List of cron jobs entries to add when module is enabled)
-		// unit_frequency must be 60 for minute, 3600 for hour, 86400 for day, 604800 for week
-		/* BEGIN MODULEBUILDER CRON */
-		$this->cronjobs = array(
-			//  0 => array(
-			//      'label' => 'MyJob label',
-			//      'jobtype' => 'method',
-			//      'class' => '/lmdbcrm/class/myobject.class.php',
-			//      'objectname' => 'MyObject',
-			//      'method' => 'doScheduledJob',
-			//      'parameters' => '',
-			//      'comment' => 'Comment',
-			//      'frequency' => 2,
-			//      'unitfrequency' => 3600,
-			//      'status' => 0,
-			//      'test' => 'isModEnabled("lmdbcrm")',
-			//      'priority' => 50,
-			//  ),
-		);
-		/* END MODULEBUILDER CRON */
-		// Example: $this->cronjobs=array(
-		//    0=>array('label'=>'My label', 'jobtype'=>'method', 'class'=>'/dir/class/file.class.php', 'objectname'=>'MyClass', 'method'=>'myMethod', 'parameters'=>'param1, param2', 'comment'=>'Comment', 'frequency'=>2, 'unitfrequency'=>3600, 'status'=>0, 'test'=>'isModEnabled("lmdbcrm")', 'priority'=>50),
-		//    1=>array('label'=>'My label', 'jobtype'=>'command', 'command'=>'', 'parameters'=>'param1, param2', 'comment'=>'Comment', 'frequency'=>1, 'unitfrequency'=>3600*24, 'status'=>0, 'test'=>'isModEnabled("lmdbcrm")', 'priority'=>50)
-		// );
+		// Cronjobs
+		$this->cronjobs = array();
 
 		// Permissions provided by this module
 		$this->rights = array();
-		$r = 0;
-		// Add here entries to declare new permissions
-		/* BEGIN MODULEBUILDER PERMISSIONS */
-		/*
-		$o = 1;
-		$this->rights[$r][0] = $this->numero . sprintf("%02d", ($o * 10) + 1); // Permission id (must not be already used)
-		$this->rights[$r][1] = 'Read objects of LmdbCrm'; // Permission label
-		$this->rights[$r][4] = 'myobject';
-		$this->rights[$r][5] = 'read'; // In php code, permission will be checked by test if ($user->hasRight('lmdbcrm', 'myobject', 'read'))
-		$r++;
-		$this->rights[$r][0] = $this->numero . sprintf("%02d", ($o * 10) + 2); // Permission id (must not be already used)
-		$this->rights[$r][1] = 'Create/Update objects of LmdbCrm'; // Permission label
-		$this->rights[$r][4] = 'myobject';
-		$this->rights[$r][5] = 'write'; // In php code, permission will be checked by test if ($user->hasRight('lmdbcrm', 'myobject', 'write'))
-		$r++;
-		$this->rights[$r][0] = $this->numero . sprintf("%02d", ($o * 10) + 3); // Permission id (must not be already used)
-		$this->rights[$r][1] = 'Delete objects of LmdbCrm'; // Permission label
-		$this->rights[$r][4] = 'myobject';
-		$this->rights[$r][5] = 'delete'; // In php code, permission will be checked by test if ($user->hasRight('lmdbcrm', 'myobject', 'delete'))
-		$r++;
-		*/
-		/* END MODULEBUILDER PERMISSIONS */
-
 
 		// Main menu entries to add
 		$this->menu = array();
-		$r = 0;
-		// Add here entries to declare new menus
-		/* BEGIN MODULEBUILDER TOPMENU */
-		$this->menu[$r++] = array(
-			'fk_menu' => '', // Will be stored into mainmenu + leftmenu. Use '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
-			'type' => 'top', // This is a Top menu entry
-			'titre' => 'ModuleLmdbCrmName',
-			'prefix' => img_picto('', $this->picto, 'class="pictofixedwidth valignmiddle"'),
-			'mainmenu' => 'lmdbcrm',
-			'leftmenu' => '',
-			'url' => '/lmdbcrm/lmdbcrmindex.php',
-			'langs' => 'lmdbcrm@lmdbcrm', // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
-			'position' => 1000 + $r,
-			'enabled' => "isModEnabled('lmdbcrm')", // Define condition to show or hide menu entry. Use "isModEnabled('lmdbcrm')" if entry must be visible if module is enabled (those quote marks are importants).
-			'perms' => '1', // Use 'perms'=>'$user->hasRight("lmdbcrm", "myobject", "read")' if you want your menu with a permission rules
-			'target' => '',
-			'user' => 2, // 0=Menu for internal users, 1=external users, 2=both
-		);
-		/* END MODULEBUILDER TOPMENU */
 
-		/* BEGIN MODULEBUILDER LEFTMENU MYOBJECT */
-		/*
-		$this->menu[$r++]=array(
-			'fk_menu' => 'fk_mainmenu=lmdbcrm',      // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
-			'type' => 'left',                          // This is a Left menu entry
-			'titre' => 'MyObject',
-			'prefix' => img_picto('', $this->picto, 'class="pictofixedwidth valignmiddle paddingright"'),
-			'mainmenu' => 'lmdbcrm',
-			'leftmenu' => 'myobject',
-			'url' => '/lmdbcrm/lmdbcrmindex.php',
-			'langs' => 'lmdbcrm@lmdbcrm',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
-			'position' => 1000 + $r,
-			'enabled' => "isModEnabled('lmdbcrm')", // Define condition to show or hide menu entry. Use isModEnabled("lmdbcrm") if entry must be visible if module is enabled.
-			'perms' => '$user->hasRight("lmdbcrm", "myobject", "read")',
-			'target' => '',
-			'user' => 2,				                // 0=Menu for internal users, 1=external users, 2=both
-			'object' => 'MyObject'
-		);
-		$this->menu[$r++]=array(
-			'fk_menu' => 'fk_mainmenu=lmdbcrm,fk_leftmenu=myobject',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
-			'type' => 'left',			                // This is a Left menu entry
-			'titre' => 'New_MyObject',
-			'mainmenu' => 'lmdbcrm',
-			'leftmenu' => 'lmdbcrm_myobject_new',
-			'url' => '/lmdbcrm/myobject_card.php?action=create',
-			'langs' => 'lmdbcrm@lmdbcrm',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
-			'position' => 1000 + $r,
-			'enabled' => "isModEnabled('lmdbcrm')", // Define condition to show or hide menu entry. Use isModEnabled("lmdbcrm") if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
-			'perms' => '$user->hasRight("lmdbcrm", "myobject", "write")'
-			'target' => '',
-			'user' => 2,				                // 0=Menu for internal users, 1=external users, 2=both
-			'object' => 'MyObject'
-		);
-		$this->menu[$r++]=array(
-			'fk_menu' => 'fk_mainmenu=lmdbcrm,fk_leftmenu=myobject',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
-			'type' => 'left',			                // This is a Left menu entry
-			'titre' => 'List_MyObject',
-			'mainmenu' => 'lmdbcrm',
-			'leftmenu' => 'lmdbcrm_myobject_list',
-			'url' => '/lmdbcrm/myobject_list.php',
-			'langs' => 'lmdbcrm@lmdbcrm',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
-			'position' => 1000 + $r,
-			'enabled' => "isModEnabled('lmdbcrm')", // Define condition to show or hide menu entry. Use isModEnabled("lmdbcrm") if entry must be visible if module is enabled.
-			'perms' => '$user->hasRight("lmdbcrm", "myobject", "read")'
-			'target' => '',
-			'user' => 2,				                // 0=Menu for internal users, 1=external users, 2=both
-			'object' => 'MyObject'
-		);
-		*/
-		/* END MODULEBUILDER LEFTMENU MYOBJECT */
+		// Export definitions provided by this module
+		$this->export_code = array();
+		$this->export_label = array();
+		$this->export_icon = array();
+		$this->export_enabled = array();
+		$this->export_fields_array = array();
+		$this->export_TypeFields_array = array();
+		$this->export_entities_array = array();
+		$this->export_sql_start = array();
+		$this->export_sql_end = array();
+		$this->export_sql_order = array();
+		$this->export_dependencies_array = array();
+		$this->export_examplevalues_array = array();
+		$this->export_help_array = array();
 
-
-		// Exports profiles provided by this module
-		$r = 0;
-		/* BEGIN MODULEBUILDER EXPORT MYOBJECT */
-		/*
-		$langs->load("lmdbcrm@lmdbcrm");
-		$this->export_code[$r] = $this->rights_class.'_'.$r;
-		$this->export_label[$r] = 'MyObjectLines';	// Translation key (used only if key ExportDataset_xxx_z not found)
-		$this->export_icon[$r] = $this->picto;
-		// Define $this->export_fields_array, $this->export_TypeFields_array and $this->export_entities_array
-		$keyforclass = 'MyObject'; $keyforclassfile='/lmdbcrm/class/myobject.class.php'; $keyforelement='myobject@lmdbcrm';
-		include DOL_DOCUMENT_ROOT.'/core/commonfieldsinexport.inc.php';
-		//$this->export_fields_array[$r]['t.fieldtoadd']='FieldToAdd'; $this->export_TypeFields_array[$r]['t.fieldtoadd']='Text';
-		//unset($this->export_fields_array[$r]['t.fieldtoremove']);
-		//$keyforclass = 'MyObjectLine'; $keyforclassfile='/lmdbcrm/class/myobject.class.php'; $keyforelement='myobjectline@lmdbcrm'; $keyforalias='tl';
-		//include DOL_DOCUMENT_ROOT.'/core/commonfieldsinexport.inc.php';
-		$keyforselect='myobject'; $keyforaliasextra='extra'; $keyforelement='myobject@lmdbcrm';
-		include DOL_DOCUMENT_ROOT.'/core/extrafieldsinexport.inc.php';
-		//$keyforselect='myobjectline'; $keyforaliasextra='extraline'; $keyforelement='myobjectline@lmdbcrm';
-		//include DOL_DOCUMENT_ROOT.'/core/extrafieldsinexport.inc.php';
-		//$this->export_dependencies_array[$r] = array('myobjectline' => array('tl.rowid','tl.ref')); // To force to activate one or several fields if we select some fields that need same (like to select a unique key if we ask a field of a child to avoid the DISTINCT to discard them, or for computed field than need several other fields)
-		//$this->export_special_array[$r] = array('t.field' => '...');
-		//$this->export_examplevalues_array[$r] = array('t.field' => 'Example');
-		//$this->export_help_array[$r] = array('t.field' => 'FieldDescHelp');
-		$this->export_sql_start[$r]='SELECT DISTINCT ';
-		$this->export_sql_end[$r]  =' FROM '.$this->db->prefix().'lmdbcrm_myobject as t';
-		//$this->export_sql_end[$r]  .=' LEFT JOIN '.$this->db->prefix().'lmdbcrm_myobject_line as tl ON tl.fk_myobject = t.rowid';
-		$this->export_sql_end[$r] .=' WHERE 1 = 1';
-		$this->export_sql_end[$r] .=' AND t.entity IN ('.getEntity('myobject').')';
-		$r++; */
-		/* END MODULEBUILDER EXPORT MYOBJECT */
-
-		// Imports profiles provided by this module
-		$r = 0;
-		/* BEGIN MODULEBUILDER IMPORT MYOBJECT */
-		/*
-		$langs->load("lmdbcrm@lmdbcrm");
-		$this->import_code[$r] = $this->rights_class.'_'.$r;
-		$this->import_label[$r] = 'MyObjectLines';	// Translation key (used only if key ExportDataset_xxx_z not found)
-		$this->import_icon[$r] = $this->picto;
-		$this->import_tables_array[$r] = array('t' => $this->db->prefix().'lmdbcrm_myobject', 'extra' => $this->db->prefix().'lmdbcrm_myobject_extrafields');
-		$this->import_tables_creator_array[$r] = array('t' => 'fk_user_author'); // Fields to store import user id
-		$import_sample = array();
-		$keyforclass = 'MyObject'; $keyforclassfile='/lmdbcrm/class/myobject.class.php'; $keyforelement='myobject@lmdbcrm';
-		include DOL_DOCUMENT_ROOT.'/core/commonfieldsinimport.inc.php';
-		$import_extrafield_sample = array();
-		$keyforselect='myobject'; $keyforaliasextra='extra'; $keyforelement='myobject@lmdbcrm';
-		include DOL_DOCUMENT_ROOT.'/core/extrafieldsinimport.inc.php';
-		$this->import_fieldshidden_array[$r] = array('extra.fk_object' => 'lastrowid-'.$this->db->prefix().'lmdbcrm_myobject');
-		$this->import_regex_array[$r] = array();
-		$this->import_examplevalues_array[$r] = array_merge($import_sample, $import_extrafield_sample);
-		$this->import_updatekeys_array[$r] = array('t.ref' => 'Ref');
-		$this->import_convertvalue_array[$r] = array(
-			't.ref' => array(
-				'rule'=>'getrefifauto',
-				'class'=>(!getDolGlobalString('LMDBCRM_MYOBJECT_ADDON') ? 'mod_myobject_standard' : getDolGlobalString('LMDBCRM_MYOBJECT_ADDON')),
-				'path'=>"/core/modules/lmdbcrm/".(!getDolGlobalString('LMDBCRM_MYOBJECT_ADDON') ? 'mod_myobject_standard' : getDolGlobalString('LMDBCRM_MYOBJECT_ADDON')).'.php',
-				'classobject'=>'MyObject',
-				'pathobject'=>'/lmdbcrm/class/myobject.class.php',
-			),
-			't.fk_soc' => array('rule' => 'fetchidfromref', 'file' => '/societe/class/societe.class.php', 'class' => 'Societe', 'method' => 'fetch', 'element' => 'ThirdParty'),
-			't.fk_user_valid' => array('rule' => 'fetchidfromref', 'file' => '/user/class/user.class.php', 'class' => 'User', 'method' => 'fetch', 'element' => 'user'),
-			't.fk_mode_reglement' => array('rule' => 'fetchidfromcodeorlabel', 'file' => '/compta/paiement/class/cpaiement.class.php', 'class' => 'Cpaiement', 'method' => 'fetch', 'element' => 'cpayment'),
-		);
-		$this->import_run_sql_after_array[$r] = array();
-		$r++; */
-		/* END MODULEBUILDER IMPORT MYOBJECT */
+		// Import definitions provided by this module
+		$this->import_code = array();
+		$this->import_label = array();
+		$this->import_icon = array();
+		$this->import_tables_array = array();
+		$this->import_tables_creator_array = array();
+		$this->import_fields_array = array();
+		$this->import_fieldshidden_array = array();
+		$this->import_regex_array = array();
+		$this->import_examplevalues_array = array();
+		$this->import_updatekeys_array = array();
+		$this->import_convertvalue_array = array();
+		$this->import_run_sql_after_array = array();
 	}
+
 
 	/**
 	 *  Function called when module is enabled.
@@ -464,75 +279,31 @@ class modLmdbCrm extends DolibarrModules
 	 *  It also creates data directories
 	 *
 	 *  @param      string  $options    Options when enabling module ('', 'noboxes')
-	 *  @return     int<-1,1>          	1 if OK, <=0 if KO
+	 *  @return     int<-1,1>               1 if OK, <=0 if KO
 	 */
 	public function init($options = '')
 	{
-		global $conf, $langs;
-
-		// Create tables of module at module activation
-		//$result = $this->_load_tables('/install/mysql/', 'lmdbcrm');
+// EN: Initialize module (create SQL schema and widgets)
+// FR: Initialiser le module (creation du schema SQL et des widgets)
 		$result = $this->_load_tables('/lmdbcrm/sql/');
 		if ($result < 0) {
-			return -1; // Do not activate module if error 'not allowed' returned when loading module SQL queries (the _load_table run sql with run_sql with the error allowed parameter set to 'default')
+			return -1;
 		}
-
-		// Create extrafields during init
-		//include_once DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php';
-		//$extrafields = new ExtraFields($this->db);
-		//$result0=$extrafields->addExtraField('lmdbcrm_separator1', "Separator 1", 'separator', 1,  0, 'thirdparty',   0, 0, '', array('options'=>array(1=>1)), 1, '', 1, 0, '', '', 'lmdbcrm@lmdbcrm', 'isModEnabled("lmdbcrm")');
-		//$result1=$extrafields->addExtraField('lmdbcrm_myattr1', "New Attr 1 label", 'boolean', 1,  3, 'thirdparty',   0, 0, '', '', 1, '', -1, 0, '', '', 'lmdbcrm@lmdbcrm', 'isModEnabled("lmdbcrm")');
-		//$result2=$extrafields->addExtraField('lmdbcrm_myattr2', "New Attr 2 label", 'varchar', 1, 10, 'project',      0, 0, '', '', 1, '', -1, 0, '', '', 'lmdbcrm@lmdbcrm', 'isModEnabled("lmdbcrm")');
-		//$result3=$extrafields->addExtraField('lmdbcrm_myattr3', "New Attr 3 label", 'varchar', 1, 10, 'bank_account', 0, 0, '', '', 1, '', -1, 0, '', '', 'lmdbcrm@lmdbcrm', 'isModEnabled("lmdbcrm")');
-		//$result4=$extrafields->addExtraField('lmdbcrm_myattr4', "New Attr 4 label", 'select',  1,  3, 'thirdparty',   0, 1, '', array('options'=>array('code1'=>'Val1','code2'=>'Val2','code3'=>'Val3')), 1,'', -1, 0, '', '', 'lmdbcrm@lmdbcrm', 'isModEnabled("lmdbcrm")');
-		//$result5=$extrafields->addExtraField('lmdbcrm_myattr5', "New Attr 5 label", 'text',    1, 10, 'user',         0, 0, '', '', 1, '', -1, 0, '', '', 'lmdbcrm@lmdbcrm', 'isModEnabled("lmdbcrm")');
-
-		// Permissions
+		
 		$this->remove($options);
-
+		
 		$sql = array();
-
-		// Document templates
-		$moduledir = dol_sanitizeFileName('lmdbcrm');
-		$myTmpObjects = array();
-		$myTmpObjects['MyObject'] = array('includerefgeneration' => 0, 'includedocgeneration' => 0);
-
-		foreach ($myTmpObjects as $myTmpObjectKey => $myTmpObjectArray) {
-			if ($myTmpObjectArray['includerefgeneration']) {
-				$src = DOL_DOCUMENT_ROOT.'/install/doctemplates/'.$moduledir.'/template_myobjects.odt';
-				$dirodt = DOL_DATA_ROOT.($conf->entity > 1 ? '/'.$conf->entity : '').'/doctemplates/'.$moduledir;
-				$dest = $dirodt.'/template_myobjects.odt';
-
-				if (file_exists($src) && !file_exists($dest)) {
-					require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
-					dol_mkdir($dirodt);
-					$result = dol_copy($src, $dest, '0', 0);
-					if ($result < 0) {
-						$langs->load("errors");
-						$this->error = $langs->trans('ErrorFailToCopyFile', $src, $dest);
-						return 0;
-					}
-				}
-
-				$sql = array_merge($sql, array(
-					"DELETE FROM ".$this->db->prefix()."document_model WHERE nom = 'standard_".strtolower($myTmpObjectKey)."' AND type = '".$this->db->escape(strtolower($myTmpObjectKey))."' AND entity = ".((int) $conf->entity),
-					"INSERT INTO ".$this->db->prefix()."document_model (nom, type, entity) VALUES('standard_".strtolower($myTmpObjectKey)."', '".$this->db->escape(strtolower($myTmpObjectKey))."', ".((int) $conf->entity).")",
-					"DELETE FROM ".$this->db->prefix()."document_model WHERE nom = 'generic_".strtolower($myTmpObjectKey)."_odt' AND type = '".$this->db->escape(strtolower($myTmpObjectKey))."' AND entity = ".((int) $conf->entity),
-					"INSERT INTO ".$this->db->prefix()."document_model (nom, type, entity) VALUES('generic_".strtolower($myTmpObjectKey)."_odt', '".$this->db->escape(strtolower($myTmpObjectKey))."', ".((int) $conf->entity).")"
-				));
-			}
-		}
-
+		
 		return $this->_init($sql, $options);
 	}
 
 	/**
-	 *	Function called when module is disabled.
-	 *	Remove from database constants, boxes and permissions from Dolibarr database.
-	 *	Data directories are not deleted
+	 *      Function called when module is disabled.
+	 *      Remove from database constants, boxes and permissions from Dolibarr database.
+	 *      Data directories are not deleted
 	 *
-	 *	@param	string		$options	Options when enabling module ('', 'noboxes')
-	 *	@return	int<-1,1>				1 if OK, <=0 if KO
+	 *      @param  string          $options        Options when enabling module ('', 'noboxes')
+	 *      @return int<-1,1>                               1 if OK, <=0 if KO
 	 */
 	public function remove($options = '')
 	{
