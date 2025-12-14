@@ -101,7 +101,7 @@ class lmdbcrm_podium_signedquotes extends ModeleBoxes
 				'css' => 'liste_titre center',
 				'align' => 'center',
 				'url' => '',
-				'text' => $langs->trans('LmdbCrmSignedQuotesPodiumRank'),
+				'text' => '#',
 			),
 			1 => array(
 				'td' => 'class="left"',
@@ -132,8 +132,8 @@ class lmdbcrm_podium_signedquotes extends ModeleBoxes
 		$sql .= " WHERE p.entity IN (".getEntity('propal').")";
 		$sql .= " AND p.fk_statut = ".Propal::STATUS_SIGNED;
 		$sql .= " AND p.fk_user_author IS NOT NULL";
-		$sql .= " AND p.date_cloture IS NOT NULL";
-		$sql .= " AND p.date_cloture >= '".$this->db->idate($fromDate)."'";
+		$sql .= " AND p.date_signature IS NOT NULL";
+		$sql .= " AND p.date_signature >= '".$this->db->idate($fromDate)."'";
 		$sql .= " GROUP BY p.fk_user_author, u.lastname, u.firstname, u.login, u.photo, u.statut";
 		$sql .= " ORDER BY qty DESC";
 		$sql .= $this->db->plimit($this->max);
@@ -163,18 +163,18 @@ class lmdbcrm_podium_signedquotes extends ModeleBoxes
 
 					$this->info_box_contents[] = array(
 						0 => array(
-							'td' => 'class=\"center\"',
+							'td' => 'class="center"',
 							'align' => 'center',
 							'asis' => 1,
 							'text' => '<strong>'.$rank.'</strong>',
 						),
 						1 => array(
-							'td' => 'class=\"left\"',
+							'td' => 'class="left"',
 							'asis' => 1,
-							'text' => $photohtml.$userlink,
+							'text' => $tmpuser->getNomUrl(-1),
 						),
 						2 => array(
-							'td' => 'class=\"right\"',
+							'td' => 'class="right"',
 							'align' => 'right',
 							'asis' => 1,
 							'text' => dol_escape_htmltag($obj->qty),
@@ -187,6 +187,14 @@ class lmdbcrm_podium_signedquotes extends ModeleBoxes
 					0 => array(
 						'td' => 'class=\"center\" colspan=\"3\"',
 						'text' => $langs->trans('LmdbCrmSignedQuotesPodiumEmpty'),
+					),
+					1 => array(
+						'td' => 'class=\"center\" colspan=\"3\"',
+						'text' => '',
+					),
+					2 => array(
+						'td' => 'class=\"center\" colspan=\"3\"',
+						'text' => '',
 					),
 				);
 			}
