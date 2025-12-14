@@ -108,11 +108,6 @@ if (!empty($search_date_end_input)) {
 }
 
 $search_user = trim(GETPOST('search_user', 'alphanohtml'));
-$search_total_count = GETPOSTISSET('search_total_count') ? trim(GETPOST('search_total_count', 'alphanohtml')) : '';
-$search_signed_count = GETPOSTISSET('search_signed_count') ? trim(GETPOST('search_signed_count', 'alphanohtml')) : '';
-$search_total_amount = GETPOSTISSET('search_total_amount') ? price2num(GETPOST('search_total_amount', 'alpha'), 'MT') : '';
-$search_signed_amount = GETPOSTISSET('search_signed_amount') ? price2num(GETPOST('search_signed_amount', 'alpha'), 'MT') : '';
-$search_conversion_rate = GETPOSTISSET('search_conversion_rate') ? price2num(GETPOST('search_conversion_rate', 'alpha'), 'MT') : '';
 
 if (empty($sortfield) || !in_array($sortfield, $validSortFields, true)) {
 	$sortfield = 'signed_count';
@@ -131,21 +126,6 @@ if (!empty($search_date_end_input)) {
 }
 if ($search_user !== '') {
 	$param .= '&search_user='.urlencode($search_user);
-}
-if ($search_total_count !== '') {
-	$param .= '&search_total_count='.urlencode($search_total_count);
-}
-if ($search_signed_count !== '') {
-	$param .= '&search_signed_count='.urlencode($search_signed_count);
-}
-if ($search_total_amount !== '') {
-	$param .= '&search_total_amount='.urlencode($search_total_amount);
-}
-if ($search_signed_amount !== '') {
-	$param .= '&search_signed_amount='.urlencode($search_signed_amount);
-}
-if ($search_conversion_rate !== '') {
-	$param .= '&search_conversion_rate='.urlencode($search_conversion_rate);
 }
 
 $form = new Form($db);
@@ -181,26 +161,6 @@ if ($search_date_end > 0) {
 }
 $sql .= " GROUP BY u.rowid, u.lastname, u.firstname, u.login, u.photo, u.email";
 
-$having = array();
-if ($search_total_count !== '') {
-	$having[] = " COUNT(p.rowid) = ".((int) $search_total_count);
-}
-if ($search_signed_count !== '') {
-	$having[] = " SUM(CASE WHEN p.fk_statut IN (2, 4) THEN 1 ELSE 0 END) = ".((int) $search_signed_count);
-}
-if ($search_total_amount !== '') {
-	$having[] = " SUM(p.total_ht) = " . price2num($search_total_amount, 'MT');
-}
-if ($search_signed_amount !== '') {
-	$having[] = " SUM(CASE WHEN p.fk_statut IN (2, 4) THEN p.total_ht ELSE 0 END) = " . price2num($search_signed_amount, 'MT');
-}
-if ($search_conversion_rate !== '') {
-	$having[] = " CASE WHEN COUNT(p.rowid) > 0 THEN (SUM(CASE WHEN p.fk_statut IN (2, 4) THEN 1 ELSE 0 END) / COUNT(p.rowid)) * 100 ELSE 0 END = " . price2num($search_conversion_rate, 'MT');
-}
-
-if (!empty($having)) {
-	$sql .= " HAVING ".implode(' AND ', $having);
-}
 $sql .= $db->order($db->escape($sortfield), $db->escape($sortorder));
 
 $resql = $db->query($sql);
@@ -235,19 +195,18 @@ print '<td class="liste_titre">';
 print '<input class="flat" type="text" name="search_user" value="'.dol_escape_htmltag($search_user).'">';
 print '</td>';
 print '<td class="liste_titre">';
-print '<input class="flat" type="text" name="search_total_count" value="'.($search_total_count !== '' ? dol_escape_htmltag($search_total_count) : '').'">';
+print '&nbsp;';
 print '</td>';
 print '<td class="liste_titre">';
-print '<input class="flat" type="text" name="search_signed_count" value="'.($search_signed_count !== '' ? dol_escape_htmltag($search_signed_count) : '').'">';
+print '&nbsp;';
 print '</td>';
 print '<td class="liste_titre">';
-print '<input class="flat" type="text" name="search_total_amount" value="'.($search_total_amount !== '' ? dol_escape_htmltag($search_total_amount) : '').'">';
+print '&nbsp;';
 print '</td>';
 print '<td class="liste_titre">';
-print '<input class="flat" type="text" name="search_signed_amount" value="'.($search_signed_amount !== '' ? dol_escape_htmltag($search_signed_amount) : '').'">';
+print '&nbsp;';
 print '</td>';
 print '<td class="liste_titre center">';
-print '<input class="flat" type="text" name="search_conversion_rate" value="'.($search_conversion_rate !== '' ? dol_escape_htmltag($search_conversion_rate) : '').'">';
 print $form->showFilterButtons('right');
 print '</td>';
 print '</tr>';
