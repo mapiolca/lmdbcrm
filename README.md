@@ -2,7 +2,7 @@
 
 ## Features
 
-Description of the module...
+Podium widget showing the top 3 sales representatives by number of signed proposals over the last 30 rolling days (photo, name and count).
 
 <!--
 ![Screenshot lmdbcrm](img/screenshot_lmdbcrm.png?raw=true "LmdbCrm"){imgmd}
@@ -12,7 +12,7 @@ Other external modules are available on [Dolistore.com](https://www.dolistore.co
 
 ## Translations
 
-Translations can be completed manually by editing files in the module directories under `langs`.
+Translations can be completed manually by editing files in the module directories under `langs`. The module ships translations for English, French, German, Italian and Spanish.
 
 <!--
 This module contains also a sample configuration for Transifex, under the hidden directory [.tx](.tx), so it is possible to manage translation using this service.
