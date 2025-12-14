@@ -54,7 +54,7 @@ class modLmdbCrm extends DolibarrModules
 
 		// Family can be 'base' (core modules),'crm','financial','hr','projects','products','ecm','technic' (transverse modules),'interface' (link with external tools),'other','...'
 		// It is used to group modules by family in module setup page
-		$this->family = "other";
+		$this->family = "Les Métiers du Bâtiment";
 
 		// Module position in the family on 2 digits ('01', '10', '20', ...)
 		$this->module_position = '90';
@@ -64,19 +64,19 @@ class modLmdbCrm extends DolibarrModules
 		// Module label (no space allowed), used if translation string 'ModuleLmdbCrmName' not found (LmdbCrm is name of module).
 		$this->name = preg_replace('/^mod/i', '', get_class($this));
 
-// DESCRIPTION_FLAG
-// Module description, used if translation string 'ModuleLmdbCrmDesc' not found (LmdbCrm is name of module).
-$this->description = "ModuleLmdbCrmDesc";
-// Used only if file README.md and README-LL.md not found.
-$this->descriptionlong = "ModuleLmdbCrmDesc";
+		// DESCRIPTION_FLAG
+		// Module description, used if translation string 'ModuleLmdbCrmDesc' not found (LmdbCrm is name of module).
+		$this->description = "ModuleLmdbCrmDesc";
+		// Used only if file README.md and README-LL.md not found.
+		$this->descriptionlong = "ModuleLmdbCrmDesc";
 
 		// Author
 		$this->editor_name = 'Les Métiers du Bâtiment';
 		$this->editor_url = 'lesmetiersdubatiment.fr';		// Must be an external online web site
 		$this->editor_squarred_logo = '';					// Must be image filename into the module/img directory followed with @modulename. Example: 'myimage.png@lmdbcrm'
 
-// Possible values for version are: 'development', 'experimental', 'dolibarr', 'dolibarr_deprecated', 'experimental_deprecated' or a version string like 'x.y.z'
-$this->version = '1.1';
+		// Possible values for version are: 'development', 'experimental', 'dolibarr', 'dolibarr_deprecated', 'experimental_deprecated' or a version string like 'x.y.z'
+		$this->version = '1.0';
 		// Url to the file with your last numberversion of this module
 		//$this->url_last_version = 'http://www.example.com/versionmodule.txt';
 
