@@ -256,12 +256,11 @@ class modLmdbCrm extends DolibarrModules
 		// Add here list of php file(s) stored in lmdbcrm/core/boxes that contains a class to show a widget.
 		/* BEGIN MODULEBUILDER WIDGETS */
 		$this->boxes = array(
-			//  0 => array(
-			//      'file' => 'lmdbcrmwidget1.php@lmdbcrm',
-			//      'note' => 'Widget provided by LmdbCrm',
-			//      'enabledbydefaulton' => 'Home',
-			//  ),
-			//  ...
+			0 => array(
+				'file' => 'lmdbcrm_podium_signedquotes.php@lmdbcrm',
+				'note' => 'LmdbCrmSignedQuotesPodiumDescription',
+				'enabledbydefaulton' => 'Home',
+			),
 		);
 		/* END MODULEBUILDER WIDGETS */
 
