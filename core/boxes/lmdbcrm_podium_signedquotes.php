@@ -188,6 +188,14 @@ class lmdbcrm_podium_signedquotes extends ModeleBoxes
 						'td' => 'class=\"center\" colspan=\"3\"',
 						'text' => $langs->trans('LmdbCrmSignedQuotesPodiumEmpty'),
 					),
+					1 => array(
+						'td' => 'class=\"center\" colspan=\"3\"',
+						'text' => '',
+					),
+					2 => array(
+						'td' => 'class=\"center\" colspan=\"3\"',
+						'text' => '',
+					),
 				);
 			}
 
