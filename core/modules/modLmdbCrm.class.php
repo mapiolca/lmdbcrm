@@ -241,20 +241,20 @@ $this->version = '1.1';
 
 		// Main menu entries to add
 		$this->menu = array();
-		
+
 		$this->menu[] = array(
-		'fk_menu' => 'fk_mainmenu=commercial,fk_leftmenu=propallist',
-		'type' => 'left',
-		'titre' => 'LmdbCrmSalesRepRanking',
-		'mainmenu' => 'commercial',
-		'leftmenu' => 'lmdbcrm_salesrepranking',
-		'url' => '/lmdbcrm/commercial_ranking.php',
-		'langs' => 'lmdbcrm@lmdbcrm',
-		'position' => 1000,
-		'perms' => '$user->rights->propal->lire',
-		'enabled' => 'isModEnabled("lmdbcrm")',
-		'target' => '',
-		'user' => 2,
+			'fk_menu' => 'fk_mainmenu=commercial,fk_leftmenu=propals',
+			'type' => 'left',
+			'titre' => 'LmdbCrmSalesRepRanking',
+			'mainmenu' => 'commercial',
+			'leftmenu' => 'lmdbcrm_salesrepranking',
+			'url' => '/lmdbcrm/commercial_ranking.php',
+			'langs' => 'lmdbcrm@lmdbcrm',
+			'position' => 1000,
+			'perms' => '$user->rights->propal->lire',
+			'enabled' => 'isModEnabled("lmdbcrm")',
+			'target' => '',
+			'user' => 2,
 		);
 
 		// Export definitions provided by this module
@@ -298,8 +298,7 @@ $this->version = '1.1';
 	 */
 	public function init($options = '')
 	{
-// EN: Initialize module (create SQL schema and widgets)
-// FR: Initialiser le module (creation du schema SQL et des widgets)
+		// Initialize module (create SQL schema and widgets)
 		$result = $this->_load_tables('/lmdbcrm/sql/');
 		if ($result < 0) {
 			return -1;
