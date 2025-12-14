@@ -74,7 +74,7 @@ $langs->loadLangs(array('lmdbcrm@lmdbcrm', 'commercial', 'propal'));
 
 // Security check - Protection if external user
 if (!empty($user->socid)) {
-	accessforbidden();
+accessforbidden();
 }
 if (!isModEnabled('propal')) {
 	accessforbidden();
@@ -83,11 +83,10 @@ if (empty($user->rights->propal->lire)) {
 	accessforbidden();
 }
 
-// EN: Manage sorting and search parameters
-// FR: Gérer les paramètres de tri et de recherche
+// Manage sorting and search parameters
 $sortfield = GETPOST('sortfield', 'aZ09');
 $sortorder = GETPOST('sortorder', 'aZ09');
-$validSortFields = array('total_count', 'signed_count', 'total_amount', 'signed_amount', 'userid');
+$validSortFields = array('total_count', 'signed_count', 'total_amount', 'signed_amount', 'conversion_rate', 'userid');
 
 $search_date_startday = GETPOST('search_date_startday', 'int');
 $search_date_startmonth = GETPOST('search_date_startmonth', 'int');
@@ -99,6 +98,13 @@ $search_date_endyear = GETPOST('search_date_endyear', 'int');
 $search_date_start = dol_mktime(0, 0, 0, $search_date_startmonth, $search_date_startday, $search_date_startyear);
 $search_date_end = dol_mktime(23, 59, 59, $search_date_endmonth, $search_date_endday, $search_date_endyear);
 
+if (empty($search_date_startday) && empty($search_date_startmonth) && empty($search_date_startyear)) {
+	$search_date_start = 0;
+}
+if (empty($search_date_endday) && empty($search_date_endmonth) && empty($search_date_endyear)) {
+	$search_date_end = 0;
+}
+
 if (empty($sortfield) || !in_array($sortfield, $validSortFields, true)) {
 	$sortfield = 'signed_count';
 }
@@ -109,8 +115,7 @@ if (empty($sortorder) || !in_array(dol_strtoupper($sortorder), array('ASC', 'DES
 $dateStartForSelect = $search_date_start ?: -1;
 $dateEndForSelect = $search_date_end ?: -1;
 
-// EN: Prepare url parameters for listing
-// FR: Préparer les paramètres d'URL pour la liste
+// Prepare url parameters for listing
 $param = '';
 if (!empty($search_date_startday)) {
 	$param .= '&search_date_startday='.urlencode($search_date_startday);
@@ -138,19 +143,18 @@ $title = $langs->trans('LmdbCrmSalesRepRanking');
 
 llxHeader('', $title, '', '', 0, 0, '', '', '', 'mod-lmdbcrm page-commercial-ranking');
 
-// EN: Title bar following Dolibarr list layout
-// FR: Barre de titre suivant la mise en page des listes Dolibarr
+// Title bar following Dolibarr list layout
 print load_fiche_titre($title, '', 'chart');
 print '<br>';
 print_barre_liste('', 0, $_SERVER['PHP_SELF'], $param, $sortfield, $sortorder, '', 0, -1, '', 0, '', '', 0, 1, 1);
 
-// EN: Build SQL request for ranking
-// FR: Construire la requête SQL du classement
+// Build SQL request for ranking
 $sql = "SELECT u.rowid as userid, u.lastname, u.firstname, u.login, u.photo, u.email";
 $sql .= ", COUNT(p.rowid) as total_count";
 $sql .= ", SUM(CASE WHEN p.fk_statut IN (2, 4) THEN 1 ELSE 0 END) as signed_count";
 $sql .= ", SUM(p.total_ht) as total_amount";
 $sql .= ", SUM(CASE WHEN p.fk_statut IN (2, 4) THEN p.total_ht ELSE 0 END) as signed_amount";
+$sql .= ", CASE WHEN COUNT(p.rowid) > 0 THEN (SUM(CASE WHEN p.fk_statut IN (2, 4) THEN 1 ELSE 0 END) / COUNT(p.rowid)) * 100 ELSE 0 END as conversion_rate";
 $sql .= " FROM ".$db->prefix()."user as u";
 $sql .= " JOIN ".$db->prefix()."propal as p ON p.fk_user_author = u.rowid";
 $sql .= " WHERE p.fk_statut IN (1, 2, 3, 4)";
@@ -172,8 +176,7 @@ if (!$resql) {
 
 $num = $db->num_rows($resql);
 
-// EN: Render list inspired by core proposal list layout
-// FR: Afficher la liste en s'inspirant de la mise en page de la liste des propositions
+// Render list inspired by core proposal list layout
 print '<form method="GET" action="'.$_SERVER['PHP_SELF'].'" name="search_form">';
 print '<input type="hidden" name="sortfield" value="'.$sortfield.'">';
 print '<input type="hidden" name="sortorder" value="'.$sortorder.'">';
@@ -203,29 +206,25 @@ print_liste_field_titre($langs->trans('LmdbCrmProposalsCount'), $_SERVER['PHP_SE
 print_liste_field_titre($langs->trans('LmdbCrmSignedProposalsCount'), $_SERVER['PHP_SELF'], 'signed_count', '', $param, '', $sortfield, $sortorder, 'center ');
 print_liste_field_titre($langs->trans('LmdbCrmQuotedAmount'), $_SERVER['PHP_SELF'], 'total_amount', '', $param, '', $sortfield, $sortorder, 'right ');
 print_liste_field_titre($langs->trans('LmdbCrmSignedAmount'), $_SERVER['PHP_SELF'], 'signed_amount', '', $param, '', $sortfield, $sortorder, 'right ');
-print '<th class="center">'.$langs->trans('LmdbCrmConversionRate').'</th>';
+print_liste_field_titre($langs->trans('LmdbCrmConversionRate'), $_SERVER['PHP_SELF'], 'conversion_rate', '', $param, '', $sortfield, $sortorder, 'center ');
 print '</tr>';
+
 
 if ($num > 0) {
 	while ($obj = $db->fetch_object($resql)) {
-		$conversionRate = 0;
-		if (!empty($obj->total_count)) {
-			$conversionRate = ($obj->signed_count / $obj->total_count) * 100;
-		}
-
 		$userstatic->id = $obj->userid;
 		$userstatic->lastname = $obj->lastname;
 		$userstatic->firstname = $obj->firstname;
 		$userstatic->login = $obj->login;
 		$userstatic->email = $obj->email;
-
+		
 		print '<tr class="oddeven">';
 		print '<td class="nowraponall">'.$userstatic->getNomUrl(-1, '', 0, 0, 0).'</td>';
 		print '<td class="center">'.(int) $obj->total_count.'</td>';
 		print '<td class="center">'.(int) $obj->signed_count.'</td>';
 		print '<td class="right">'.price($obj->total_amount, 0, $langs, 0, 0, -1, $conf->currency).'</td>';
 		print '<td class="right">'.price($obj->signed_amount, 0, $langs, 0, 0, -1, $conf->currency).'</td>';
-		$conversionDisplay = price($conversionRate, 0, $langs, 0, 0, 2, '', 1, 0);
+		$conversionDisplay = price($obj->conversion_rate, 0, $langs, 0, 0, 2, '', 1, 0);
 		print '<td class="center">'.$conversionDisplay.' %</td>';
 		print '</tr>';
 	}
