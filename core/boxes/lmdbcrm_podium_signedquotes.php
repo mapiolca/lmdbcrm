@@ -101,7 +101,7 @@ class lmdbcrm_podium_signedquotes extends ModeleBoxes
 				'css' => 'liste_titre center',
 				'align' => 'center',
 				'url' => '',
-				'text' => $langs->trans('LmdbCrmSignedQuotesPodiumRank'),
+				'text' => '#'),
 			),
 			1 => array(
 				'td' => 'class="left"',
