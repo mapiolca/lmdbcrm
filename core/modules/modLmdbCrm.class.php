@@ -231,6 +231,11 @@ class modLmdbCrm extends DolibarrModules
 				'note' => 'LmdbCrmSignedQuotesPodiumDescription',
 				'enabledbydefaulton' => 'Home',
 			),
+			1 => array(
+				'file' => 'lmdbcrm_graph_conversionrates.php@lmdbcrm',
+				'note' => 'lmdbcrm_graph_conversionratesDescription',
+				'enabledbydefaulton' => 'Home',
+			),
 		);
 
 		// Cronjobs

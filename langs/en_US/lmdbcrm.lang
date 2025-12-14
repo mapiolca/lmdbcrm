@@ -30,3 +30,12 @@ LmdbCrmQuotedAmount = Quoted amount
 LmdbCrmSignedAmount = Signed amount
 LmdbCrmConversionRate = Conversion rate
 LmdbCrmNoRankingData = No proposal found for the selected period
+
+# Conversion rate graphs widget
+LmdbCrmConversionRatesTitle = Conversion rates (user / company)
+LmdbCrmConversionPeriodLabel = Period
+LmdbCrmConversionUserLabel = My conversion rate
+LmdbCrmConversionCompanyLabel = Company conversion rate
+LmdbCrmConversionSigned = Signed
+LmdbCrmConversionUnsigned = Not signed
+LmdbCrmConversionNoData = No proposal found for this period
