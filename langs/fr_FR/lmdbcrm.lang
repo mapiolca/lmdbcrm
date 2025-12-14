@@ -20,3 +20,13 @@ LmdbCrmSignedQuotesPodiumRank = Position dans le classement
 LmdbCrmSignedQuotesPodiumUser = Commercial
 LmdbCrmSignedQuotesPodiumCountTitle = Nombre de devis signés
 LmdbCrmSignedQuotesPodiumEmpty = Aucun devis signé sur les 30 derniers jours
+
+# Classement des commerciaux
+LmdbCrmSalesRepRanking = Classement des commerciaux
+LmdbCrmSalesRep = Commercial
+LmdbCrmProposalsCount = Nombre de devis réalisés
+LmdbCrmSignedProposalsCount = Nombre de devis signés
+LmdbCrmQuotedAmount = Montant chiffré
+LmdbCrmSignedAmount = Montant signé
+LmdbCrmConversionRate = Taux de conversion
+LmdbCrmNoRankingData = Aucun devis trouvé pour la période sélectionnée
