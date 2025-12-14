@@ -40,3 +40,9 @@ MyPageName = My page name
 #
 MyWidget = My widget
 MyWidgetDescription = My widget description
+
+# Widget podium devis signés
+LmdbCrmSignedQuotesPodiumTitle = Top 3 commerciaux (devis signés - 30 jours glissants)
+LmdbCrmSignedQuotesPodiumDescription = Podium des commerciaux selon le nombre de devis signés sur 30 jours glissants.
+LmdbCrmSignedQuotesPodiumCount = %s devis signés
+LmdbCrmSignedQuotesPodiumEmpty = Aucun devis signé sur les 30 derniers jours

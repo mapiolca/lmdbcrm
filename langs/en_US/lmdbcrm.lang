@@ -40,3 +40,9 @@ MyPageName = My page name
 #
 MyWidget = My widget
 MyWidgetDescription = My widget description
+
+# Signed quotes podium widget
+LmdbCrmSignedQuotesPodiumTitle = Top 3 sales representatives (signed proposals - last 30 days)
+LmdbCrmSignedQuotesPodiumDescription = Podium of sales representatives by signed proposals over the last 30 rolling days.
+LmdbCrmSignedQuotesPodiumCount = %s signed proposals
+LmdbCrmSignedQuotesPodiumEmpty = No signed proposals over the last 30 days
