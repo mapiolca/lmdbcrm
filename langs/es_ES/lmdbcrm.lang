@@ -17,6 +17,6 @@ LmdbCrmSignedQuotesPodiumTitle = Top 3 comerciales (presupuestos firmados - últ
 LmdbCrmSignedQuotesPodiumDescription = Podio de comerciales según el número de presupuestos firmados en los últimos 30 días móviles.
 LmdbCrmSignedQuotesPodiumCount = %s presupuestos firmados
 LmdbCrmSignedQuotesPodiumRank = Posición en la clasificación
-LmdbCrmSignedQuotesPodiumUser = Foto + Nombre + Apellidos
+LmdbCrmSignedQuotesPodiumUser = Comercial
 LmdbCrmSignedQuotesPodiumCountTitle = Número de presupuestos firmados
 LmdbCrmSignedQuotesPodiumEmpty = Ningún presupuesto firmado en los últimos 30 días

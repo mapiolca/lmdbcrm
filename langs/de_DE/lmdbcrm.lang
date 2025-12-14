@@ -17,6 +17,6 @@ LmdbCrmSignedQuotesPodiumTitle = Top 3 Verkäufer (unterschriebene Angebote - le
 LmdbCrmSignedQuotesPodiumDescription = Podium der Verkäufer nach Anzahl unterschriebener Angebote über die letzten 30 gleitenden Tage.
 LmdbCrmSignedQuotesPodiumCount = %s unterschriebene Angebote
 LmdbCrmSignedQuotesPodiumRank = Platzierung
-LmdbCrmSignedQuotesPodiumUser = Foto + Vorname + Nachname
+LmdbCrmSignedQuotesPodiumUser = Vertriebsmitarbeiter
 LmdbCrmSignedQuotesPodiumCountTitle = Anzahl unterschriebener Angebote
 LmdbCrmSignedQuotesPodiumEmpty = Keine unterschriebenen Angebote in den letzten 30 Tagen

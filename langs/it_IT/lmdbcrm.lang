@@ -17,6 +17,6 @@ LmdbCrmSignedQuotesPodiumTitle = Top 3 commerciali (preventivi firmati - ultimi 
 LmdbCrmSignedQuotesPodiumDescription = Podio dei commerciali in base al numero di preventivi firmati negli ultimi 30 giorni mobili.
 LmdbCrmSignedQuotesPodiumCount = %s preventivi firmati
 LmdbCrmSignedQuotesPodiumRank = Posizione in classifica
-LmdbCrmSignedQuotesPodiumUser = Foto + Nome + Cognome
+LmdbCrmSignedQuotesPodiumUser = Commerciale
 LmdbCrmSignedQuotesPodiumCountTitle = Numero di preventivi firmati
 LmdbCrmSignedQuotesPodiumEmpty = Nessun preventivo firmato negli ultimi 30 giorni

@@ -17,6 +17,6 @@ LmdbCrmSignedQuotesPodiumTitle = Top 3 sales representatives (signed proposals -
 LmdbCrmSignedQuotesPodiumDescription = Podium of sales representatives by signed proposals over the last 30 rolling days.
 LmdbCrmSignedQuotesPodiumCount = %s signed proposals
 LmdbCrmSignedQuotesPodiumRank = Ranking position
-LmdbCrmSignedQuotesPodiumUser = Photo + First name + Last name
+LmdbCrmSignedQuotesPodiumUser = Salesperson
 LmdbCrmSignedQuotesPodiumCountTitle = Signed proposals count
 LmdbCrmSignedQuotesPodiumEmpty = No signed proposals over the last 30 days
