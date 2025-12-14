@@ -163,18 +163,18 @@ class lmdbcrm_podium_signedquotes extends ModeleBoxes
 
 					$this->info_box_contents[] = array(
 						0 => array(
-							'td' => 'class=\"center\"',
+							'td' => 'class="center"',
 							'align' => 'center',
 							'asis' => 1,
 							'text' => '<strong>'.$rank.'</strong>',
 						),
 						1 => array(
-							'td' => 'class=\"left\"',
+							'td' => 'class="left"',
 							'asis' => 1,
 							'text' => $photohtml.$userlink,
 						),
 						2 => array(
-							'td' => 'class=\"right\"',
+							'td' => 'class="right"',
 							'align' => 'right',
 							'asis' => 1,
 							'text' => dol_escape_htmltag($obj->qty),
