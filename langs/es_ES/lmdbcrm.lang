@@ -1,0 +1,42 @@
+# Translation file
+
+#
+# Generic
+#
+
+# Module label 'ModuleLmdbCrmName'
+ModuleLmdbCrmName = LmdbCrm
+# Module description 'ModuleLmdbCrmDesc'
+ModuleLmdbCrmDesc = LmdbCrm description
+
+#
+# Admin page
+#
+LmdbCrmSetup = LmdbCrm setup
+Settings = Settings
+LmdbCrmSetupPage = LmdbCrm setup page
+NewSection=New section
+LMDBCRM_MYPARAM1 = My param 1
+LMDBCRM_MYPARAM1Tooltip = My param 1 tooltip
+LMDBCRM_MYPARAM2=My param 2
+LMDBCRM_MYPARAM2Tooltip=My param 2 tooltip
+
+
+#
+# About page
+#
+About = About
+LmdbCrmAbout = About LmdbCrm
+LmdbCrmAboutPage = LmdbCrm about page
+
+#
+# Sample page
+#
+LmdbCrmArea = Home LmdbCrm
+MyPageName = My page name
+
+#
+# Sample widget
+#
+MyWidget = My widget
+MyWidgetDescription = My widget description
