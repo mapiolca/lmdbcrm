@@ -93,6 +93,34 @@ class lmdbcrm_podium_signedquotes extends ModeleBoxes
 		);
 
 		$this->info_box_contents = array();
+		$this->info_box_contents[] = array(
+			0 => array(
+				'td' => 'class="center"',
+				'asis' => 1,
+				'css' => 'liste_titre center',
+				'align' => 'center',
+				'url' => '',
+				'text' => $langs->trans('LmdbCrmSignedQuotesPodiumRank'),
+			),
+			1 => array(
+				'td' => 'class="left"',
+				'asis' => 1,
+				'css' => 'liste_titre left',
+				'align' => 'left',
+				'url' => '',
+				'color' => '',
+				'text' => $langs->trans('LmdbCrmSignedQuotesPodiumUser'),
+			),
+			2 => array(
+				'td' => 'class="right"',
+				'asis' => 1,
+				'css' => 'liste_titre right',
+				'align' => 'right',
+				'url' => '',
+				'color' => '',
+				'text' => $langs->trans('LmdbCrmSignedQuotesPodiumCountTitle'),
+			),
+		);
 
 		$now = dol_now();
 		$fromDate = dol_time_plus_duree($now, -30, 'd');
@@ -115,7 +143,8 @@ class lmdbcrm_podium_signedquotes extends ModeleBoxes
 			if ($num > 0) {
 				$rank = 1;
 				while ($obj = $this->db->fetch_object($resql)) {
-					$userlink = $langs->trans('Unknown');
+					$userlink = dol_escape_htmltag($langs->trans('Unknown'));
+					$photohtml = '';
 					if (!empty($obj->userid)) {
 						$tmpuser = new User($this->db);
 						$tmpuser->id = (int) $obj->userid;
@@ -125,28 +154,37 @@ class lmdbcrm_podium_signedquotes extends ModeleBoxes
 						$tmpuser->photo = $obj->photo;
 						$tmpuser->statut = $obj->statut;
 						$userlink = $tmpuser->getNomUrl(1);
+						if (!empty($tmpuser->photo)) {
+							$photourl = dol_buildpath('/viewimage.php', 1).'?modulepart=userphoto&file='.urlencode($tmpuser->photo);
+							$photohtml = '<img class="inline-block" style="max-height:32px;max-width:32px;border-radius:50%;margin-right:6px;" src="'.$photourl.'" alt="'.$langs->trans('Photo').'">';
+						}
 					}
-
-					$countlabel = $langs->trans('LmdbCrmSignedQuotesPodiumCount', $obj->qty);
 
 					$this->info_box_contents[] = array(
 						0 => array(
-							'td' => 'class=\"left\"',
+							'td' => 'class=\"center\"',
+							'align' => 'center',
 							'asis' => 1,
-							'text' => '<strong>#'.$rank.'</strong> '.$userlink,
+							'text' => '<strong>'.$rank.'</strong>',
 						),
 						1 => array(
+							'td' => 'class=\"left\"',
+							'asis' => 1,
+							'text' => $photohtml.$userlink,
+						),
+						2 => array(
 							'td' => 'class=\"right\"',
-							'text' => $countlabel,
+							'align' => 'right',
+							'asis' => 1,
+							'text' => dol_escape_htmltag($obj->qty),
 						),
 					);
-
 					$rank++;
 				}
 			} else {
 				$this->info_box_contents[] = array(
 					0 => array(
-						'td' => 'class=\"center\"',
+						'td' => 'class=\"center\" colspan=\"3\"',
 						'text' => $langs->trans('LmdbCrmSignedQuotesPodiumEmpty'),
 					),
 				);
@@ -156,11 +194,12 @@ class lmdbcrm_podium_signedquotes extends ModeleBoxes
 		} else {
 			$this->info_box_contents[] = array(
 				0 => array(
-					'td' => 'class=\"center\"',
+					'td' => 'class=\"center\" colspan=\"3\"',
 					'asis' => 1,
 					'text' => $this->db->lasterror(),
 				),
 			);
 		}
 	}
+
 }

@@ -45,4 +45,7 @@ MyWidgetDescription = My widget description
 LmdbCrmSignedQuotesPodiumTitle = Top 3 commerciaux (devis signés - 30 jours glissants)
 LmdbCrmSignedQuotesPodiumDescription = Podium des commerciaux selon le nombre de devis signés sur 30 jours glissants.
 LmdbCrmSignedQuotesPodiumCount = %s devis signés
+LmdbCrmSignedQuotesPodiumRank = Position dans le classement
+LmdbCrmSignedQuotesPodiumUser = Photo + Nom + Prénom
+LmdbCrmSignedQuotesPodiumCountTitle = Nombre de devis signés
 LmdbCrmSignedQuotesPodiumEmpty = Aucun devis signé sur les 30 derniers jours
