@@ -30,3 +30,12 @@ LmdbCrmQuotedAmount = Montant chiffré
 LmdbCrmSignedAmount = Montant signé
 LmdbCrmConversionRate = Taux de conversion
 LmdbCrmNoRankingData = Aucun devis trouvé pour la période sélectionnée
+
+# Conversion rate graphs widget
+LmdbCrmConversionRatesTitle = Taux de conversion (utilisateur / entreprise)
+LmdbCrmConversionPeriodLabel = Période
+LmdbCrmConversionUserLabel = Mon taux de conversion
+LmdbCrmConversionCompanyLabel = Taux de conversion de l'entreprise
+LmdbCrmConversionSigned = Signées
+LmdbCrmConversionUnsigned = Non signées
+LmdbCrmConversionNoData = Aucune proposition trouvée pour cette période
