@@ -132,8 +132,8 @@ class lmdbcrm_podium_signedquotes extends ModeleBoxes
 		$sql .= " WHERE p.entity IN (".getEntity('propal').")";
 		$sql .= " AND p.fk_statut = ".Propal::STATUS_SIGNED;
 		$sql .= " AND p.fk_user_author IS NOT NULL";
-		$sql .= " AND p.date_cloture IS NOT NULL";
-		$sql .= " AND p.date_cloture >= '".$this->db->idate($fromDate)."'";
+		$sql .= " AND p.date_signature IS NOT NULL";
+		$sql .= " AND p.date_signature >= '".$this->db->idate($fromDate)."'";
 		$sql .= " GROUP BY p.fk_user_author, u.lastname, u.firstname, u.login, u.photo, u.statut";
 		$sql .= " ORDER BY qty DESC";
 		$sql .= $this->db->plimit($this->max);
