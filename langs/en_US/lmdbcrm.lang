@@ -20,3 +20,13 @@ LmdbCrmSignedQuotesPodiumRank = Ranking position
 LmdbCrmSignedQuotesPodiumUser = Salesperson
 LmdbCrmSignedQuotesPodiumCountTitle = Signed proposals count
 LmdbCrmSignedQuotesPodiumEmpty = No signed proposals over the last 30 days
+
+# Sales representative ranking
+LmdbCrmSalesRepRanking = Sales representatives ranking
+LmdbCrmSalesRep = Sales representative
+LmdbCrmProposalsCount = Proposals created
+LmdbCrmSignedProposalsCount = Signed proposals
+LmdbCrmQuotedAmount = Quoted amount
+LmdbCrmSignedAmount = Signed amount
+LmdbCrmConversionRate = Conversion rate
+LmdbCrmNoRankingData = No proposal found for the selected period
