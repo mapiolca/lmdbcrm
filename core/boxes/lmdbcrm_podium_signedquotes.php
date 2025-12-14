@@ -171,7 +171,7 @@ class lmdbcrm_podium_signedquotes extends ModeleBoxes
 						1 => array(
 							'td' => 'class="left"',
 							'asis' => 1,
-							'text' => $photohtml.$userlink,
+							'text' => $tmpuser->getNomUrl(-1),
 						),
 						2 => array(
 							'td' => 'class="right"',
