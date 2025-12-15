@@ -39,3 +39,13 @@ LmdbCrmConversionCompanyLabel = Company conversion rate
 LmdbCrmConversionSigned = Signed
 LmdbCrmConversionUnsigned = Not signed
 LmdbCrmConversionNoData = No proposal found for this period
+
+# Widget podium signed turnover
+LmdbCrmSignedTurnoverPodiumTitle = Top 3 sales reps (Signed revenue - rolling 30 days)
+LmdbCrmSignedTurnoverPodiumDescription = Sales reps podium based on signed revenue over the last rolling 30 days.
+LmdbCrmSignedTurnoverPodiumAmount = %s signed
+LmdbCrmSignedTurnoverPodiumRank = Ranking position
+LmdbCrmSignedTurnoverPodiumUser = Sales rep
+LmdbCrmSignedTurnoverPodiumAmountTitle = Signed revenue
+LmdbCrmSignedTurnoverPodiumEmpty = No signed proposals in the last 30 days
+
