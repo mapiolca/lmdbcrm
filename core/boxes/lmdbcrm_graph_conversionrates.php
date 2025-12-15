@@ -120,7 +120,7 @@ class lmdbcrm_graph_conversionrates extends ModeleBoxes
 		$filterform = '<form method="GET" action="'.dol_escape_htmltag($_SERVER['PHP_SELF']).'" class="nocellnopadding">';
 		$filterform .= '<div class="center">';
 		$filterform .= $langs->trans('LmdbCrmConversionPeriodLabel').' ';
-		$filterform .= $form->selectDate($fromdate, 'lmdbcrmconv_from', 0, 0, 1, '', 0, 1, 0, '', '', 1);
+		$filterform .= $form->selectDate($fromdate, 'lmdbcrmconv_from', 0, 0, 0, '', 1, 1);
 		$filterform .= $langs->trans('to').' ';
 		$filterform .= $form->selectDate($todate, 'lmdbcrmconv_to', 0, 0, 1, '', 1, 1, 0, '', '', 1);
 		$filterform .= '<input type="submit" class="button smallpaddingimp" value="'.$langs->trans('Refresh').'">';
