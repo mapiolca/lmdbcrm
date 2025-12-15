@@ -3,8 +3,8 @@
 #
 # Générique
 #
-ModuleLmdbCrmName = LmdbCrm
-ModuleLmdbCrmDesc = Podium des meilleurs commerciaux par devis signés sur les 30 derniers jours.
+ModuleLmdbCrmName = CRM
+ModuleLmdbCrmDesc = Divers widgets et fonctionnalités CRM pour compléter votre Dolibarr préféré.
 
 #
 # Page admin
