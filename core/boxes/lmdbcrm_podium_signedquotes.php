@@ -161,6 +161,12 @@ class lmdbcrm_podium_signedquotes extends ModeleBoxes
 						}
 					}
 
+					$signedquotesqty = dol_escape_htmltag($obj->qty);
+					if (!empty($obj->login)) {
+						$signedquoteslisturl = dol_buildpath('/comm/propal/list.php', 1).'?search_status='.urlencode((string) (Propal::STATUS_SIGNED.','.Propal::STATUS_BILLED)).'&search_login='.urlencode((string) $obj->login);
+						$signedquotesqty = '<a href="'.$signedquoteslisturl.'">'.$signedquotesqty.'</a>';
+					}
+
 					$this->info_box_contents[] = array(
 						0 => array(
 							'td' => 'class="center"',
@@ -177,7 +183,7 @@ class lmdbcrm_podium_signedquotes extends ModeleBoxes
 							'td' => 'class="right"',
 							'align' => 'right',
 							'asis' => 1,
-							'text' => dol_escape_htmltag($obj->qty),
+							'text' => $signedquotesqty,
 						),
 					);
 					$rank++;

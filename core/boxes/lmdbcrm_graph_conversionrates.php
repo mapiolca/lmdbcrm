@@ -120,9 +120,9 @@ class lmdbcrm_graph_conversionrates extends ModeleBoxes
 		$filterform = '<form method="GET" action="'.dol_escape_htmltag($_SERVER['PHP_SELF']).'" class="nocellnopadding">';
 		$filterform .= '<div class="center">';
 		$filterform .= $langs->trans('LmdbCrmConversionPeriodLabel').' ';
-		$filterform .= $form->selectDate($fromdate, 'lmdbcrmconv_from', 0, 0, 1, '', 1, 1, 0, '', '', 1);
+		$filterform .= $form->selectDate($fromdate, 'lmdbcrmconv_from', 0, 0, 0, '', 1, 1);
 		$filterform .= $langs->trans('to').' ';
-		$filterform .= $form->selectDate($todate, 'lmdbcrmconv_to', 0, 0, 1, '', 1, 1, 0, '', '', 1);
+		$filterform .= $form->selectDate($todate, 'lmdbcrmconv_to', 0, 0, 1, '', 1, 1);
 		$filterform .= '<input type="submit" class="button smallpaddingimp" value="'.$langs->trans('Refresh').'">';
 		$filterform .= '</div>';
 		$filterform .= '</form>';
@@ -191,8 +191,8 @@ class lmdbcrm_graph_conversionrates extends ModeleBoxes
 
 		$graph = new DolGraph();
 		$graph->SetData(array(
-			array($langs->trans('LmdbCrmConversionSigned'), $signed),
-			array($langs->trans('LmdbCrmConversionUnsigned'), $unsigned),
+		    array($langs->transnoentities('LmdbCrmConversionSigned'), $signed),
+		    array($langs->transnoentities('LmdbCrmConversionUnsigned'), $unsigned),
 		));
 		$graph->SetDataColor(array('#76a7fa', '#c0c0c0'));
 		$graph->setShowLegend(1);
