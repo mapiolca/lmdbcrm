@@ -201,15 +201,15 @@ class lmdbcrm_graph_conversionrates extends ModeleBoxes
 		$graph->setHeight('280');
 		$graph->setWidth('340');
 
-		$dir = $conf->user->dir_temp;
+		$dir = !empty($conf->user->dir_temp) ? $conf->user->dir_temp : DOL_DATA_ROOT.'/temp';
 		if (!empty($conf->multicompany->enabled) && !empty($conf->entity)) {
-			$dir .= '/'.$conf->entity;
+			$dir = rtrim($dir, '/').'/'.$conf->entity;
 		}
 		dol_mkdir($dir);
 
 		$filename = 'lmdbcrm_conversion_'.$suffix.'_'.dol_print_date(dol_now(), 'dayhourlog').'.png';
 		$file = $dir.'/'.$filename;
-		$fileurl = DOL_URL_ROOT.'/viewimage.php?modulepart=apercu&file='.urlencode(basename($dir).'/'.$filename);
+		$fileurl = dol_buildpath('/viewimage.php', 1).'?modulepart=apercu&file='.urlencode(basename($dir).'/'.$filename);
 
 		$graph->draw($file, $fileurl);
 
@@ -218,6 +218,7 @@ class lmdbcrm_graph_conversionrates extends ModeleBoxes
 
 		return $label.$graph->show($fileurl, 0, '', 0, 1);
 	}
+
 
 	/**
 	 * Fetch conversion data for a given user or the company.
