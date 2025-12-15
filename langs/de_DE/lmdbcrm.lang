@@ -20,3 +20,13 @@ LmdbCrmSignedQuotesPodiumRank = Platzierung
 LmdbCrmSignedQuotesPodiumUser = Vertriebsmitarbeiter
 LmdbCrmSignedQuotesPodiumCountTitle = Anzahl unterschriebener Angebote
 LmdbCrmSignedQuotesPodiumEmpty = Keine unterschriebenen Angebote in den letzten 30 Tagen
+
+# Widget podium unterzeichneter Umsatz
+LmdbCrmSignedTurnoverPodiumTitle = Top 3 Vertriebsmitarbeiter (Unterzeichneter Umsatz – rollierende 30 Tage)
+LmdbCrmSignedTurnoverPodiumDescription = Podium der Vertriebsmitarbeiter nach unterzeichnetem Umsatz über die letzten rollierenden 30 Tage.
+LmdbCrmSignedTurnoverPodiumAmount = %s unterzeichnet
+LmdbCrmSignedTurnoverPodiumRank = Rang im Ranking
+LmdbCrmSignedTurnoverPodiumUser = Vertriebsmitarbeiter
+LmdbCrmSignedTurnoverPodiumAmountTitle = Unterzeichneter Umsatz
+LmdbCrmSignedTurnoverPodiumEmpty = Keine unterzeichneten Angebote in den letzten 30 Tagen
+
