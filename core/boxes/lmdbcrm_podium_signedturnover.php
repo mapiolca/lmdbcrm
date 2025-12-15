@@ -176,7 +176,7 @@ class lmdbcrm_podium_signedturnover extends ModeleBoxes
 							'td' => 'class="center"',
 							'asis' => 1,
 							'align' => 'center',
-							'text' => (string) $rank,
+							'text' => <strong>'.$rank.'</strong>,
 						),
 						1 => array(
 							'td' => 'class="left"',
