@@ -191,7 +191,7 @@ class lmdbcrm_graph_conversionrates extends ModeleBoxes
 
 		$graph = new DolGraph();
 		$graph->SetData(array(
-			array($langs->trans('LmdbCrmConversionSigned'), $signed),
+			array(dol_htmlentities($langs->trans('LmdbCrmConversionSigned')), $signed),
 			array($langs->trans('LmdbCrmConversionUnsigned'), $unsigned),
 		));
 		$graph->SetDataColor(array('#76a7fa', '#c0c0c0'));
