@@ -46,5 +46,5 @@ LmdbCrmSignedTurnoverPodiumDescription = Podium des commerciaux selon le chiffre
 LmdbCrmSignedTurnoverPodiumAmount = %s signés
 LmdbCrmSignedTurnoverPodiumRank = Position dans le classement
 LmdbCrmSignedTurnoverPodiumUser = Commercial
-LmdbCrmSignedTurnoverPodiumAmountTitle = Chiffre d'affaire signés
+LmdbCrmSignedTurnoverPodiumAmountTitle = Chiffre d'affaire signé
 LmdbCrmSignedTurnoverPodiumEmpty = Aucun devis signé sur les 30 derniers jours
