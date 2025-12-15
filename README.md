@@ -9,7 +9,7 @@ Widget tableau de bord affichant un podium des 3 meilleurs commerciaux sur les 3
 - Traductions fournies : en_US, fr_FR, de_DE, it_IT, es_ES.
 
 ## Compatibilité Dolibarr
-- Version minimale : Dolibarr 19.0 (module testé sur 19.x et supérieur).
+- Version minimale : Dolibarr 21.0 (module testé sur 21.x et supérieur).
 - PHP minimal : 7.2.
 
 ## Installation
@@ -70,7 +70,7 @@ Dashboard widget showing a podium of the top 3 sales representatives over the la
 - Provided translations: en_US, fr_FR, de_DE, it_IT, es_ES.
 
 ## Dolibarr compatibility
-- Minimum version: Dolibarr 19.0 (module tested on 19.x and above).
+- Minimum version: Dolibarr 21.0 (module tested on 21.x and above).
 - Minimum PHP version: 7.2.
 
 ## Installation
