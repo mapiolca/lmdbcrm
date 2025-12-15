@@ -39,3 +39,12 @@ LmdbCrmConversionCompanyLabel = Taux de conversion de l'entreprise
 LmdbCrmConversionSigned = Signées
 LmdbCrmConversionUnsigned = Non signées
 LmdbCrmConversionNoData = Aucune proposition trouvée pour cette période
+
+# Widget podium chiffre d'affaire signés
+LmdbCrmSignedTurnoverPodiumTitle = Top 3 commerciaux (CA signé - 30 jours glissants)
+LmdbCrmSignedTurnoverPodiumDescription = Podium des commerciaux selon le chiffre d'affaire signé sur 30 jours glissants.
+LmdbCrmSignedTurnoverPodiumAmount = %s signés
+LmdbCrmSignedTurnoverPodiumRank = Position dans le classement
+LmdbCrmSignedTurnoverPodiumUser = Commercial
+LmdbCrmSignedTurnoverPodiumAmountTitle = Chiffre d'affaire signés
+LmdbCrmSignedTurnoverPodiumEmpty = Aucun devis signé sur les 30 derniers jours
