@@ -182,7 +182,7 @@ class lmdbcrm_podium_signedturnover extends ModeleBoxes
 							'td' => 'class="left"',
 							'asis' => 1,
 							'align' => 'left',
-							'text' => $photohtml.' '.$userlink,
+							'text' => $tmpuser->getNomUrl(-1),
 						),
 						2 => array(
 							'td' => 'class="right"',
