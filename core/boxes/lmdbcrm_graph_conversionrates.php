@@ -198,7 +198,7 @@ class lmdbcrm_graph_conversionrates extends ModeleBoxes
 		$graph->setShowLegend(1);
 		$graph->setShowPercent(1);
 		$graph->SetType(array('pie'));
-		$graph->setHeight('280');
+		$graph->setHeight('140');
 		$graph->setWidth('170');
 
 		$graphid = 'lmdbcrmconv_'.$suffix.'_e'.((int) $conf->entity);
