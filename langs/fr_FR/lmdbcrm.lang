@@ -12,6 +12,9 @@ ModuleLmdbCrmDesc = Podium des meilleurs commerciaux par devis signés sur les 3
 LmdbCrmSetup = Paramétrage LmdbCrm
 LmdbCrmNoSetupNeeded = Aucun paramétrage supplémentaire n'est requis pour ce module.
 
+# Classement des commerciaux
+PeriodRange = Période d'observation 
+
 # Widget podium devis signés
 LmdbCrmSignedQuotesPodiumTitle = Top 3 commerciaux (devis signés - 30 jours glissants)
 LmdbCrmSignedQuotesPodiumDescription = Podium des commerciaux selon le nombre de devis signés sur 30 jours glissants.
