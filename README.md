@@ -1,6 +1,6 @@
 # LMDBCRM pour [Dolibarr ERP & CRM](https://www.dolibarr.org)
 
-Widget tableau de bord affichant un podium des 3 meilleurs commerciaux sur les 30 derniers jours (photo, nom et nombre de propositions signées). Conçu pour s'intégrer nativement à l'interface Dolibarr.
+Divers widgets et fonctionnalités CRM pour compléter votre Dolibarr préféré.
 
 ## Fonctionnalités
 - Podium des 3 premiers commerciaux sur les propositions signées des 30 derniers jours.
@@ -61,8 +61,7 @@ Widget tableau de bord affichant un podium des 3 meilleurs commerciaux sur les 3
 
 # LMDBCRM for [Dolibarr ERP & CRM](https://www.dolibarr.org)
 
-Dashboard widget showing a podium of the top 3 sales representatives over the last 30 days (photo, name, and number of signed proposals). Designed to fit seamlessly into the Dolibarr interface.
-
+Various CRM widgets and features to complement your favorite Dolibarr.
 ## Features
 - Podium of the top 3 sales reps based on signed proposals over the last 30 days.
 - Displays user pictures and signed volumes to motivate teams.
