@@ -20,3 +20,12 @@ LmdbCrmSignedQuotesPodiumRank = Posición en la clasificación
 LmdbCrmSignedQuotesPodiumUser = Comercial
 LmdbCrmSignedQuotesPodiumCountTitle = Número de presupuestos firmados
 LmdbCrmSignedQuotesPodiumEmpty = Ningún presupuesto firmado en los últimos 30 días
+
+# Widget podio ingresos firmados
+LmdbCrmSignedTurnoverPodiumTitle = Top 3 comerciales (Ingresos firmados - 30 días móviles)
+LmdbCrmSignedTurnoverPodiumDescription = Podio de comerciales según los ingresos firmados en los últimos 30 días móviles.
+LmdbCrmSignedTurnoverPodiumAmount = %s firmados
+LmdbCrmSignedTurnoverPodiumRank = Posición en el ranking
+LmdbCrmSignedTurnoverPodiumUser = Comercial
+LmdbCrmSignedTurnoverPodiumAmountTitle = Ingresos firmados
+LmdbCrmSignedTurnoverPodiumEmpty = No hay presupuestos firmados en los últimos 30 días
