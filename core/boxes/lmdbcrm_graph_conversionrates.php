@@ -194,29 +194,20 @@ class lmdbcrm_graph_conversionrates extends ModeleBoxes
 			array($langs->trans('LmdbCrmConversionSigned'), $signed),
 			array($langs->trans('LmdbCrmConversionUnsigned'), $unsigned),
 		));
-		$graph->SetDataColor(array('76a7fa', 'c0c0c0'));
+		$graph->SetDataColor(array('#76a7fa', '#c0c0c0'));
 		$graph->setShowLegend(1);
 		$graph->setShowPercent(1);
 		$graph->SetType(array('pie'));
 		$graph->setHeight('280');
 		$graph->setWidth('340');
 
-		$dir = $conf->user->dir_temp;
-		if (!empty($conf->multicompany->enabled) && !empty($conf->entity)) {
-			$dir .= '/'.$conf->entity;
-		}
-		dol_mkdir($dir);
-
-		$filename = 'lmdbcrm_conversion_'.$suffix.'_'.dol_print_date(dol_now(), 'dayhourlog').'.png';
-		$file = $dir.'/'.$filename;
-		$fileurl = DOL_URL_ROOT.'/viewimage.php?modulepart=apercu&file='.urlencode(basename($dir).'/'.$filename);
-
-		$graph->draw($file, $fileurl);
+		$graphid = 'lmdbcrmconv_'.$suffix.'_e'.((int) $conf->entity);
+		$graph->draw($graphid);
 
 		$percent = round(($signed / $total) * 100, 2);
 		$label = '<div class="center"><strong>'.$title.'</strong><br>'.dol_escape_htmltag($percent).' %</div>';
 
-		return $label.$graph->show($fileurl, 0, '', 0, 1);
+		return $label.$graph->show(0);
 	}
 
 	/**
