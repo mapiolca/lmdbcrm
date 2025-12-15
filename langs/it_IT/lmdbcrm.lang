@@ -20,3 +20,13 @@ LmdbCrmSignedQuotesPodiumRank = Posizione in classifica
 LmdbCrmSignedQuotesPodiumUser = Commerciale
 LmdbCrmSignedQuotesPodiumCountTitle = Numero di preventivi firmati
 LmdbCrmSignedQuotesPodiumEmpty = Nessun preventivo firmato negli ultimi 30 giorni
+
+# Widget podio fatturato firmato
+LmdbCrmSignedTurnoverPodiumTitle = Top 3 commerciali (Fatturato firmato - ultimi 30 giorni)
+LmdbCrmSignedTurnoverPodiumDescription = Podio dei commerciali in base al fatturato firmato negli ultimi 30 giorni a scorrimento.
+LmdbCrmSignedTurnoverPodiumAmount = %s firmati
+LmdbCrmSignedTurnoverPodiumRank = Posizione in classifica
+LmdbCrmSignedTurnoverPodiumUser = Commerciale
+LmdbCrmSignedTurnoverPodiumAmountTitle = Fatturato firmato
+LmdbCrmSignedTurnoverPodiumEmpty = Nessun preventivo firmato negli ultimi 30 giorni
+
