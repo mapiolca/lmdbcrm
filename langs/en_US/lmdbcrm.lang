@@ -3,39 +3,51 @@
 #
 # Generic
 #
-ModuleLmdbCrmName = LmdbCrm
-ModuleLmdbCrmDesc = Podium of top sales representatives by signed proposals over the last 30 days.
+ModuleLmdbCrmName = CRM
+ModuleLmdbCrmDesc = Various CRM widgets and features to complement your favorite Dolibarr.
 
 #
 # Admin page
 #
 LmdbCrmSetup = LmdbCrm setup
-LmdbCrmNoSetupNeeded = No additional configuration is required for this module.
+LmdbCrmNoSetupNeeded = No additional setup is required for this module.
 
-# Signed quotes podium widget
-LmdbCrmSignedQuotesPodiumTitle = Top 3 sales representatives (signed proposals - last 30 days)
-LmdbCrmSignedQuotesPodiumDescription = Podium of sales representatives by signed proposals over the last 30 rolling days.
+# Sales reps ranking
+PeriodRange = Observation period
+
+# Signed proposals podium widget
+LmdbCrmSignedQuotesPodiumTitle = Top 3 sales reps (signed proposals - rolling 30 days)
+LmdbCrmSignedQuotesPodiumDescription = Sales reps podium based on the number of signed proposals over the last rolling 30 days.
 LmdbCrmSignedQuotesPodiumCount = %s signed proposals
 LmdbCrmSignedQuotesPodiumRank = Ranking position
-LmdbCrmSignedQuotesPodiumUser = Salesperson
-LmdbCrmSignedQuotesPodiumCountTitle = Signed proposals count
-LmdbCrmSignedQuotesPodiumEmpty = No signed proposals over the last 30 days
+LmdbCrmSignedQuotesPodiumUser = Sales rep
+LmdbCrmSignedQuotesPodiumCountTitle = Number of signed proposals
+LmdbCrmSignedQuotesPodiumEmpty = No signed proposals in the last 30 days
 
-# Sales representative ranking
-LmdbCrmSalesRepRanking = Sales representatives ranking
-LmdbCrmSalesRep = Sales representative
-LmdbCrmProposalsCount = Proposals created
-LmdbCrmSignedProposalsCount = Signed proposals
+# Sales reps ranking
+LmdbCrmSalesRepRanking = Sales reps ranking
+LmdbCrmSalesRep = Sales rep
+LmdbCrmProposalsCount = Number of proposals created
+LmdbCrmSignedProposalsCount = Number of signed proposals
 LmdbCrmQuotedAmount = Quoted amount
 LmdbCrmSignedAmount = Signed amount
 LmdbCrmConversionRate = Conversion rate
 LmdbCrmNoRankingData = No proposal found for the selected period
 
 # Conversion rate graphs widget
-LmdbCrmConversionRatesTitle = Conversion rates (user / company)
+LmdbCrmConversionRatesTitle = Conversion rate (user / company)
 LmdbCrmConversionPeriodLabel = Period
 LmdbCrmConversionUserLabel = My conversion rate
 LmdbCrmConversionCompanyLabel = Company conversion rate
 LmdbCrmConversionSigned = Signed
 LmdbCrmConversionUnsigned = Not signed
 LmdbCrmConversionNoData = No proposal found for this period
+
+# Signed turnover podium widget
+LmdbCrmSignedTurnoverPodiumTitle = Top 3 sales reps (signed revenue - rolling 30 days)
+LmdbCrmSignedTurnoverPodiumDescription = Sales reps podium based on signed revenue over the last rolling 30 days.
+LmdbCrmSignedTurnoverPodiumAmount = %s signed
+LmdbCrmSignedTurnoverPodiumRank = Ranking position
+LmdbCrmSignedTurnoverPodiumUser = Sales rep
+LmdbCrmSignedTurnoverPodiumAmountTitle = Signed revenue
+LmdbCrmSignedTurnoverPodiumEmpty = No signed proposals in the last 30 days

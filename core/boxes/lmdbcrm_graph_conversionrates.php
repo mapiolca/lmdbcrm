@@ -223,7 +223,7 @@ class lmdbcrm_graph_conversionrates extends ModeleBoxes
 		$total = 0;
 		$signed = 0;
 
-		$sql = "SELECT COUNT(p.rowid) as total, SUM(CASE WHEN p.fk_statut = ".Propal::STATUS_SIGNED." THEN 1 ELSE 0 END) as signed";
+		$sql = "SELECT SUM(CASE WHEN p.fk_statut IN (2,3,4) THEN 1 ELSE 0 END) as total, SUM(CASE WHEN p.fk_statut = ".Propal::STATUS_SIGNED." THEN 1 ELSE 0 END) as signed"; //COUNT(p.rowid) as total
 		$sql .= " FROM ".MAIN_DB_PREFIX."propal as p";
 		$sql .= " WHERE p.entity IN (".getEntity('propal').")";
 		$sql .= " AND p.datec IS NOT NULL";

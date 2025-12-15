@@ -3,20 +3,51 @@
 #
 # Allgemein
 #
-ModuleLmdbCrmName = LmdbCrm
-ModuleLmdbCrmDesc = Podium der besten Vertriebsmitarbeiter nach unterschriebenen Angeboten der letzten 30 Tage.
+ModuleLmdbCrmName = CRM
+ModuleLmdbCrmDesc = Verschiedene CRM-Widgets und Funktionen zur Ergänzung Ihres bevorzugten Dolibarr.
 
 #
 # Admin-Seite
 #
-LmdbCrmSetup = LmdbCrm Konfiguration
-LmdbCrmNoSetupNeeded = Für dieses Modul ist keine zusätzliche Konfiguration erforderlich.
+LmdbCrmSetup = LmdbCrm-Einstellungen
+LmdbCrmNoSetupNeeded = Für dieses Modul sind keine zusätzlichen Einstellungen erforderlich.
 
-# Widget Podium unterschriebene Angebote
-LmdbCrmSignedQuotesPodiumTitle = Top 3 Verkäufer (unterschriebene Angebote - letzte 30 Tage)
-LmdbCrmSignedQuotesPodiumDescription = Podium der Verkäufer nach Anzahl unterschriebener Angebote über die letzten 30 gleitenden Tage.
-LmdbCrmSignedQuotesPodiumCount = %s unterschriebene Angebote
-LmdbCrmSignedQuotesPodiumRank = Platzierung
+# Vertriebsranking
+PeriodRange = Beobachtungszeitraum
+
+# Widget Podium unterzeichneter Angebote
+LmdbCrmSignedQuotesPodiumTitle = Top 3 Vertriebsmitarbeiter (unterzeichnete Angebote – rollierende 30 Tage)
+LmdbCrmSignedQuotesPodiumDescription = Podium der Vertriebsmitarbeiter nach Anzahl der unterzeichneten Angebote über die letzten rollierenden 30 Tage.
+LmdbCrmSignedQuotesPodiumCount = %s unterzeichnete Angebote
+LmdbCrmSignedQuotesPodiumRank = Rang im Ranking
 LmdbCrmSignedQuotesPodiumUser = Vertriebsmitarbeiter
-LmdbCrmSignedQuotesPodiumCountTitle = Anzahl unterschriebener Angebote
-LmdbCrmSignedQuotesPodiumEmpty = Keine unterschriebenen Angebote in den letzten 30 Tagen
+LmdbCrmSignedQuotesPodiumCountTitle = Anzahl der unterzeichneten Angebote
+LmdbCrmSignedQuotesPodiumEmpty = Keine unterzeichneten Angebote in den letzten 30 Tagen
+
+# Vertriebsranking
+LmdbCrmSalesRepRanking = Vertriebsranking
+LmdbCrmSalesRep = Vertriebsmitarbeiter
+LmdbCrmProposalsCount = Anzahl erstellter Angebote
+LmdbCrmSignedProposalsCount = Anzahl unterzeichneter Angebote
+LmdbCrmQuotedAmount = Angebotssumme
+LmdbCrmSignedAmount = Unterzeichneter Betrag
+LmdbCrmConversionRate = Conversion-Rate
+LmdbCrmNoRankingData = Kein Angebot für den ausgewählten Zeitraum gefunden
+
+# Widget Conversion-Rate Diagramme
+LmdbCrmConversionRatesTitle = Conversion-Rate (Benutzer / Unternehmen)
+LmdbCrmConversionPeriodLabel = Zeitraum
+LmdbCrmConversionUserLabel = Meine Conversion-Rate
+LmdbCrmConversionCompanyLabel = Conversion-Rate des Unternehmens
+LmdbCrmConversionSigned = Unterzeichnet
+LmdbCrmConversionUnsigned = Nicht unterzeichnet
+LmdbCrmConversionNoData = Kein Angebot für diesen Zeitraum gefunden
+
+# Widget Podium unterzeichneter Umsatz
+LmdbCrmSignedTurnoverPodiumTitle = Top 3 Vertriebsmitarbeiter (unterzeichneter Umsatz – rollierende 30 Tage)
+LmdbCrmSignedTurnoverPodiumDescription = Podium der Vertriebsmitarbeiter nach unterzeichnetem Umsatz über die letzten rollierenden 30 Tage.
+LmdbCrmSignedTurnoverPodiumAmount = %s unterzeichnet
+LmdbCrmSignedTurnoverPodiumRank = Rang im Ranking
+LmdbCrmSignedTurnoverPodiumUser = Vertriebsmitarbeiter
+LmdbCrmSignedTurnoverPodiumAmountTitle = Unterzeichneter Umsatz
+LmdbCrmSignedTurnoverPodiumEmpty = Keine unterzeichneten Angebote in den letzten 30 Tagen

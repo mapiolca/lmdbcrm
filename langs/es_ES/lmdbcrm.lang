@@ -3,20 +3,51 @@
 #
 # Genérico
 #
-ModuleLmdbCrmName = LmdbCrm
-ModuleLmdbCrmDesc = Podio de los mejores comerciales por presupuestos firmados en los últimos 30 días.
+ModuleLmdbCrmName = CRM
+ModuleLmdbCrmDesc = Varios widgets y funciones de CRM para complementar tu Dolibarr favorito.
 
 #
 # Página de administración
 #
 LmdbCrmSetup = Configuración de LmdbCrm
-LmdbCrmNoSetupNeeded = No se requiere configuración adicional para este módulo.
+LmdbCrmNoSetupNeeded = No se requiere ninguna configuración adicional para este módulo.
+
+# Ranking de comerciales
+PeriodRange = Período de observación
 
 # Widget podio de presupuestos firmados
-LmdbCrmSignedQuotesPodiumTitle = Top 3 comerciales (presupuestos firmados - últimos 30 días)
+LmdbCrmSignedQuotesPodiumTitle = Top 3 comerciales (presupuestos firmados - 30 días móviles)
 LmdbCrmSignedQuotesPodiumDescription = Podio de comerciales según el número de presupuestos firmados en los últimos 30 días móviles.
 LmdbCrmSignedQuotesPodiumCount = %s presupuestos firmados
-LmdbCrmSignedQuotesPodiumRank = Posición en la clasificación
+LmdbCrmSignedQuotesPodiumRank = Posición en el ranking
 LmdbCrmSignedQuotesPodiumUser = Comercial
 LmdbCrmSignedQuotesPodiumCountTitle = Número de presupuestos firmados
-LmdbCrmSignedQuotesPodiumEmpty = Ningún presupuesto firmado en los últimos 30 días
+LmdbCrmSignedQuotesPodiumEmpty = No hay presupuestos firmados en los últimos 30 días
+
+# Ranking de comerciales
+LmdbCrmSalesRepRanking = Ranking de comerciales
+LmdbCrmSalesRep = Comercial
+LmdbCrmProposalsCount = Número de presupuestos creados
+LmdbCrmSignedProposalsCount = Número de presupuestos firmados
+LmdbCrmQuotedAmount = Importe presupuestado
+LmdbCrmSignedAmount = Importe firmado
+LmdbCrmConversionRate = Tasa de conversión
+LmdbCrmNoRankingData = No se encontró ningún presupuesto para el período seleccionado
+
+# Widget gráficos de tasa de conversión
+LmdbCrmConversionRatesTitle = Tasa de conversión (usuario / empresa)
+LmdbCrmConversionPeriodLabel = Período
+LmdbCrmConversionUserLabel = Mi tasa de conversión
+LmdbCrmConversionCompanyLabel = Tasa de conversión de la empresa
+LmdbCrmConversionSigned = Firmadas
+LmdbCrmConversionUnsigned = No firmadas
+LmdbCrmConversionNoData = No se encontró ninguna propuesta para este período
+
+# Widget podio de ingresos firmados
+LmdbCrmSignedTurnoverPodiumTitle = Top 3 comerciales (ingresos firmados - 30 días móviles)
+LmdbCrmSignedTurnoverPodiumDescription = Podio de comerciales según los ingresos firmados en los últimos 30 días móviles.
+LmdbCrmSignedTurnoverPodiumAmount = %s firmados
+LmdbCrmSignedTurnoverPodiumRank = Posición en el ranking
+LmdbCrmSignedTurnoverPodiumUser = Comercial
+LmdbCrmSignedTurnoverPodiumAmountTitle = Ingresos firmados
+LmdbCrmSignedTurnoverPodiumEmpty = No hay presupuestos firmados en los últimos 30 días

@@ -3,20 +3,51 @@
 #
 # Generico
 #
-ModuleLmdbCrmName = LmdbCrm
-ModuleLmdbCrmDesc = Podio dei migliori commerciali per preventivi firmati negli ultimi 30 giorni.
+ModuleLmdbCrmName = CRM
+ModuleLmdbCrmDesc = Vari widget e funzionalità CRM per completare il tuo Dolibarr preferito.
 
 #
-# Pagina di amministrazione
+# Pagina admin
 #
 LmdbCrmSetup = Configurazione LmdbCrm
-LmdbCrmNoSetupNeeded = Nessuna configurazione aggiuntiva è richiesta per questo modulo.
+LmdbCrmNoSetupNeeded = Non è richiesta alcuna configurazione aggiuntiva per questo modulo.
+
+# Classifica commerciali
+PeriodRange = Periodo di osservazione
 
 # Widget podio preventivi firmati
 LmdbCrmSignedQuotesPodiumTitle = Top 3 commerciali (preventivi firmati - ultimi 30 giorni)
-LmdbCrmSignedQuotesPodiumDescription = Podio dei commerciali in base al numero di preventivi firmati negli ultimi 30 giorni mobili.
+LmdbCrmSignedQuotesPodiumDescription = Podio dei commerciali in base al numero di preventivi firmati negli ultimi 30 giorni a scorrimento.
 LmdbCrmSignedQuotesPodiumCount = %s preventivi firmati
 LmdbCrmSignedQuotesPodiumRank = Posizione in classifica
 LmdbCrmSignedQuotesPodiumUser = Commerciale
 LmdbCrmSignedQuotesPodiumCountTitle = Numero di preventivi firmati
 LmdbCrmSignedQuotesPodiumEmpty = Nessun preventivo firmato negli ultimi 30 giorni
+
+# Classifica commerciali
+LmdbCrmSalesRepRanking = Classifica commerciali
+LmdbCrmSalesRep = Commerciale
+LmdbCrmProposalsCount = Numero di preventivi creati
+LmdbCrmSignedProposalsCount = Numero di preventivi firmati
+LmdbCrmQuotedAmount = Importo preventivato
+LmdbCrmSignedAmount = Importo firmato
+LmdbCrmConversionRate = Tasso di conversione
+LmdbCrmNoRankingData = Nessun preventivo trovato per il periodo selezionato
+
+# Widget grafici tasso di conversione
+LmdbCrmConversionRatesTitle = Tasso di conversione (utente / azienda)
+LmdbCrmConversionPeriodLabel = Periodo
+LmdbCrmConversionUserLabel = Il mio tasso di conversione
+LmdbCrmConversionCompanyLabel = Tasso di conversione dell'azienda
+LmdbCrmConversionSigned = Firmate
+LmdbCrmConversionUnsigned = Non firmate
+LmdbCrmConversionNoData = Nessuna proposta trovata per questo periodo
+
+# Widget podio fatturato firmato
+LmdbCrmSignedTurnoverPodiumTitle = Top 3 commerciali (fatturato firmato - ultimi 30 giorni)
+LmdbCrmSignedTurnoverPodiumDescription = Podio dei commerciali in base al fatturato firmato negli ultimi 30 giorni a scorrimento.
+LmdbCrmSignedTurnoverPodiumAmount = %s firmati
+LmdbCrmSignedTurnoverPodiumRank = Posizione in classifica
+LmdbCrmSignedTurnoverPodiumUser = Commerciale
+LmdbCrmSignedTurnoverPodiumAmountTitle = Fatturato firmato
+LmdbCrmSignedTurnoverPodiumEmpty = Nessun preventivo firmato negli ultimi 30 giorni
