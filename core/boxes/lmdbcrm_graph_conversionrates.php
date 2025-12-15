@@ -131,8 +131,8 @@ class lmdbcrm_graph_conversionrates extends ModeleBoxes
 		$companyGraph = $this->renderPieGraph($companyData, 'company', $langs->trans('LmdbCrmConversionCompanyLabel'));
 
 		$graphsHtml = '<div class="center">'.$filterform.'<div class="flexcontainer wrap center">';
-		$graphsHtml .= '<div class="center" style="min-width:340px;">'.$userGraph.'</div>';
-		$graphsHtml .= '<div class="center" style="min-width:340px;">'.$companyGraph.'</div>';
+		$graphsHtml .= '<div class="center" style="min-width:250px;">'.$userGraph.'</div>';
+		$graphsHtml .= '<div class="center" style="min-width:250px;">'.$companyGraph.'</div>';
 		$graphsHtml .= '</div></div>';
 
 		$this->info_box_contents = array();
