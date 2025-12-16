@@ -186,7 +186,7 @@ print '<span class="opacitymedium">'.$langs->trans('PeriodRange').' : </span>';
 //print $langs->trans('LmdbCrmConversionPeriodLabel').' ';
 print $form->selectDate($search_date_start_input, 'search_date_start', 0, 0, 0, '', 1, 1);
 print $langs->trans('to').' ';
-print $form->selectDate($search_date_end_input, 'search_date_end', 0, 0, 1, '', 1, 1);
+print $form->selectDate($search_date_end_input, 'search_date_end', 0, 0, 0, '', 1, 1);
 //print '<input class="flat datepicker" type="text" name="search_date_start" value="'.(!empty($search_date_start_input) ? dol_escape_htmltag($search_date_start_input) : '').'" autocomplete="off">';
 //print ' - ';
 //print '<input class="flat datepicker" type="text" name="search_date_end" value="'.(!empty($search_date_end_input) ? dol_escape_htmltag($search_date_end_input) : '').'" autocomplete="off">';
