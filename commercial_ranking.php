@@ -107,7 +107,9 @@ if (!empty($search_date_end_input)) {
 	}
 }
 
-$search_user = trim(GETPOST('search_user', 'string'));
+$search_user = GETPOST('search_user', 'array');
+if (!is_array($search_user)) $search_user = array();
+$search_user = array_filter(array_map('intval', $search_user));
 
 if (empty($sortfield) || !in_array($sortfield, $validSortFields, true)) {
 	$sortfield = 'signed_count';
@@ -124,8 +126,8 @@ if (!empty($search_date_start_input)) {
 if (!empty($search_date_end_input)) {
 	$param .= '&search_date_end='.urlencode($search_date_end_input);
 }
-if ($search_user !== '') {
-	$param .= '&search_user='.urlencode($search_user);
+foreach ($search_user as $uid) {
+	$param .= '&search_user[]='.$uid;
 }
 
 $form = new Form($db);
@@ -150,8 +152,9 @@ $sql .= " FROM ".$db->prefix()."user as u";
 $sql .= " JOIN ".$db->prefix()."propal as p ON p.fk_user_author = u.rowid";
 $sql .= " WHERE p.fk_statut IN (1, 2, 3, 4)";
 $sql .= " AND p.entity IN (".getEntity('propal').")";
-if ($search_user !== '') {
-	$sql .= natural_search(array('u.lastname', 'u.firstname', 'u.login'), $search_user);
+if (!empty($search_user)) {
+	$sql .= " AND u.rowid IN (".$db->sanitize(join(',', $search_user)).")";
+	// ou (équivalent) : AND p.fk_user_author IN (...)
 }
 if ($search_date_start > 0) {
 	$sql .= " AND p.datep >= '".$db->idate($search_date_start)."'";
