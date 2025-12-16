@@ -44,7 +44,7 @@ LmdbCrmConversionNoData = No se encontraron propuestas para este periodo
 LmdbCrmConversionRatesTooltip = Tasa de conversión en 30 días móviles. Cálculo: en el periodo solo contamos las propuestas cerradas (aceptadas/firmadas + rechazadas). Tasa = (aceptadas ÷ cerradas) × 100. Calculamos la tasa del usuario actual y la de toda la empresa y mostramos la comparación.
 
 # Widget gráficos de tasa de margen
-LmdbCrmMarginRatesTitle = Principales tasas de margen (periodo)
+LmdbCrmMarginRatesTitle = Tasa de margen en presupuestos (usuario / empresa)
 LmdbCrmMarginPeriodLabel = Periodo
 LmdbCrmMarginUserLabel = Mi tasa de margen
 LmdbCrmMarginCompanyLabel = Tasa de margen de la empresa
