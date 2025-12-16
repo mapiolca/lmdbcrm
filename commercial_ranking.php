@@ -233,7 +233,7 @@ if ($num > 0) {
 		$userstatic->email = $obj->email;
 		
 		print '<tr class="oddeven">';
-		print '<td class="nowraponall">'.$userstatic->getNomUrl(-1, '', 0, 0, 0).'</td>';
+		print '<td class="nowraponall">'.$userstatic->getNomUrl(-1).'</td>';
 		print '<td class="center">'.(int) $obj->total_count.'</td>';
 		print '<td class="center">'.(int) $obj->signed_count.'</td>';
 		print '<td class="right">'.price($obj->total_amount, 0, $langs, 0, 0, -1, $conf->currency).'</td>';
