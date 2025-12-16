@@ -112,7 +112,7 @@ class modLmdbCrm extends DolibarrModules
 		$this->dirs = array("/lmdbcrm/temp");
 
 		// Config pages. Put here list of php page, stored into lmdbcrm/admin directory, to use to setup module.
-		$this->config_page_url = array("setup.php@lmdbcrm");
+		//$this->config_page_url = array("setup.php@lmdbcrm");
 
 		// Dependencies
 		// A condition to hide module
