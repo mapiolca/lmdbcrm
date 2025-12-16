@@ -54,6 +54,7 @@ LmdbCrmMarginAmountLabel = Marge
 LmdbCrmMarginNegativeNoGraph = Negative Marge: Diagramm wird nicht angezeigt
 LmdbCrmMarginSliceMargin = Marge
 LmdbCrmMarginSliceCost = Einstandspreis
+LmdbCrmMarginRatesTooltip = Rate = Marge / Umsatz (netto). Marge = Umsatz (unterzeichnete/fakturierte Angebote) - Kosten. Das Diagramm teilt den Umsatz in Marge + Kosten auf. Zeitraum gefiltert auf das Erstellungsdatum des Angebots (p.datec). Kosten = buy_price_ht × Menge (Fallback auf pa_ht falls nötig).
 
 # Widget Podium unterschriebener Umsatz
 LmdbCrmSignedTurnoverPodiumTitle = Top 3 Vertrieb (unterzeichneter Umsatz – rollierende 30 Tage)

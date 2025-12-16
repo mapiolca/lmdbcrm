@@ -54,6 +54,7 @@ LmdbCrmMarginAmountLabel = Margine
 LmdbCrmMarginNegativeNoGraph = Margine negativo: grafico non visualizzato
 LmdbCrmMarginSliceMargin = Margine
 LmdbCrmMarginSliceCost = Costo
+LmdbCrmMarginRatesTooltip = Tasso = Margine / Fatturato (IVA esclusa). Margine = fatturato (proposte firmate/fatturate) - costo. Il grafico suddivide il fatturato in Margine + Costo. Periodo filtrato sulla data di creazione della proposta (p.datec). Costo = buy_price_ht × quantità (usa pa_ht se necessario).
 
 # Widget podio fatturato firmato
 LmdbCrmSignedTurnoverPodiumTitle = Top 3 commerciali (fatturato firmato - 30 giorni mobili)
