@@ -54,6 +54,7 @@ LmdbCrmMarginAmountLabel = Margin
 LmdbCrmMarginNegativeNoGraph = Negative margin: graph not displayed
 LmdbCrmMarginSliceMargin = Margin
 LmdbCrmMarginSliceCost = Cost price
+LmdbCrmMarginRatesTooltip = Rate = Margin / Turnover (excl. VAT). Margin = turnover (signed/invoiced quotes) - cost. The chart splits turnover into Margin + Cost. Period filtered on proposal creation date (p.datec). Cost = buy_price_ht × quantity (fallback to pa_ht if needed).
 
 # Signed turnover podium widget
 LmdbCrmSignedTurnoverPodiumTitle = Top 3 sales reps (signed revenue - rolling 30 days)

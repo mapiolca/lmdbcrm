@@ -54,6 +54,7 @@ LmdbCrmMarginAmountLabel = Margen
 LmdbCrmMarginNegativeNoGraph = Margen negativo: gráfico no mostrado
 LmdbCrmMarginSliceMargin = Margen
 LmdbCrmMarginSliceCost = Coste
+LmdbCrmMarginRatesTooltip = Tasa = Margen / Facturación (sin IVA). Margen = facturación (presupuestos firmados/facturados) - coste. El gráfico reparte la facturación entre Margen + Coste. Periodo filtrado por la fecha de creación del presupuesto (p.datec). Coste = buy_price_ht × cantidad (usa pa_ht si es necesario).
 
 # Widget podio de facturación firmada
 LmdbCrmSignedTurnoverPodiumTitle = Top 3 comerciales (facturación firmada - 30 días móviles)
@@ -63,3 +64,4 @@ LmdbCrmSignedTurnoverPodiumRank = Posición en el ranking
 LmdbCrmSignedTurnoverPodiumUser = Comercial
 LmdbCrmSignedTurnoverPodiumAmountTitle = Facturación firmada
 LmdbCrmSignedTurnoverPodiumEmpty = No hay presupuestos firmados en los últimos
+LmdbCrmSignedTurnoverPodiumTooltip = Ranking de los 3 comerciales con mayor facturación firmada en los últimos 30 días móviles. Cálculo: sumamos, por comercial, el importe total (sin impuestos) de las propuestas pasadas a estado Aceptada/Firmada en el periodo (fecha de cierre/firma) y mostramos los 3 totales más altos.

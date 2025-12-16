@@ -24,13 +24,16 @@
 * \brief      Ranking list for sales representatives based on proposals
 */
 
-// Load Dolibarr environment
+// EN: Load Dolibarr environment
+// FR: Charger l'environnement Dolibarr
 $res = 0;
-// Try main.inc.php into web root known defined into CONTEXT_DOCUMENT_ROOT (not always defined)
+// EN: Try main.inc.php into web root known defined into CONTEXT_DOCUMENT_ROOT (not always defined)
+// FR: Tester main.inc.php dans la racine web connue via CONTEXT_DOCUMENT_ROOT (pas toujours défini)
 if (!$res && !empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) {
-	$res = @include str_replace("..", "", $_SERVER["CONTEXT_DOCUMENT_ROOT"])."/main.inc.php";
+$res = @include str_replace("..", "", $_SERVER["CONTEXT_DOCUMENT_ROOT"])."/main.inc.php";
 }
-// Try main.inc.php into web root detected using web root calculated from SCRIPT_FILENAME
+// EN: Try main.inc.php into web root detected using web root calculated from SCRIPT_FILENAME
+// FR: Tester main.inc.php dans la racine web détectée depuis SCRIPT_FILENAME
 $tmp = empty($_SERVER['SCRIPT_FILENAME']) ? '' : $_SERVER['SCRIPT_FILENAME'];
 $tmp2 = realpath(__FILE__);
 $i = strlen($tmp) - 1;
@@ -45,9 +48,10 @@ if (!$res && $i > 0 && file_exists(substr($tmp, 0, ($i + 1))."/main.inc.php")) {
 if (!$res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i + 1)))."/main.inc.php")) {
 	$res = @include dirname(substr($tmp, 0, ($i + 1)))."/main.inc.php";
 }
-// Try main.inc.php using relative path
+// EN: Try main.inc.php using relative path
+// FR: Tester main.inc.php via un chemin relatif
 if (!$res && file_exists("../main.inc.php")) {
-	$res = @include "../main.inc.php";
+$res = @include "../main.inc.php";
 }
 if (!$res && file_exists("../../main.inc.php")) {
 	$res = @include "../../main.inc.php";
@@ -104,7 +108,7 @@ $ey = GETPOST('search_date_endyear', 'int');
 $em = GETPOST('search_date_endmonth', 'int');
 $ed = GETPOST('search_date_endday', 'int');
 
-$search_date_end = '';
+	$search_date_end = '';
 if ($ey > 0 && $em > 0 && $ed > 0) {
 	$search_date_end = dol_mktime(23, 59, 59, $em, $ed, $ey);
 }
@@ -112,6 +116,7 @@ if ($ey > 0 && $em > 0 && $ed > 0) {
 $search_user = GETPOST('search_user', 'array');
 if (!is_array($search_user)) $search_user = array();
 $search_user = array_filter(array_map('intval', $search_user));
+$search_user_keyword = trim(GETPOST('search_user_keyword', 'alphanohtml'));
 
 if (empty($sortfield) || !in_array($sortfield, $validSortFields, true)) {
 	$sortfield = 'signed_count';
@@ -131,6 +136,9 @@ if ($search_date_end > 0) {
 foreach ($search_user as $uid) {
 	$param .= '&search_user[]='.$uid;
 }
+if ($search_user_keyword !== '') {
+	$param .= '&search_user_keyword='.urlencode($search_user_keyword);
+}
 
 $form = new Form($db);
 $userstatic = new User($db);
@@ -143,7 +151,8 @@ llxHeader('', $title, '', '', 0, 0, '', '', '', 'mod-lmdbcrm page-commercial-ran
 print load_fiche_titre($title, '', 'chart');
 print '<br>';
 
-// Build SQL request for ranking
+// EN: Build SQL request for ranking
+// FR: Construire la requête SQL du classement
 $sql = "SELECT u.rowid as userid, u.lastname, u.firstname, u.login, u.photo, u.email";
 $sql .= ", COUNT(p.rowid) as total_count";
 $sql .= ", SUM(CASE WHEN p.fk_statut IN (2, 4) THEN 1 ELSE 0 END) as signed_count";
@@ -151,22 +160,25 @@ $sql .= ", SUM(p.total_ht) as total_amount";
 $sql .= ", SUM(CASE WHEN p.fk_statut IN (2, 4) THEN p.total_ht ELSE 0 END) as signed_amount";
 $sql .= ", CASE WHEN COUNT(p.rowid) > 0 THEN (SUM(CASE WHEN p.fk_statut IN (2, 4) THEN 1 ELSE 0 END) / COUNT(p.rowid)) * 100 ELSE 0 END as conversion_rate";
 $sql .= " FROM ".$db->prefix()."user as u";
-$sql .= " JOIN ".$db->prefix()."propal as p ON p.fk_user_author = u.rowid";
-$sql .= " WHERE p.fk_statut IN (1, 2, 3, 4)";
+$sql .= " LEFT JOIN ".$db->prefix()."propal as p ON p.fk_user_author = u.rowid";
+$sql .= " AND p.fk_statut IN (1, 2, 3, 4)";
 $sql .= " AND p.entity IN (".getEntity('propal').")";
-if (!empty($search_user)) {
-	$sql .= " AND u.rowid IN (".$db->sanitize(join(',', $search_user)).")";
-	// ou (équivalent) : AND p.fk_user_author IN (...)
-}
 if ($search_date_start > 0) {
 	$sql .= " AND p.datep >= '".$db->idate($search_date_start)."'";
 }
 if ($search_date_end > 0) {
 	$sql .= " AND p.datep <= '".$db->idate($search_date_end)."'";
 }
+$sql .= " WHERE u.entity IN (".getEntity('user').")";
+if (!empty($search_user)) {
+	$sql .= " AND u.rowid IN (".$db->sanitize(join(',', $search_user)).")";
+}
+if ($search_user_keyword !== '') {
+	$sql .= natural_search(array('u.lastname', 'u.firstname', 'u.login', 'u.email'), $search_user_keyword);
+}
 $sql .= " GROUP BY u.rowid, u.lastname, u.firstname, u.login, u.photo, u.email";
 
-$sql .= $db->order($db->escape($sortfield), $db->escape($sortorder));
+$sql .= $db->order($sortfield, $sortorder);
 
 $resql = $db->query($sql);
 if (!$resql) {
@@ -176,8 +188,9 @@ if (!$resql) {
 
 $num = $db->num_rows($resql);
 
-// Render list inspired by core proposal list layout
-print '<form method="GET" action="'.$_SERVER['PHP_SELF'].'" name="search_form">';
+// EN: Render list inspired by core proposal list layout
+// FR: Afficher la liste en s'inspirant du modèle Dolibarr
+print '<form method="GET" action="'.dol_escape_htmltag($_SERVER['PHP_SELF']).'" name="search_form">';
 print '<input type="hidden" name="sortfield" value="'.$sortfield.'">';
 print '<input type="hidden" name="sortorder" value="'.$sortorder.'">';
 
@@ -197,26 +210,33 @@ print '</tr>';
 
 print '<tr class="liste_titre_filter">';
 print '<td class="liste_titre">';
+// EN: User selector and text search
+// FR: Sélecteur utilisateur et recherche textuelle
+print '<div class="inline-block">';
 print $form->select_dolusers(
-	$search_user,
-	'search_user',      // htmlname (sans [])
-	0,               // show_empty
-	null,            // exclude
-	0,               // disabled
-	'',              // include
-	'',              // enableonly
-	'',              // force_entity
-	0,               // maxlength
-	0,               // showstatus
-	'',              // morefilter
-	0,               // show_every
-	'',              // enableonlytext
-	'minwidth300',   // morecss
-	0,               // notdisabled
-	0,               // outputmode
-	true,            // multiple
-	0                // forcecombo
-);//'<input class="flat" type="text" name="search_user" value="'.dol_escape_htmltag($search_user).'">';
+$search_user,
+'search_user',      // htmlname (sans [])
+0,               // show_empty
+null,            // exclude
+0,               // disabled
+'',              // include
+'',              // enableonly
+getEntity('user'), // force_entity
+0,               // maxlength
+0,               // showstatus
+'',              // morefilter
+0,               // show_every
+'',              // enableonlytext
+'minwidth300',   // morecss
+0,               // notdisabled
+0,               // outputmode
+true,            // multiple
+0                // forcecombo
+);
+print '</div>';
+print '<div class="inline-block marginleftonly">';
+print '<input type="text" class="flat maxwidth150" name="search_user_keyword" value="'.dol_escape_htmltag($search_user_keyword).'" placeholder="'.$langs->trans('Search').'">';
+print '</div>';
 print '</td>';
 print '<td class="liste_titre">';
 print '&nbsp;';

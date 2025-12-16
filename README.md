@@ -6,6 +6,8 @@ Divers widgets et fonctionnalités CRM pour compléter votre Dolibarr préféré
 - Widget podium des 3 meilleurs commerciaux basé sur le nombre de propositions signées des 30 derniers jours.
 - Widget podium des 3 meilleurs commerciaux basé sur le Chiffre d'affaire signé des 30 derniers jours.
 - Widget Taux de conversion de l'uilisateur vs la société.
+- Widget graphique des taux de conversion utilisateur / entreprise avec filtres de période.
+- Page de classement des commerciaux avec filtres multi-utilisateurs et recherche textuelle.
 - Affichage des photos utilisateurs et des volumes signés pour motiver les équipes.
 - Compatibilité Multicompany : le podium respecte le périmètre entité de l'utilisateur connecté.
 - Traductions fournies : en_US, fr_FR, de_DE, it_IT, es_ES.
@@ -68,6 +70,8 @@ Various CRM widgets and features to complement your favorite Dolibarr.
 - Podium widget: Top 3 sales reps based on the number of proposals signed over the last 30 days.
 - Podium widget: Top 3 sales reps based on signed revenue (turnover) over the last 30 days.
 - Conversion rate widget: User vs. company benchmark.
+- Conversion rate graph widget with period filters comparing user vs company.
+- Sales rep ranking page with multi-user filters and keyword search.
 - Displays user pictures and signed volumes to motivate teams.
 - Multicompany-compatible: the podium respects the entity scope of the logged-in user.
 - Provided translations: en_US, fr_FR, de_DE, it_IT, es_ES.
