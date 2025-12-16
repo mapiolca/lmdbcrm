@@ -44,7 +44,7 @@ LmdbCrmConversionNoData = Keine Vorschläge/Angebote für diesen Zeitraum gefund
 LmdbCrmConversionRatesTooltip = Konversionsrate über 30 rollierende Tage. Berechnung: Im Zeitraum berücksichtigen wir nur abgeschlossene Angebote (akzeptiert/unterschrieben + abgelehnt). Rate = (akzeptiert ÷ abgeschlossen) × 100. Wir berechnen die Rate für den aktuellen Benutzer und für das gesamte Unternehmen und zeigen den Vergleich.
 
 # Widget Margenraten (Diagramm)
-LmdbCrmMarginRatesTitle = Top-Margenraten (Zeitraum)
+LmdbCrmMarginRatesTitle = Margequote auf Angeboten (Benutzer / Unternehmen)
 LmdbCrmMarginPeriodLabel = Zeitraum
 LmdbCrmMarginUserLabel = Meine Marge
 LmdbCrmMarginCompanyLabel = Marge des Unternehmens
