@@ -44,7 +44,7 @@ LmdbCrmConversionNoData = No proposals found for this period
 LmdbCrmConversionRatesTooltip = Conversion rate over 30 rolling days. Calculation: within the period, we only take closed proposals (accepted/signed + refused). Rate = (accepted ÷ closed) × 100. We compute the rate for the current user and for the whole company, then display the comparison.
 
 # Margin rate graphs widget
-LmdbCrmMarginRatesTitle = Top margin rates (period)
+LmdbCrmMarginRatesTitle = Margin rate on quotes (user / company)
 LmdbCrmMarginPeriodLabel = Period
 LmdbCrmMarginUserLabel = My margin rate
 LmdbCrmMarginCompanyLabel = Company margin rate
