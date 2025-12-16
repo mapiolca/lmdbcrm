@@ -91,6 +91,9 @@ class lmdbcrm_podium_signedquotes extends ModeleBoxes
 		$this->info_box_head = array(
 			'text' => $langs->trans('LmdbCrmSignedQuotesPodiumTitle'),
 			'limit' => 0,
+			'subpicto' => 'help',
+			'subtext'  => dol_escape_htmltag($langs->transnoentitiesnoconv('LmdbCrmSignedQuotesPodiumTooltip')),
+			'subclass' => 'classfortooltip',
 		);
 
 		$this->info_box_contents = array();
