@@ -222,7 +222,7 @@ class lmdbcrm_graph_marginrates extends ModeleBoxes
 
 		$graph->SetData(array(
 			array($labelMargin, $margin),
-			array($labelCost, $cost),
+			array($labelCost),
 		));
 		$graph->SetDataColor(array('#4caf50', '#c0c0c0'));
 		$graph->setShowLegend(1);
