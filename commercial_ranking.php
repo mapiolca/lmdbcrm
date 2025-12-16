@@ -107,7 +107,7 @@ if (!empty($search_date_end_input)) {
 	}
 }
 
-$search_user = trim(GETPOST('search_user', 'int'));
+$search_user = trim(GETPOST('search_user', 'string'));
 
 if (empty($sortfield) || !in_array($sortfield, $validSortFields, true)) {
 	$sortfield = 'signed_count';
