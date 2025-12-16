@@ -113,7 +113,7 @@ class lmdbcrm_graph_conversionrates extends ModeleBoxes
 			'text' => $langs->trans('LmdbCrmConversionRatesTitle'),
 			'limit' => 0,
 			'subpicto' => 'help',
-			'subtext'  => dol_escape_htmltag($langs->transnoentitiesnoconv('MyBoxTitleHelp')),
+			'subtext'  => dol_escape_htmltag($langs->transnoentitiesnoconv('LmdbCrmConversionRatesTooltip')),
 			'subclass' => 'classfortooltip',
 		);
 
