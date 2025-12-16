@@ -43,6 +43,18 @@ LmdbCrmConversionUnsigned = No firmadas
 LmdbCrmConversionNoData = No se encontraron propuestas para este periodo
 LmdbCrmConversionRatesTooltip = Tasa de conversión en 30 días móviles. Cálculo: en el periodo solo contamos las propuestas cerradas (aceptadas/firmadas + rechazadas). Tasa = (aceptadas ÷ cerradas) × 100. Calculamos la tasa del usuario actual y la de toda la empresa y mostramos la comparación.
 
+# Widget gráficos de tasa de margen
+LmdbCrmMarginRatesTitle = Principales tasas de margen (periodo)
+LmdbCrmMarginPeriodLabel = Periodo
+LmdbCrmMarginUserLabel = Mi tasa de margen
+LmdbCrmMarginCompanyLabel = Tasa de margen de la empresa
+LmdbCrmMarginNoData = Sin datos de margen en el periodo
+LmdbCrmMarginTurnoverLabel = Facturación
+LmdbCrmMarginAmountLabel = Margen
+LmdbCrmMarginNegativeNoGraph = Margen negativo: gráfico no mostrado
+LmdbCrmMarginSliceMargin = Margen
+LmdbCrmMarginSliceCost = Coste
+
 # Widget podio de facturación firmada
 LmdbCrmSignedTurnoverPodiumTitle = Top 3 comerciales (facturación firmada - 30 días móviles)
 LmdbCrmSignedTurnoverPodiumDescription = Podio de comerciales según la facturación firmada en los últimos 30 días móviles.

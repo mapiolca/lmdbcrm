@@ -43,6 +43,18 @@ LmdbCrmConversionUnsigned = Non signées
 LmdbCrmConversionNoData = Aucune proposition trouvée pour cette période
 LmdbCrmConversionRatesTooltip = Taux de conversion sur 30 jours glissants. Calcul : pour la période, on ne prend que les propositions clôturées (acceptées/signées + refusées). Taux = (nb acceptées ÷ nb clôturées) × 100. On calcule le taux pour l’utilisateur connecté et pour l’ensemble de la société, puis on affiche la comparaison.
 
+# Margin rate graphs widget
+LmdbCrmMarginRatesTitle = Top taux de marge (période)
+LmdbCrmMarginPeriodLabel = Période
+LmdbCrmMarginUserLabel = Taux de marge personnel
+LmdbCrmMarginCompanyLabel = Taux de marge de l'entreprise
+LmdbCrmMarginNoData = Aucune donnée sur la période
+LmdbCrmMarginTurnoverLabel = CA
+LmdbCrmMarginAmountLabel = Marge
+LmdbCrmMarginNegativeNoGraph = Marge négative : graphe non affiché
+LmdbCrmMarginSliceMargin = Marge
+LmdbCrmMarginSliceCost = Coût de revient
+
 # Widget podium chiffre d'affaire signés
 LmdbCrmSignedTurnoverPodiumTitle = Top 3 commerciaux (CA signé - 30 jours glissants)
 LmdbCrmSignedTurnoverPodiumDescription = Podium des commerciaux selon le chiffre d'affaire signé sur 30 jours glissants.
