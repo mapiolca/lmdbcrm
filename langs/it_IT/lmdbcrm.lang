@@ -1,4 +1,4 @@
-# File di traduzione
+# File di traduzione (IT)
 
 #
 # Generico
@@ -7,25 +7,24 @@ ModuleLmdbCrmName = CRM
 ModuleLmdbCrmDesc = Vari widget e funzionalità CRM per completare il tuo Dolibarr preferito.
 
 #
-# Pagina admin
+# Pagina di amministrazione
 #
-LmdbCrmSetup = Configurazione LmdbCrm
-LmdbCrmNoSetupNeeded = Non è richiesta alcuna configurazione aggiuntiva per questo modulo.
-
-# Classifica commerciali
-PeriodRange = Periodo di osservazione
+LmdbCrmSetup = Impostazioni LmdbCrm
+LmdbCrmNoSetupNeeded = Non è necessaria alcuna configurazione aggiuntiva per questo modulo.
 
 # Widget podio preventivi firmati
-LmdbCrmSignedQuotesPodiumTitle = Top 3 commerciali (preventivi firmati - ultimi 30 giorni)
-LmdbCrmSignedQuotesPodiumDescription = Podio dei commerciali in base al numero di preventivi firmati negli ultimi 30 giorni a scorrimento.
+LmdbCrmSignedQuotesPodiumTitle = Top 3 commerciali (preventivi firmati - 30 giorni mobili)
+LmdbCrmSignedQuotesPodiumDescription = Podio dei commerciali in base al numero di preventivi firmati negli ultimi 30 giorni mobili.
 LmdbCrmSignedQuotesPodiumCount = %s preventivi firmati
 LmdbCrmSignedQuotesPodiumRank = Posizione in classifica
 LmdbCrmSignedQuotesPodiumUser = Commerciale
 LmdbCrmSignedQuotesPodiumCountTitle = Numero di preventivi firmati
 LmdbCrmSignedQuotesPodiumEmpty = Nessun preventivo firmato negli ultimi 30 giorni
+LmdbCrmSignedQuotesPodiumTooltip = Classifica dei 3 commerciali che hanno firmato il maggior numero di proposte negli ultimi 30 giorni mobili. Calcolo: consideriamo le proposte passate allo stato Accettata/Firmata nel periodo (data di chiusura/firma), contiamo 1 per proposta, raggruppiamo per commerciale e mostriamo i 3 totali più alti.
 
-# Classifica commerciali
-LmdbCrmSalesRepRanking = Classifica commerciali
+# Classifica dei commerciali
+PeriodRange = Periodo di osservazione
+LmdbCrmSalesRepRanking = Classifica dei commerciali
 LmdbCrmSalesRep = Commerciale
 LmdbCrmProposalsCount = Numero di preventivi creati
 LmdbCrmSignedProposalsCount = Numero di preventivi firmati
@@ -42,12 +41,14 @@ LmdbCrmConversionCompanyLabel = Tasso di conversione dell'azienda
 LmdbCrmConversionSigned = Firmate
 LmdbCrmConversionUnsigned = Non firmate
 LmdbCrmConversionNoData = Nessuna proposta trovata per questo periodo
+LmdbCrmConversionRatesTooltip = Tasso di conversione su 30 giorni mobili. Calcolo: nel periodo consideriamo solo le proposte chiuse (accettate/firmate + rifiutate). Tasso = (accettate ÷ chiuse) × 100. Calcoliamo il tasso per l’utente corrente e per l’intera azienda e mostriamo il confronto.
 
 # Widget podio fatturato firmato
-LmdbCrmSignedTurnoverPodiumTitle = Top 3 commerciali (fatturato firmato - ultimi 30 giorni)
-LmdbCrmSignedTurnoverPodiumDescription = Podio dei commerciali in base al fatturato firmato negli ultimi 30 giorni a scorrimento.
+LmdbCrmSignedTurnoverPodiumTitle = Top 3 commerciali (fatturato firmato - 30 giorni mobili)
+LmdbCrmSignedTurnoverPodiumDescription = Podio dei commerciali in base al fatturato firmato negli ultimi 30 giorni mobili.
 LmdbCrmSignedTurnoverPodiumAmount = %s firmati
 LmdbCrmSignedTurnoverPodiumRank = Posizione in classifica
 LmdbCrmSignedTurnoverPodiumUser = Commerciale
 LmdbCrmSignedTurnoverPodiumAmountTitle = Fatturato firmato
 LmdbCrmSignedTurnoverPodiumEmpty = Nessun preventivo firmato negli ultimi 30 giorni
+LmdbCrmSignedTurnoverPodiumTooltip = Classifica dei 3 commerciali con il fatturato firmato più alto negli ultimi 30 giorni mobili. Calcolo: sommiamo, per commerciale, l’importo totale (al netto IVA) delle proposte passate allo stato Accettata/Firmata nel periodo (data di chiusura/firma) e mostriamo i 3 totali più alti.
