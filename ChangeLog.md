@@ -1,14 +1,10 @@
 # Journal des modifications / ChangeLog - LMDBCRM
 
-## [1.1.0] - 16/12/2025
-### Ajouté / Added
+## 1.1.0 - 16/12/2025
 - Ajout du widget `lmdbcrm_graph_conversionrates.php` comparant les taux de conversion utilisateur vs entreprise avec filtres de période. / Added the `lmdbcrm_graph_conversionrates.php` widget comparing user vs company conversion rates with period filters.
-
-### Modifié / Changed
 - Corrections et améliorations du classement commercial (`commercial_ranking.php`) : requête compatible Multicompany, filtrage par période renforcé et ajout d'une recherche textuelle sur les utilisateurs. / Fixes and enhancements to the sales ranking (`commercial_ranking.php`): Multicompany-safe query, strengthened period filtering, and added text search on users.
 
-## [1.0.0] - 15/12/2025
-### Ajouté
+## 1.0.0 - 15/12/2025
 - Création initiale du module LMDBCRM. / Initial creation of the LMDBCRM module.
 - Widget podium des 3 meilleurs commerciaux basé sur le nombre de propositions signées des 30 derniers jours. / Podium widget: Top 3 sales reps based on the number of proposals signed over the last 30 days.
 - Widget podium des 3 meilleurs commerciaux basé sur le Chiffre d'affaire signé des 30 derniers jours. / Podium widget: Top 3 sales reps based on signed revenue (turnover) over the last 30 days.
