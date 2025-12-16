@@ -43,6 +43,18 @@ LmdbCrmConversionUnsigned = Nicht unterschrieben
 LmdbCrmConversionNoData = Keine Vorschläge/Angebote für diesen Zeitraum gefunden
 LmdbCrmConversionRatesTooltip = Konversionsrate über 30 rollierende Tage. Berechnung: Im Zeitraum berücksichtigen wir nur abgeschlossene Angebote (akzeptiert/unterschrieben + abgelehnt). Rate = (akzeptiert ÷ abgeschlossen) × 100. Wir berechnen die Rate für den aktuellen Benutzer und für das gesamte Unternehmen und zeigen den Vergleich.
 
+# Widget Margenraten (Diagramm)
+LmdbCrmMarginRatesTitle = Top-Margenraten (Zeitraum)
+LmdbCrmMarginPeriodLabel = Zeitraum
+LmdbCrmMarginUserLabel = Meine Marge
+LmdbCrmMarginCompanyLabel = Marge des Unternehmens
+LmdbCrmMarginNoData = Keine Margendaten für den Zeitraum
+LmdbCrmMarginTurnoverLabel = Umsatz
+LmdbCrmMarginAmountLabel = Marge
+LmdbCrmMarginNegativeNoGraph = Negative Marge: Diagramm wird nicht angezeigt
+LmdbCrmMarginSliceMargin = Marge
+LmdbCrmMarginSliceCost = Einstandspreis
+
 # Widget Podium unterschriebener Umsatz
 LmdbCrmSignedTurnoverPodiumTitle = Top 3 Vertrieb (unterzeichneter Umsatz – rollierende 30 Tage)
 LmdbCrmSignedTurnoverPodiumDescription = Podium der Vertriebsmitarbeitenden nach unterzeichnetem Umsatz in den letzten 30 rollierenden Tagen.

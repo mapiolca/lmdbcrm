@@ -43,6 +43,18 @@ LmdbCrmConversionUnsigned = Non firmate
 LmdbCrmConversionNoData = Nessuna proposta trovata per questo periodo
 LmdbCrmConversionRatesTooltip = Tasso di conversione su 30 giorni mobili. Calcolo: nel periodo consideriamo solo le proposte chiuse (accettate/firmate + rifiutate). Tasso = (accettate ÷ chiuse) × 100. Calcoliamo il tasso per l’utente corrente e per l’intera azienda e mostriamo il confronto.
 
+# Widget grafici tasso di margine
+LmdbCrmMarginRatesTitle = Top tassi di margine (periodo)
+LmdbCrmMarginPeriodLabel = Periodo
+LmdbCrmMarginUserLabel = Il mio tasso di margine
+LmdbCrmMarginCompanyLabel = Tasso di margine dell'azienda
+LmdbCrmMarginNoData = Nessun dato di margine per il periodo
+LmdbCrmMarginTurnoverLabel = Fatturato
+LmdbCrmMarginAmountLabel = Margine
+LmdbCrmMarginNegativeNoGraph = Margine negativo: grafico non visualizzato
+LmdbCrmMarginSliceMargin = Margine
+LmdbCrmMarginSliceCost = Costo
+
 # Widget podio fatturato firmato
 LmdbCrmSignedTurnoverPodiumTitle = Top 3 commerciali (fatturato firmato - 30 giorni mobili)
 LmdbCrmSignedTurnoverPodiumDescription = Podio dei commerciali in base al fatturato firmato negli ultimi 30 giorni mobili.
