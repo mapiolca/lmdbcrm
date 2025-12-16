@@ -43,6 +43,18 @@ LmdbCrmConversionUnsigned = Not signed
 LmdbCrmConversionNoData = No proposals found for this period
 LmdbCrmConversionRatesTooltip = Conversion rate over 30 rolling days. Calculation: within the period, we only take closed proposals (accepted/signed + refused). Rate = (accepted ÷ closed) × 100. We compute the rate for the current user and for the whole company, then display the comparison.
 
+# Margin rate graphs widget
+LmdbCrmMarginRatesTitle = Top margin rates (period)
+LmdbCrmMarginPeriodLabel = Period
+LmdbCrmMarginUserLabel = My margin rate
+LmdbCrmMarginCompanyLabel = Company margin rate
+LmdbCrmMarginNoData = No margin data for the period
+LmdbCrmMarginTurnoverLabel = Turnover
+LmdbCrmMarginAmountLabel = Margin
+LmdbCrmMarginNegativeNoGraph = Negative margin: graph not displayed
+LmdbCrmMarginSliceMargin = Margin
+LmdbCrmMarginSliceCost = Cost price
+
 # Signed turnover podium widget
 LmdbCrmSignedTurnoverPodiumTitle = Top 3 sales reps (signed revenue - rolling 30 days)
 LmdbCrmSignedTurnoverPodiumDescription = Sales podium based on signed revenue over the last 30 rolling days.
