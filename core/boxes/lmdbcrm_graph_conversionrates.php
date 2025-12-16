@@ -112,6 +112,9 @@ class lmdbcrm_graph_conversionrates extends ModeleBoxes
 		$this->info_box_head = array(
 			'text' => $langs->trans('LmdbCrmConversionRatesTitle'),
 			'limit' => 0,
+			'subpicto' => 'help',
+			'subtext'  => dol_escape_htmltag($langs->transnoentitiesnoconv('MyBoxTitleHelp')),
+			'subclass' => 'classfortooltip',
 		);
 
 		$userData = $this->fetchConversionData($fromdate, $todate, (int) $user->id);
