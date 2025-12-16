@@ -184,9 +184,9 @@ print '<td class="liste_titre" colspan="6">';
 print '<div class="nowraponall">';
 print '<span class="opacitymedium">'.$langs->trans('PeriodRange').' : </span>';
 //print $langs->trans('LmdbCrmConversionPeriodLabel').' ';
-print $form->selectDate($search_date_start_input, 'search_date_start', 0, 0, 0, '', 1, 1);
+print $form->selectDate($search_date_start_input, 'search_date_start', 0, 0, 1, '', 1, 1);
 print $langs->trans('to').' ';
-print $form->selectDate($search_date_end_input, 'search_date_end', 0, 0, 0, '', 1, 1);
+print $form->selectDate($search_date_end_input, 'search_date_end', 0, 0, 1, '', 1, 1);
 //print '<input class="flat datepicker" type="text" name="search_date_start" value="'.(!empty($search_date_start_input) ? dol_escape_htmltag($search_date_start_input) : '').'" autocomplete="off">';
 //print ' - ';
 //print '<input class="flat datepicker" type="text" name="search_date_end" value="'.(!empty($search_date_end_input) ? dol_escape_htmltag($search_date_end_input) : '').'" autocomplete="off">';
@@ -196,7 +196,26 @@ print '</tr>';
 
 print '<tr class="liste_titre_filter">';
 print '<td class="liste_titre">';
-print '<input class="flat" type="text" name="search_user" value="'.dol_escape_htmltag($search_user).'">';
+print $form->select_dolusers(
+	$selected,
+	'fk_users',      // htmlname (sans [])
+	0,               // show_empty
+	null,            // exclude
+	0,               // disabled
+	'',              // include
+	'',              // enableonly
+	'',              // force_entity
+	0,               // maxlength
+	0,               // showstatus
+	'',              // morefilter
+	0,               // show_every
+	'',              // enableonlytext
+	'minwidth300',   // morecss
+	0,               // notdisabled
+	0,               // outputmode
+	true,            // multiple
+	0                // forcecombo
+);//'<input class="flat" type="text" name="search_user" value="'.dol_escape_htmltag($search_user).'">';
 print '</td>';
 print '<td class="liste_titre">';
 print '&nbsp;';
