@@ -234,7 +234,7 @@ if ($num > 0) {
 		$userstatic->photo = $obj->photo;
 		
 		print '<tr class="oddeven">';
-		print '<td class="nowraponall">'.$userstatic->getNomUrl(1).'</td>';
+		print '<td class="nowraponall">'.$userstatic->getNomUrl(-1).'</td>';
 		print '<td class="center">'.(int) $obj->total_count.'</td>';
 		print '<td class="center">'.(int) $obj->signed_count.'</td>';
 		print '<td class="right">'.price($obj->total_amount, 0, $langs, 0, 0, -1, $conf->currency).'</td>';
