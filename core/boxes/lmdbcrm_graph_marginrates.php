@@ -222,7 +222,7 @@ class lmdbcrm_graph_marginrates extends ModeleBoxes
 
 		$graph->SetData(array(
 			array($labelMargin, $margin),
-			array($labelCost),
+			array($labelCost, $cost),
 		));
 		$graph->SetDataColor(array('#4caf50', '#c0c0c0'));
 		$graph->setShowLegend(1);
@@ -230,7 +230,7 @@ class lmdbcrm_graph_marginrates extends ModeleBoxes
 
 		// According to Dolibarr version, DolGraph can also show absolute values on the chart
 		if (method_exists($graph, 'setShowValues')) {
-			$graph->setShowValues(1);
+			$graph->setShowValues(0);
 		}
 
 		$graph->SetType(array('pie'));
