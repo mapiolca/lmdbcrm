@@ -217,8 +217,8 @@ class lmdbcrm_graph_marginrates extends ModeleBoxes
 		$graph = new DolGraph();
 
 		// Legend includes amounts => "montant dans les valeurs"
-		$labelMargin = $langs->transnoentities('LmdbCrmMarginSliceMargin').' ('.trim(price($margin, 0, $langs, 1, -1, 2).' '.$currencySymbol).')';
-		$labelCost = $langs->transnoentities('LmdbCrmMarginSliceCost').' ('.trim(price($cost, 0, $langs, 1, -1, 2).' '.$currencySymbol).')';
+		$labelMargin = $langs->transnoentities('LmdbCrmMarginSliceMargin').' ('.$currencySymbol).')';
+		$labelCost = $langs->transnoentities('LmdbCrmMarginSliceCost').' ('.$currencySymbol).')';
 
 		$graph->SetData(array(
 			array($labelMargin, $margin),
