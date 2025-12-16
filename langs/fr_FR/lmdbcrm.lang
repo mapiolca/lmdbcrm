@@ -23,6 +23,7 @@ LmdbCrmSignedQuotesPodiumRank = Position dans le classement
 LmdbCrmSignedQuotesPodiumUser = Commercial
 LmdbCrmSignedQuotesPodiumCountTitle = Nombre de devis signés
 LmdbCrmSignedQuotesPodiumEmpty = Aucun devis signé sur les 30 derniers jours
+LmdbCrmSignedQuotesPodiumTooltip = Classement des 3 commerciaux ayant signé le plus de propositions sur les 30 derniers jours glissants. Calcul : on prend les propositions passées à l’état Acceptée/Signée sur la période (date de clôture/signature), on compte 1 par proposition, on regroupe par commercial et on affiche les 3 plus gros compteurs.
 
 # Classement des commerciaux
 LmdbCrmSalesRepRanking = Classement des commerciaux
@@ -42,6 +43,7 @@ LmdbCrmConversionCompanyLabel = Taux de conversion de l'entreprise
 LmdbCrmConversionSigned = Signées
 LmdbCrmConversionUnsigned = Non signées
 LmdbCrmConversionNoData = Aucune proposition trouvée pour cette période
+LmdbCrmConversionRatesTooltip = Taux de conversion sur 30 jours glissants. Calcul : pour la période, on ne prend que les propositions clôturées (acceptées/signées + refusées). Taux = (nb acceptées ÷ nb clôturées) × 100. On calcule le taux pour l’utilisateur connecté et pour l’ensemble de la société, puis on affiche la comparaison.
 
 # Widget podium chiffre d'affaire signés
 LmdbCrmSignedTurnoverPodiumTitle = Top 3 commerciaux (CA signé - 30 jours glissants)
@@ -51,3 +53,4 @@ LmdbCrmSignedTurnoverPodiumRank = Position dans le classement
 LmdbCrmSignedTurnoverPodiumUser = Commercial
 LmdbCrmSignedTurnoverPodiumAmountTitle = Chiffre d'affaire signé
 LmdbCrmSignedTurnoverPodiumEmpty = Aucun devis signé sur les 30 derniers jours
+LmdbCrmSignedTurnoverPodiumTooltip = Classement des 3 commerciaux générant le plus de chiffre d’affaires signé sur les 30 derniers jours glissants. Calcul : on additionne, par commercial, le montant total (HT) des propositions passées à l’état Acceptée/Signée sur la période (date de clôture/signature), puis on affiche les 3 totaux les plus élevés.
