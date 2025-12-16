@@ -199,8 +199,8 @@ class lmdbcrm_graph_marginrates extends ModeleBoxes
 			$currencySymbol = $langs->getCurrencySymbol($conf->currency);
 		}
 
-		$turnoverStr = trim(price($turnover).' '.$currencySymbol);
-		$marginStr = trim(price($margin).' '.$currencySymbol);
+		$turnoverStr = trim(price($turnover, 0, $langs, 1, -1, 2).' '.$currencySymbol);
+		$marginStr = trim(price($margin, 0, $langs, 1, -1, 2).' '.$currencySymbol);
 
 		$label = '<div class="center"><strong>'.$title.'</strong><br>'.dol_escape_htmltag($rate).' %</div>';
 		$label .= '<div class="center opacitymedium">';
@@ -217,8 +217,8 @@ class lmdbcrm_graph_marginrates extends ModeleBoxes
 		$graph = new DolGraph();
 
 		// Legend includes amounts => "montant dans les valeurs"
-		$labelMargin = $langs->transnoentities('LmdbCrmMarginSliceMargin').' ('.trim(price($margin).' '.$currencySymbol).')';
-		$labelCost = $langs->transnoentities('LmdbCrmMarginSliceCost').' ('.trim(price($cost).' '.$currencySymbol).')';
+		$labelMargin = $langs->transnoentities('LmdbCrmMarginSliceMargin').' ('.$currencySymbol.')';
+		$labelCost = $langs->transnoentities('LmdbCrmMarginSliceCost').' ('.$currencySymbol.')';
 
 		$graph->SetData(array(
 			array($labelMargin, $margin),
