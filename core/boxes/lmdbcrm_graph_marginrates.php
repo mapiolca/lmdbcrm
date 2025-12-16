@@ -107,6 +107,14 @@ class lmdbcrm_graph_marginrates extends ModeleBoxes
 			$todate = $tmp;
 		}
 
+		$this->info_box_head = array(
+			'text' => $langs->trans('LmdbCrmMarginRatesTitle'),
+			'limit' => 0,
+			'subpicto' => 'help',
+			'subtext'  => dol_escape_htmltag($langs->transnoentitiesnoconv('LmdbCrmMarginRatesTooltip')),
+			'subclass' => 'classfortooltip',
+		);
+
 		$userData = $this->fetchMarginData($fromdate, $todate, (int) $user->id);
 		$companyData = $this->fetchMarginData($fromdate, $todate, 0);
 
