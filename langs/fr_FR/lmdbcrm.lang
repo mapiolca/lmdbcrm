@@ -44,7 +44,7 @@ LmdbCrmConversionNoData = Aucune proposition trouvée pour cette période
 LmdbCrmConversionRatesTooltip = Taux de conversion sur 30 jours glissants. Calcul : pour la période, on ne prend que les propositions clôturées (acceptées/signées + refusées). Taux = (nb acceptées ÷ nb clôturées) × 100. On calcule le taux pour l’utilisateur connecté et pour l’ensemble de la société, puis on affiche la comparaison.
 
 # Margin rate graphs widget
-LmdbCrmMarginRatesTitle = TTaux de marge (utilisateur / entreprise)
+LmdbCrmMarginRatesTitle = Taux de marge (utilisateur / entreprise)
 LmdbCrmMarginPeriodLabel = Période
 LmdbCrmMarginUserLabel = Taux de marge personnel
 LmdbCrmMarginCompanyLabel = Taux de marge de l'entreprise
