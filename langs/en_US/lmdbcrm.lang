@@ -1,4 +1,4 @@
-# Translation file
+# Translation file (EN)
 
 #
 # Generic
@@ -12,27 +12,26 @@ ModuleLmdbCrmDesc = Various CRM widgets and features to complement your favorite
 LmdbCrmSetup = LmdbCrm setup
 LmdbCrmNoSetupNeeded = No additional setup is required for this module.
 
-# Sales reps ranking
-PeriodRange = Observation period
-
-# Signed proposals podium widget
-LmdbCrmSignedQuotesPodiumTitle = Top 3 sales reps (signed proposals - rolling 30 days)
-LmdbCrmSignedQuotesPodiumDescription = Sales reps podium based on the number of signed proposals over the last rolling 30 days.
-LmdbCrmSignedQuotesPodiumCount = %s signed proposals
+# Signed quotes podium widget
+LmdbCrmSignedQuotesPodiumTitle = Top 3 sales reps (signed quotes - rolling 30 days)
+LmdbCrmSignedQuotesPodiumDescription = Sales podium based on the number of signed quotes over the last 30 rolling days.
+LmdbCrmSignedQuotesPodiumCount = %s signed quotes
 LmdbCrmSignedQuotesPodiumRank = Ranking position
 LmdbCrmSignedQuotesPodiumUser = Sales rep
-LmdbCrmSignedQuotesPodiumCountTitle = Number of signed proposals
-LmdbCrmSignedQuotesPodiumEmpty = No signed proposals in the last 30 days
+LmdbCrmSignedQuotesPodiumCountTitle = Number of signed quotes
+LmdbCrmSignedQuotesPodiumEmpty = No signed quotes in the last 30 days
+LmdbCrmSignedQuotesPodiumTooltip = Ranking of the 3 sales reps who signed the most proposals over the last 30 rolling days. Calculation: we take proposals set to Accepted/Signed within the period (closing/signature date), count 1 per proposal, group by sales rep, and display the top 3 totals.
 
 # Sales reps ranking
-LmdbCrmSalesRepRanking = Sales reps ranking
+PeriodRange = Observation period
+LmdbCrmSalesRepRanking = Sales rep ranking
 LmdbCrmSalesRep = Sales rep
-LmdbCrmProposalsCount = Number of proposals created
-LmdbCrmSignedProposalsCount = Number of signed proposals
+LmdbCrmProposalsCount = Number of quotes created
+LmdbCrmSignedProposalsCount = Number of signed quotes
 LmdbCrmQuotedAmount = Quoted amount
 LmdbCrmSignedAmount = Signed amount
 LmdbCrmConversionRate = Conversion rate
-LmdbCrmNoRankingData = No proposal found for the selected period
+LmdbCrmNoRankingData = No quotes found for the selected period
 
 # Conversion rate graphs widget
 LmdbCrmConversionRatesTitle = Conversion rate (user / company)
@@ -41,13 +40,15 @@ LmdbCrmConversionUserLabel = My conversion rate
 LmdbCrmConversionCompanyLabel = Company conversion rate
 LmdbCrmConversionSigned = Signed
 LmdbCrmConversionUnsigned = Not signed
-LmdbCrmConversionNoData = No proposal found for this period
+LmdbCrmConversionNoData = No proposals found for this period
+LmdbCrmConversionRatesTooltip = Conversion rate over 30 rolling days. Calculation: within the period, we only take closed proposals (accepted/signed + refused). Rate = (accepted ÷ closed) × 100. We compute the rate for the current user and for the whole company, then display the comparison.
 
 # Signed turnover podium widget
 LmdbCrmSignedTurnoverPodiumTitle = Top 3 sales reps (signed revenue - rolling 30 days)
-LmdbCrmSignedTurnoverPodiumDescription = Sales reps podium based on signed revenue over the last rolling 30 days.
+LmdbCrmSignedTurnoverPodiumDescription = Sales podium based on signed revenue over the last 30 rolling days.
 LmdbCrmSignedTurnoverPodiumAmount = %s signed
 LmdbCrmSignedTurnoverPodiumRank = Ranking position
 LmdbCrmSignedTurnoverPodiumUser = Sales rep
 LmdbCrmSignedTurnoverPodiumAmountTitle = Signed revenue
-LmdbCrmSignedTurnoverPodiumEmpty = No signed proposals in the last 30 days
+LmdbCrmSignedTurnoverPodiumEmpty = No signed quotes in the last 30 days
+LmdbCrmSignedTurnoverPodiumTooltip = Ranking of the 3 sales reps generating the highest signed revenue over the last 30 rolling days. Calculation: we sum, per sales rep, the total amount (excl. tax) of proposals set to Accepted/Signed within the period (closing/signature date), then display the top 3 highest totals.
