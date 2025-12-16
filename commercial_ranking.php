@@ -94,7 +94,7 @@ $sy = GETPOST('search_date_startyear', 'int');
 $sm = GETPOST('search_date_startmonth', 'int');
 $sd = GETPOST('search_date_startday', 'int');
 
-$search_date_start = 0;
+$search_date_start = '';
 if ($sy > 0 && $sm > 0 && $sd > 0) {
 	$search_date_start = dol_mktime(0, 0, 0, $sm, $sd, $sy);
 }
@@ -104,7 +104,7 @@ $ey = GETPOST('search_date_endyear', 'int');
 $em = GETPOST('search_date_endmonth', 'int');
 $ed = GETPOST('search_date_endday', 'int');
 
-$search_date_end = 0;
+$search_date_end = '';
 if ($ey > 0 && $em > 0 && $ed > 0) {
 	$search_date_end = dol_mktime(23, 59, 59, $em, $ed, $ey);
 }
