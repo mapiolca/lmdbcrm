@@ -198,7 +198,7 @@ print '<tr class="liste_titre_filter">';
 print '<td class="liste_titre">';
 print $form->select_dolusers(
 	$selected,
-	'fk_users',      // htmlname (sans [])
+	'search_user',      // htmlname (sans [])
 	0,               // show_empty
 	null,            // exclude
 	0,               // disabled
