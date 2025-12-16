@@ -89,22 +89,24 @@ $sortfield = GETPOST('sortfield', 'aZ09');
 $sortorder = GETPOST('sortorder', 'aZ09');
 $validSortFields = array('total_count', 'signed_count', 'total_amount', 'signed_amount', 'conversion_rate', 'userid');
 
-$search_date_start_input = trim(GETPOST('search_date_start', 'alphanohtml'));
-$search_date_end_input = trim(GETPOST('search_date_end', 'alphanohtml'));
+// Start date (from selectDate)
+$sy = GETPOST('search_date_startyear', 'int');
+$sm = GETPOST('search_date_startmonth', 'int');
+$sd = GETPOST('search_date_startday', 'int');
 
 $search_date_start = 0;
-if (!empty($search_date_start_input)) {
-	$search_date_start = dol_stringtotime($search_date_start_input);
-	if ($search_date_start <= 0) {
-		$search_date_start = 0;
-	}
+if ($sy > 0 && $sm > 0 && $sd > 0) {
+	$search_date_start = dol_mktime(0, 0, 0, $sm, $sd, $sy);
 }
+
+// End date (inclusive end-of-day)
+$ey = GETPOST('search_date_endyear', 'int');
+$em = GETPOST('search_date_endmonth', 'int');
+$ed = GETPOST('search_date_endday', 'int');
+
 $search_date_end = 0;
-if (!empty($search_date_end_input)) {
-	$search_date_end = dol_stringtotime($search_date_end_input);
-	if ($search_date_end <= 0) {
-		$search_date_end = 0;
-	}
+if ($ey > 0 && $em > 0 && $ed > 0) {
+	$search_date_end = dol_mktime(23, 59, 59, $em, $ed, $ey);
 }
 
 $search_user = GETPOST('search_user', 'array');
@@ -120,11 +122,11 @@ if (empty($sortorder) || !in_array(dol_strtoupper($sortorder), array('ASC', 'DES
 
 // Prepare url parameters for listing
 $param = '';
-if (!empty($search_date_start_input)) {
-	$param .= '&search_date_start='.urlencode($search_date_start_input);
+if ($search_date_start > 0) {
+	$param .= '&search_date_startday='.$sd.'&search_date_startmonth='.$sm.'&search_date_startyear='.$sy;
 }
-if (!empty($search_date_end_input)) {
-	$param .= '&search_date_end='.urlencode($search_date_end_input);
+if ($search_date_end > 0) {
+	$param .= '&search_date_endday='.$ed.'&search_date_endmonth='.$em.'&search_date_endyear='.$ey;
 }
 foreach ($search_user as $uid) {
 	$param .= '&search_user[]='.$uid;
@@ -186,13 +188,9 @@ print '<tr class="liste_titre_filter">';
 print '<td class="liste_titre" colspan="6">';
 print '<div class="nowraponall">';
 print '<span class="opacitymedium">'.$langs->trans('PeriodRange').' : </span>';
-//print $langs->trans('LmdbCrmConversionPeriodLabel').' ';
-print $form->selectDate($search_date_start_input, 'search_date_start', 0, 0, 1, '', 1, 1);
+print $form->selectDate($search_date_start, 'search_date_start', 0, 0, 1, '', 1, 1);
 print $langs->trans('to').' ';
-print $form->selectDate($search_date_end_input, 'search_date_end', 0, 0, 1, '', 1, 1);
-//print '<input class="flat datepicker" type="text" name="search_date_start" value="'.(!empty($search_date_start_input) ? dol_escape_htmltag($search_date_start_input) : '').'" autocomplete="off">';
-//print ' - ';
-//print '<input class="flat datepicker" type="text" name="search_date_end" value="'.(!empty($search_date_end_input) ? dol_escape_htmltag($search_date_end_input) : '').'" autocomplete="off">';
+print $form->selectDate($search_date_end, 'search_date_end', 0, 0, 1, '', 1, 1);
 print '</div>';
 print '</td>';
 print '</tr>';
