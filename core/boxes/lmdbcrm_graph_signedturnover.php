@@ -86,6 +86,8 @@ class lmdbcrm_graph_signedturnover extends ModeleBoxes
 
 		$langs->loadLangs(array('lmdbcrm@lmdbcrm', 'propal'));
 
+		$debug = GETPOSTINT('debug_lmdbcrmsignedturnover');
+
 		$range = $this->getCurrentFiscalYearRange();
 
 		$monthlyData = $this->fetchSignedTurnoverByMonth($range['start'], $range['end']);
@@ -101,6 +103,16 @@ class lmdbcrm_graph_signedturnover extends ModeleBoxes
 			}
 			$totalAmount += $value;
 			$graphData[] = array($monthInfo['label'], $value);
+		}
+
+		if ($debug) {
+			var_dump(array(
+				'debug_scope' => 'lmdbcrm_graph_signedturnover::loadBox',
+				'fiscal_range' => $range,
+				'monthlyData' => $monthlyData,
+				'graphData' => $graphData,
+				'totalAmount' => $totalAmount,
+			));
 		}
 
 		$this->info_box_head = array(
@@ -242,6 +254,7 @@ class lmdbcrm_graph_signedturnover extends ModeleBoxes
 
 		$signedStatus = (defined('Propal::STATUS_SIGNED') ? Propal::STATUS_SIGNED : 2);
 		$billedStatus = (defined('Propal::STATUS_BILLED') ? Propal::STATUS_BILLED : 4);
+		$debug = GETPOSTINT('debug_lmdbcrmsignedturnover');
 
 		$sql = "SELECT YEAR(p.date_signature) as y, MONTH(p.date_signature) as m, SUM(p.total_ht) as amount";
 		$sql .= " FROM ".MAIN_DB_PREFIX."propal as p";
@@ -252,6 +265,17 @@ class lmdbcrm_graph_signedturnover extends ModeleBoxes
 		$sql .= " AND p.date_signature <= '".$this->db->idate($toDate)."'";
 		$sql .= " GROUP BY YEAR(p.date_signature), MONTH(p.date_signature)";
 
+		if ($debug) {
+			var_dump(array(
+				'debug_scope' => 'lmdbcrm_graph_signedturnover::fetchSignedTurnoverByMonth',
+				'sql' => $sql,
+				'fromDate' => $fromDate,
+				'toDate' => $toDate,
+				'signedStatus' => $signedStatus,
+				'billedStatus' => $billedStatus,
+			));
+		}
+
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			while ($obj = $this->db->fetch_object($resql)) {
@@ -259,6 +283,13 @@ class lmdbcrm_graph_signedturnover extends ModeleBoxes
 				$data[$key] = (float) $obj->amount;
 			}
 			$this->db->free($resql);
+		}
+
+		if ($debug) {
+			var_dump(array(
+				'debug_scope' => 'lmdbcrm_graph_signedturnover::fetchSignedTurnoverByMonth_results',
+				'results' => $data,
+			));
 		}
 
 		return $data;
