@@ -147,18 +147,16 @@ class lmdbcrm_graph_signedturnover extends ModeleBoxes
 		);
 
 		$contentHtml = '';
-		$contentHtml .= '<div class="center opacitymedium">'.$langs->trans('LmdbCrmSignedTurnoverCurveFiscalYear', dol_escape_htmltag($rangeCurrent['label'])).'</div>';
 
 		if ($totalAmount <= 0) {
 			$contentHtml .= '<div class="center opacitymedium">'.$langs->trans('LmdbCrmSignedTurnoverCurveNoData').'</div>';
 		} else {
 			$graph = new DolGraph();
 			$graph->SetData($graphData);
-			$graph->SetLegend(array(
-				$langs->trans('LmdbCrmSignedTurnoverCurveLegendCurrent'),
-				$langs->trans('LmdbCrmSignedTurnoverCurveLegendPrevious1'),
-				$langs->trans('LmdbCrmSignedTurnoverCurveLegendPrevious2'),
-			));
+			$legendCurrent = dol_print_date($rangeCurrent['start'], '%Y');
+			$legendPrev1 = dol_print_date($rangePrev1['start'], '%Y');
+			$legendPrev2 = dol_print_date($rangePrev2['start'], '%Y');
+			$graph->SetLegend(array($legendCurrent, $legendPrev1, $legendPrev2));
 			$graph->SetDataColor(array('#2e78c2', '#a3a3a3', '#d8a200'));
 			$graph->SetType(array('lines'));
 			$graph->setHeight('320');
