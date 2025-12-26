@@ -40,7 +40,7 @@ class lmdbcrm_graph_signedturnover extends ModeleBoxes
 	/**
 	 * @var string Box icon (in configuration page)
 	 */
-	public $boximg = 'fa fa-chart-line';
+	public $boximg = 'chart';
 
 	/**
 	 * @var string Box label (in configuration page)
@@ -63,7 +63,7 @@ class lmdbcrm_graph_signedturnover extends ModeleBoxes
 	 * @param DoliDB $db Database handler
 	 * @param string $param More parameters
 	 */
-	public function __construct($db, $param)
+	public function __construct(DoliDB $db, $param = '')
 	{
 		global $user;
 
