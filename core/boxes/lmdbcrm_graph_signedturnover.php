@@ -202,6 +202,9 @@ class lmdbcrm_graph_signedturnover extends ModeleBoxes
 		$endYear = $startYear + ($fiscalStartMonth > 1 ? 1 : 0);
 		$endDay = dol_get_last_day($endYear, $endMonth, 0);
 		$endDate = dol_mktime(23, 59, 59, $endMonth, $endDay, $endYear);
+		if (empty($endDate)) {
+			$endDate = dol_time_plus_duree($startDate, 12, 'm') - 1;
+		}
 
 		$startLabelYear = dol_print_date($startDate, '%Y');
 		$endLabelYear = dol_print_date($endDate, '%Y');
