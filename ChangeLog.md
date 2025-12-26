@@ -1,6 +1,6 @@
 # Journal des modifications / ChangeLog - LMDBCRM
 
-## 1.2.0 - 17/12/2025
+## 1.2.0 - 26/12/2025
 - Nouveau widget graphique `lmdbcrm_graph_signedturnover.php` affichant le CA signé par mois et superposant l'exercice en cours et les deux exercices précédents, avec sorties de debug optionnelles. / New graph widget `lmdbcrm_graph_signedturnover.php` showing signed revenue per month overlaying current and previous two fiscal years, with optional debug outputs.
 
 ## 1.1.0 - 16/12/2025
