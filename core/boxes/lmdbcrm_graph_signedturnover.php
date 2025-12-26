@@ -40,7 +40,7 @@ class lmdbcrm_graph_signedturnover extends ModeleBoxes
 	/**
 	 * @var string Box icon (in configuration page)
 	 */
-	public $boximg = 'fa fa-chart-line';
+	public $boximg = 'chart';
 
 	/**
 	 * @var string Box label (in configuration page)
