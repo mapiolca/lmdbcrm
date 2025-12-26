@@ -1,5 +1,8 @@
 # Journal des modifications / ChangeLog - LMDBCRM
 
+## 1.2.0 - 17/12/2025
+- Nouveau widget graphique `lmdbcrm_graph_signedturnover.php` affichant le CA signé par mois et superposant l'exercice en cours et les deux exercices précédents, avec sorties de debug optionnelles. / New graph widget `lmdbcrm_graph_signedturnover.php` showing signed revenue per month overlaying current and previous two fiscal years, with optional debug outputs.
+
 ## 1.1.0 - 16/12/2025
 - Ajout du widget `lmdbcrm_graph_conversionrates.php` comparant les taux de conversion utilisateur vs entreprise avec filtres de période. / Added the `lmdbcrm_graph_conversionrates.php` widget comparing user vs company conversion rates with period filters.
 - Corrections et améliorations du classement commercial (`commercial_ranking.php`) : requête compatible Multicompany, filtrage par période renforcé et ajout d'une recherche textuelle sur les utilisateurs. / Fixes and enhancements to the sales ranking (`commercial_ranking.php`): Multicompany-safe query, strengthened period filtering, and added text search on users.
@@ -10,6 +13,5 @@
 - Widget podium des 3 meilleurs commerciaux basé sur le Chiffre d'affaire signé des 30 derniers jours. / Podium widget: Top 3 sales reps based on signed revenue (turnover) over the last 30 days.
 - Widget Taux de conversion de l'uilisateur vs la société. / Conversion rate widget: User vs. company benchmark.
 - Support Multicompany et traductions en_US, fr_FR, de_DE, it_IT, es_ES. / Multicompany support and translations en_US, fr_FR, de_DE, it_IT, es_ES.
-
 
 
