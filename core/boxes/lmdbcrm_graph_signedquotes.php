@@ -124,24 +124,46 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 			'subclass' => 'classfortooltip',
 		);
 
-		// Filter form
-		$form = new Form($this->db);
-		$contentHtml .= '<div class="center" style="margin-bottom: 6px;">';
-		$contentHtml .= '<form method="GET" action="'.dol_escape_htmltag($_SERVER['PHP_SELF']).'" class="inline-block">';
+		// ---- Filters (same prefix for selectDate + GETPOSTDATE) ----
+		$prefixStart = 'lmdbcrm_sq_datestart_';
+		$prefixEnd = 'lmdbcrm_sq_dateend_';
+		
+		$dateStartFilter = GETPOSTDATE($prefixStart);	// Reads ${prefix}day/month/year
+		$dateEndFilter = GETPOSTDATE($prefixEnd);
+		
+		// Defaults
+		if (empty($dateStartFilter)) $dateStartFilter = $yearStart;
+		if (empty($dateEndFilter)) $dateEndFilter = $today;
+		
+		// Normalize to be inclusive
+		$sy = (int) dol_print_date($dateStartFilter, '%Y');
+		$sm = (int) dol_print_date($dateStartFilter, '%m');
+		$sd = (int) dol_print_date($dateStartFilter, '%d');
+		$dateStartFilter = dol_mktime(0, 0, 0, $sm, $sd, $sy);
+		
+		$ey = (int) dol_print_date($dateEndFilter, '%Y');
+		$em = (int) dol_print_date($dateEndFilter, '%m');
+		$ed = (int) dol_print_date($dateEndFilter, '%d');
+		$dateEndFilter = dol_mktime(23, 59, 59, $em, $ed, $ey);
+		
+		if ($dateEndFilter < $dateStartFilter) $dateEndFilter = $dateStartFilter;
+		
+		// ---- In your filter form ----
+		$contentHtml .= '<form method="GET" action="'.dol_escape_htmltag($_SERVER['PHP_SELF']).'">';
 		$contentHtml .= '<input type="hidden" name="mainmenu" value="'.dol_escape_htmltag(GETPOST('mainmenu', 'aZ09')).'">';
 		$contentHtml .= '<input type="hidden" name="leftmenu" value="'.dol_escape_htmltag(GETPOST('leftmenu', 'aZ09')).'">';
-
-		$contentHtml .= '<span class="nowrapfordate">';
-		$contentHtml .= $form->selectDate($fromN, 'lmdbcrm_sq_datestart', 0, 0, 1, '', 1, 0, 0, '', '', '', '', 1, '', $langs->trans('From'));
+		
+		$contentHtml .= '<span class="nowraponall">';
+		$contentHtml .= $form->selectDate($dateStartFilter, $prefixStart, 0, 0, 1, '', 1, 0, 0);
 		$contentHtml .= '</span> ';
-
-		$contentHtml .= '<span class="nowrapfordate">';
-		$contentHtml .= $form->selectDate($toN, 'lmdbcrm_sq_dateend', 0, 0, 1, '', 1, 0, 0, '', '', '', '', 1, '', $langs->trans('to'));
+		
+		$contentHtml .= '<span class="nowraponall">';
+		$contentHtml .= $form->selectDate($dateEndFilter, $prefixEnd, 0, 0, 1, '', 1, 0, 0);
 		$contentHtml .= '</span> ';
-
-		$contentHtml .= '<input class="button smallpaddingimp" type="submit" value="'.$langs->trans('Refresh').'">';
+		
+		$contentHtml .= '<button class="button smallpaddingimp" type="submit">'.$langs->trans("Filter").'</button>';
 		$contentHtml .= '</form>';
-		$contentHtml .= '</div>';
+
 
 		// If selected range is outside current year
 		if ($fromN > $toN) {
