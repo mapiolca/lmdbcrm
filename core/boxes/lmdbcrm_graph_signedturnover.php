@@ -161,7 +161,7 @@ class lmdbcrm_graph_signedturnover extends ModeleBoxes
 			$graph->SetType(array('lines'));
 			// EN: Reduce chart size on small screens (render size) while keeping responsive CSS.
 			// FR: Réduire la taille du graphique sur petits écrans (taille de rendu) tout en gardant le CSS responsive.
-			$graphWidth = !empty($conf->dol_optimize_smallscreen) ? 360 : 720;
+			$graphWidth = !empty($conf->dol_optimize_smallscreen) ? 350 : 720;
 			$graphHeight = !empty($conf->dol_optimize_smallscreen) ? 240 : 320;
 			$graph->setHeight((string) $graphHeight);
 			$graph->setWidth((string) $graphWidth);

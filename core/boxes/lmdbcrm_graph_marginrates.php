@@ -236,7 +236,7 @@ class lmdbcrm_graph_marginrates extends ModeleBoxes
 		$graph->SetType(array('pie'));
 		// EN: Reduce chart size on small screens (render size) while keeping responsive CSS.
 		// FR: Réduire la taille du graphique sur petits écrans (taille de rendu) tout en gardant le CSS responsive.
-		$graphWidth = !empty($conf->dol_optimize_smallscreen) ? 300 : 340;
+		$graphWidth = !empty($conf->dol_optimize_smallscreen) ? 290 : 340;
 		$graphHeight = !empty($conf->dol_optimize_smallscreen) ? 240 : 280;
 		$graph->setHeight((string) $graphHeight);
 		$graph->setWidth((string) $graphWidth);
