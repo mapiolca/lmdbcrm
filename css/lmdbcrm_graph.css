@@ -1,0 +1,20 @@
+.lmdbcrm-graph-cell {
+	min-width: 340px;
+}
+@media (max-width: 768px) {
+	.lmdbcrm-graph-cell {
+		min-width: 0 !important;
+		width: 100%;
+	}
+	.dolgraphchart {
+		width: 100% !important;
+		max-width: 100% !important;
+		min-width: 0 !important;
+		overflow-x: hidden;
+	}
+	.dolgraphchart canvas {
+		width: 100% !important;
+		height: auto !important;
+		max-width: 100% !important;
+	}
+}

@@ -2,6 +2,7 @@
 
 ## 1.3 - 08/01/2026
 - Ajout du widget `lmdbcrm_graph_signedquotes.php` affichant l'évolution des devis signés avec filtre de période. / Added the `lmdbcrm_graph_signedquotes.php` widget showing signed quotes evolution with a period filter.
+- Centralisation du CSS responsive des DolGraph pour éviter le scroll horizontal sur mobile. / Centralized responsive DolGraph CSS to prevent horizontal scrolling on mobile.
 
 ## 1.2.1 - 08/01/2026
 - Ajustement des légendes du graphique du CA signé pour afficher les années N, N-1 et N-2 sur l'année de fin d'exercice. / Adjusted signed turnover graph legends to show years N, N-1, and N-2 based on fiscal year end.
