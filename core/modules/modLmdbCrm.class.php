@@ -251,6 +251,11 @@ class modLmdbCrm extends DolibarrModules
 				'note' => 'LmdbCrmSignedTurnoverCurveDescription',
 				'enabledbydefaulton' => 'Home',
 			),
+			5 => array(
+				'file' => 'lmdbcrm_graph_signedquotes.php@lmdbcrm',
+				'note' => 'LmdbCrmSignedQuotesCurveDescription',
+				'enabledbydefaulton' => 'Home',
+			),
 		);
 
 		// Cronjobs

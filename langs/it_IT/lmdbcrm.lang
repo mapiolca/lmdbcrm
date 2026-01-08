@@ -65,3 +65,11 @@ LmdbCrmSignedTurnoverPodiumUser = Commerciale
 LmdbCrmSignedTurnoverPodiumAmountTitle = Fatturato firmato
 LmdbCrmSignedTurnoverPodiumEmpty = Nessun preventivo firmato negli ultimi 30 giorni
 LmdbCrmSignedTurnoverPodiumTooltip = Classifica dei 3 commerciali con il fatturato firmato più alto negli ultimi 30 giorni mobili. Calcolo: sommiamo, per commerciale, l’importo totale (al netto IVA) delle proposte passate allo stato Accettata/Firmata nel periodo (data di chiusura/firma) e mostriamo i 3 totali più alti.
+
+# Widget curva annuale preventivi firmati
+LmdbCrmSignedQuotesCurveTitle = Preventivi firmati (N/N-1 - azienda vs me)
+LmdbCrmSignedQuotesCurveDescription = Curva dei preventivi firmati per mese nel periodo selezionato.
+LmdbCrmSignedQuotesCurveTooltip = Numero mensile di preventivi firmati nel periodo selezionato. Confronto azienda vs utente corrente, N vs N-1. Il periodo mostrato è filtrabile tramite date.
+LmdbCrmSignedQuotesCurveNoData = Nessun preventivo firmato per il periodo selezionato.
+LmdbCrmSignedQuotesLegendCompany = Azienda %s
+LmdbCrmSignedQuotesLegendMe = Io %s

@@ -75,3 +75,11 @@ LmdbCrmSignedTurnoverCurveLegendPrevious2 = Exercice N-2 (HT)
 LmdbCrmSignedTurnoverCurveFiscalYear = Exercice fiscal : %s
 LmdbCrmSignedTurnoverCurveNoData = Aucun chiffre d'affaires signé enregistré sur l'exercice en cours
 LmdbCrmSignedTurnoverCurveTooltip = Affiche le chiffre d'affaires signé (HT) mois par mois sur l'exercice en cours, basé sur la date de signature des propositions commerciales. Inclut les propositions au statut Accepté/Signé ou Facturé.
+
+# Signed Quotes year curve widget
+LmdbCrmSignedQuotesCurveTitle = Devis signés (N/N-1 - entreprise vs moi)
+LmdbCrmSignedQuotesCurveDescription = Courbe des devis signés par mois sur la période sélectionnée.
+LmdbCrmSignedQuotesCurveTooltip = Courbe du nombre de devis signés, mois par mois, sur la période sélectionnée. Comparaison Entreprise vs Utilisateur connecté, N vs N-1. La période affichée est filtrable via les dates.
+LmdbCrmSignedQuotesCurveNoData = Aucun devis signé sur la période sélectionnée.
+LmdbCrmSignedQuotesLegendCompany = Entreprise %s
+LmdbCrmSignedQuotesLegendMe = Moi %s

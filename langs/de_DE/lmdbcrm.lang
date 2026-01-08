@@ -65,3 +65,11 @@ LmdbCrmSignedTurnoverPodiumUser = Vertriebsmitarbeiter
 LmdbCrmSignedTurnoverPodiumAmountTitle = Unterzeichneter Umsatz
 LmdbCrmSignedTurnoverPodiumEmpty = Keine unterschriebenen Angebote in den letzten 30 Tagen
 LmdbCrmSignedTurnoverPodiumTooltip = Ranking der 3 Vertriebsmitarbeitenden mit dem höchsten unterzeichneten Umsatz in den letzten 30 rollierenden Tagen. Berechnung: Wir summieren je Vertriebsmitarbeiter den Gesamtbetrag (netto) der Angebote, die im Zeitraum auf „Akzeptiert/Unterschrieben“ gesetzt wurden (Abschluss-/Unterschriftsdatum), und zeigen anschließend die Top 3 Summen.
+
+# Widget Jahreskurve unterschriebene Angebote
+LmdbCrmSignedQuotesCurveTitle = Unterschriebene Angebote (N/N-1 - Unternehmen vs ich)
+LmdbCrmSignedQuotesCurveDescription = Verlauf der unterschriebenen Angebote pro Monat für den ausgewählten Zeitraum.
+LmdbCrmSignedQuotesCurveTooltip = Monatliche Anzahl unterschriebener Angebote im ausgewählten Zeitraum. Vergleich Unternehmen vs aktueller Benutzer, N vs N-1. Der Zeitraum ist per Datum filterbar.
+LmdbCrmSignedQuotesCurveNoData = Keine unterschriebenen Angebote für den ausgewählten Zeitraum.
+LmdbCrmSignedQuotesLegendCompany = Unternehmen %s
+LmdbCrmSignedQuotesLegendMe = Ich %s

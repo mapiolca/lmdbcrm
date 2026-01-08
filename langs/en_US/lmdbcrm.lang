@@ -75,3 +75,11 @@ LmdbCrmSignedTurnoverCurveLegendPrevious2 = Fiscal year N-2 (excl. VAT)
 LmdbCrmSignedTurnoverCurveFiscalYear = Fiscal year: %s
 LmdbCrmSignedTurnoverCurveNoData = No signed revenue recorded for the current fiscal year
 LmdbCrmSignedTurnoverCurveTooltip = Displays monthly signed revenue (excl. VAT) over the current fiscal year, based on proposal signature date. Includes proposals with Accepted/Signed or Billed status.
+
+# Signed Quotes year curve widget
+LmdbCrmSignedQuotesCurveTitle = Signed quotes (N/N-1 - company vs me)
+LmdbCrmSignedQuotesCurveDescription = Signed quotes curve by month over the selected period.
+LmdbCrmSignedQuotesCurveTooltip = Month-by-month signed quotes over the selected period. Company vs current user comparison, N vs N-1. The displayed period can be filtered by dates.
+LmdbCrmSignedQuotesCurveNoData = No signed quotes for the selected period.
+LmdbCrmSignedQuotesLegendCompany = Company %s
+LmdbCrmSignedQuotesLegendMe = Me %s
