@@ -153,9 +153,9 @@ class lmdbcrm_graph_signedturnover extends ModeleBoxes
 		} else {
 			$graph = new DolGraph();
 			$graph->SetData($graphData);
-			$legendCurrent = dol_print_date($rangeCurrent['start'], '%Y');
-			$legendPrev1 = dol_print_date($rangePrev1['start'], '%Y');
-			$legendPrev2 = dol_print_date($rangePrev2['start'], '%Y');
+			$legendCurrent = dol_print_date($rangeCurrent['end'], '%Y');
+			$legendPrev1 = dol_print_date($rangePrev1['end'], '%Y');
+			$legendPrev2 = dol_print_date($rangePrev2['end'], '%Y');
 			$graph->SetLegend(array($legendCurrent, $legendPrev1, $legendPrev2));
 			$graph->SetDataColor(array('#2e78c2', '#a3a3a3', '#d8a200'));
 			$graph->SetType(array('lines'));
@@ -266,7 +266,7 @@ class lmdbcrm_graph_signedturnover extends ModeleBoxes
 		for ($i = 0; $i < 12; $i++) {
 			$current = dol_time_plus_duree($startDate, $i, 'm');
 			$key = dol_print_date($current, '%Y-%m');
-			$label = dol_print_date($current, '%b %y');
+			$label = dol_print_date($current, '%b');
 			$months[] = array(
 				'key' => $key,
 				'label' => $label,
@@ -287,18 +287,22 @@ class lmdbcrm_graph_signedturnover extends ModeleBoxes
 	{
 		$data = array();
 
+		// EN: Use signature date for signed turnover analytics.
+		// FR: Utiliser la date de signature pour les statistiques de CA signé.
+		$dateField = 'date_signature';
+
 		$signedStatus = (defined('Propal::STATUS_SIGNED') ? Propal::STATUS_SIGNED : 2);
 		$billedStatus = (defined('Propal::STATUS_BILLED') ? Propal::STATUS_BILLED : 4);
 		$debug = GETPOSTINT('debug_lmdbcrmsignedturnover');
 
-		$sql = "SELECT YEAR(p.date_signature) as y, MONTH(p.date_signature) as m, SUM(p.total_ht) as amount";
+		$sql = "SELECT YEAR(p.".$dateField.") as y, MONTH(p.".$dateField.") as m, SUM(p.total_ht) as amount";
 		$sql .= " FROM ".MAIN_DB_PREFIX."propal as p";
 		$sql .= " WHERE p.entity IN (".getEntity('propal').")";
 		$sql .= " AND p.fk_statut IN (".((int) $signedStatus).",".((int) $billedStatus).")";
-		$sql .= " AND p.date_signature IS NOT NULL";
-		$sql .= " AND p.date_signature >= '".$this->db->idate($fromDate)."'";
-		$sql .= " AND p.date_signature <= '".$this->db->idate($toDate)."'";
-		$sql .= " GROUP BY YEAR(p.date_signature), MONTH(p.date_signature)";
+		$sql .= " AND p.".$dateField." IS NOT NULL";
+		$sql .= " AND p.".$dateField." >= '".$this->db->idate($fromDate)."'";
+		$sql .= " AND p.".$dateField." <= '".$this->db->idate($toDate)."'";
+		$sql .= " GROUP BY YEAR(p.".$dateField."), MONTH(p.".$dateField.")";
 
 		if ($debug) {
 			var_dump(array(
