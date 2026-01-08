@@ -78,8 +78,8 @@ LmdbCrmSignedTurnoverCurveTooltip = Affiche le chiffre d'affaires signé (HT) mo
 
 # Signed Quotes year curve widget
 LmdbCrmSignedQuotesCurveTitle = Devis signés (N/N-1 - entreprise vs moi)
-LmdbCrmSignedQuotesCurveDescription = Courbe des devis signé par mois sur l'année en cours.
-LmdbCrmSignedQuotesCurveTooltip = Courbe du nombre de devis signés, mois par mois, sur l’année civile en cours. Comparaison Entreprise vs Utilisateur connecté, N vs N-1. La période affichée est filtrable via les dates.
+LmdbCrmSignedQuotesCurveDescription = Courbe des devis signés par mois sur la période sélectionnée.
+LmdbCrmSignedQuotesCurveTooltip = Courbe du nombre de devis signés, mois par mois, sur la période sélectionnée. Comparaison Entreprise vs Utilisateur connecté, N vs N-1. La période affichée est filtrable via les dates.
 LmdbCrmSignedQuotesCurveNoData = Aucun devis signé sur la période sélectionnée.
 LmdbCrmSignedQuotesLegendCompany = Entreprise %s
 LmdbCrmSignedQuotesLegendMe = Moi %s

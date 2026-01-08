@@ -65,6 +65,12 @@ LmdbCrmSignedTurnoverPodiumUser = Sales rep
 LmdbCrmSignedTurnoverPodiumAmountTitle = Signed revenue
 LmdbCrmSignedTurnoverPodiumEmpty = No signed quotes in the last 30 days
 LmdbCrmSignedTurnoverPodiumTooltip = Ranking of the 3 sales reps generating the highest signed revenue over the last 30 rolling days. Calculation: we sum, per sales rep, the total amount (excl. tax) of proposals set to Accepted/Signed within the period (closing/signature date), then display the top 3 highest totals.
+LmdbCrmSignedQuotesCurveTitle = Signed quotes (N/N-1 - company vs me)
+LmdbCrmSignedQuotesCurveDescription = Signed quotes curve by month over the selected period.
+LmdbCrmSignedQuotesCurveTooltip = Month-by-month signed quotes over the selected period. Company vs current user comparison, N vs N-1. The displayed period can be filtered by dates.
+LmdbCrmSignedQuotesCurveNoData = No signed quotes for the selected period.
+LmdbCrmSignedQuotesLegendCompany = Company %s
+LmdbCrmSignedQuotesLegendMe = Me %s
 
 # Signed turnover fiscal year curve widget
 LmdbCrmSignedTurnoverCurveTitle = Signed revenue by month (current fiscal year)

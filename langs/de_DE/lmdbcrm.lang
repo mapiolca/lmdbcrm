@@ -21,6 +21,12 @@ LmdbCrmSignedQuotesPodiumUser = Vertriebsmitarbeiter
 LmdbCrmSignedQuotesPodiumCountTitle = Anzahl unterschriebener Angebote
 LmdbCrmSignedQuotesPodiumEmpty = Keine unterschriebenen Angebote in den letzten 30 Tagen
 LmdbCrmSignedQuotesPodiumTooltip = Ranking der 3 Vertriebsmitarbeitenden mit den meisten unterschriebenen Angeboten in den letzten 30 rollierenden Tagen. Berechnung: Wir berücksichtigen Angebote, die im Zeitraum auf „Akzeptiert/Unterschrieben“ gesetzt wurden (Abschluss-/Unterschriftsdatum), zählen 1 pro Angebot, gruppieren nach Vertriebsmitarbeiter und zeigen die Top 3.
+LmdbCrmSignedQuotesCurveTitle = Unterschriebene Angebote (N/N-1 - Unternehmen vs ich)
+LmdbCrmSignedQuotesCurveDescription = Verlauf der unterschriebenen Angebote pro Monat für den ausgewählten Zeitraum.
+LmdbCrmSignedQuotesCurveTooltip = Monatliche Anzahl unterschriebener Angebote im ausgewählten Zeitraum. Vergleich Unternehmen vs aktueller Benutzer, N vs N-1. Der Zeitraum ist per Datum filterbar.
+LmdbCrmSignedQuotesCurveNoData = Keine unterschriebenen Angebote für den ausgewählten Zeitraum.
+LmdbCrmSignedQuotesLegendCompany = Unternehmen %s
+LmdbCrmSignedQuotesLegendMe = Ich %s
 
 # Vertriebsranking
 PeriodRange = Beobachtungszeitraum
