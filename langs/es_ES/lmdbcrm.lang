@@ -21,12 +21,6 @@ LmdbCrmSignedQuotesPodiumUser = Comercial
 LmdbCrmSignedQuotesPodiumCountTitle = Número de presupuestos firmados
 LmdbCrmSignedQuotesPodiumEmpty = No hay presupuestos firmados en los últimos 30 días
 LmdbCrmSignedQuotesPodiumTooltip = Clasificación de los 3 comerciales que más propuestas han firmado en los últimos 30 días móviles. Cálculo: tomamos las propuestas que pasan a estado Aceptada/Firmada dentro del periodo (fecha de cierre/firma), contamos 1 por propuesta, agrupamos por comercial y mostramos los 3 mayores totales.
-LmdbCrmSignedQuotesCurveTitle = Presupuestos firmados (N/N-1 - empresa vs yo)
-LmdbCrmSignedQuotesCurveDescription = Curva de presupuestos firmados por mes en el periodo seleccionado.
-LmdbCrmSignedQuotesCurveTooltip = Número mensual de presupuestos firmados en el periodo seleccionado. Comparación empresa vs usuario actual, N vs N-1. El periodo mostrado se filtra por fechas.
-LmdbCrmSignedQuotesCurveNoData = No hay presupuestos firmados para el periodo seleccionado.
-LmdbCrmSignedQuotesLegendCompany = Empresa %s
-LmdbCrmSignedQuotesLegendMe = Yo %s
 
 # Ranking de comerciales
 PeriodRange = Periodo de observación
@@ -71,3 +65,11 @@ LmdbCrmSignedTurnoverPodiumUser = Comercial
 LmdbCrmSignedTurnoverPodiumAmountTitle = Facturación firmada
 LmdbCrmSignedTurnoverPodiumEmpty = No hay presupuestos firmados en los últimos
 LmdbCrmSignedTurnoverPodiumTooltip = Ranking de los 3 comerciales con mayor facturación firmada en los últimos 30 días móviles. Cálculo: sumamos, por comercial, el importe total (sin impuestos) de las propuestas pasadas a estado Aceptada/Firmada en el periodo (fecha de cierre/firma) y mostramos los 3 totales más altos.
+
+# Signed Quotes year curve widget
+LmdbCrmSignedQuotesCurveTitle = Presupuestos firmados (N/N-1 - empresa vs yo)
+LmdbCrmSignedQuotesCurveDescription = Curva de presupuestos firmados por mes en el periodo seleccionado.
+LmdbCrmSignedQuotesCurveTooltip = Número mensual de presupuestos firmados en el periodo seleccionado. Comparación empresa vs usuario actual, N vs N-1. El periodo mostrado se filtra por fechas.
+LmdbCrmSignedQuotesCurveNoData = No hay presupuestos firmados para el periodo seleccionado.
+LmdbCrmSignedQuotesLegendCompany = Empresa %s
+LmdbCrmSignedQuotesLegendMe = Yo %s
