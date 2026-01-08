@@ -65,6 +65,12 @@ class ActionsLmdbcrm
 			return 0;
 		}
 
+		// EN: Skip injection if module CSS is already declared globally.
+		// FR: Éviter l'injection si le CSS est déjà déclaré globalement.
+		if (!empty($conf->modules_parts['css']) && in_array('/lmdbcrm/css/lmdbcrm_graph.css', $conf->modules_parts['css'], true)) {
+			return 0;
+		}
+
 		static $isLoaded = false;
 
 		// EN: Avoid duplicate CSS injection.
@@ -75,5 +81,19 @@ class ActionsLmdbcrm
 		}
 
 		return 0;
+	}
+
+	/**
+	 * Add more CSS files into head (compatibility).
+	 *
+	 * @param array<string,mixed> $parameters Hook parameters
+	 * @param object $object Current object
+	 * @param string $action Current action
+	 * @param HookManager $hookmanager Hook manager
+	 * @return int
+	 */
+	public function addMoreHeadCss($parameters, &$object, &$action, $hookmanager)
+	{
+		return $this->addMoreCss($parameters, $object, $action, $hookmanager);
 	}
 }

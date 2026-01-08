@@ -100,9 +100,9 @@ class modLmdbCrm extends DolibarrModules
 			'models' => 0,
 			'printing' => 0,
 			'theme' => 0,
-			'css' => array(),
+			'css' => array('/lmdbcrm/css/lmdbcrm_graph.css'),
 			'js' => array(),
-			'hooks' => array('main'),
+			'hooks' => array('main', 'dashboard'),
 			'moduleforexternal' => 0,
 			'websitetemplates' => 0,
 			'captcha' => 0
