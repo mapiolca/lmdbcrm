@@ -235,7 +235,7 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 			$graph->SetDataColor(array('#2e78c2', '#a3a3a3', '#2da44e', '#d8a200'));
 			$graph->SetType(array('lines'));
 			$graph->setHeight('320');
-			$graph->setWidth('740');
+			$graph->setWidth('720');
 			$graph->setShowLegend(1);
 			$graph->setMinValue(0);
 
