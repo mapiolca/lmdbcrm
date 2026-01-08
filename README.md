@@ -8,6 +8,7 @@ Divers widgets et fonctionnalités CRM pour compléter votre Dolibarr préféré
 - Widget Taux de conversion de l'uilisateur vs la société.
 - Widget graphique des taux de conversion utilisateur / entreprise avec filtres de période.
 - Widget graphique du CA signé par mois (exercice en cours et deux exercices précédents).
+- Widget devis signés : filtre de période multi-années avec valeur par défaut sur l'année en cours.
 - Page de classement des commerciaux avec filtres multi-utilisateurs et recherche textuelle.
 - Affichage des photos utilisateurs et des volumes signés pour motiver les équipes.
 - Compatibilité Multicompany : le podium respecte le périmètre entité de l'utilisateur connecté.
@@ -73,6 +74,7 @@ Various CRM widgets and features to complement your favorite Dolibarr.
 - Conversion rate widget: User vs. company benchmark.
 - Conversion rate graph widget with period filters comparing user vs company.
 - Signed revenue line chart widget overlaying current and previous two fiscal years.
+- Signed quotes widget: multi-year period filter with defaults set to the current year.
 - Sales rep ranking page with multi-user filters and keyword search.
 - Displays user pictures and signed volumes to motivate teams.
 - Multicompany-compatible: the podium respects the entity scope of the logged-in user.
