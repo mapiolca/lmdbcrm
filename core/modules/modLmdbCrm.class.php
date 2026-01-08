@@ -102,7 +102,7 @@ class modLmdbCrm extends DolibarrModules
 			'theme' => 0,
 			'css' => array(),
 			'js' => array(),
-			'hooks' => array(),
+			'hooks' => array('main'),
 			'moduleforexternal' => 0,
 			'websitetemplates' => 0,
 			'captcha' => 0

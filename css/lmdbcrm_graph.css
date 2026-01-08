@@ -1,0 +1,13 @@
+@media (max-width: 768px) {
+	.dolgraphchart {
+		width: 100% !important;
+		max-width: 100% !important;
+		min-width: 0 !important;
+		overflow-x: hidden;
+	}
+	.dolgraphchart canvas {
+		width: 100% !important;
+		height: auto !important;
+		max-width: 100% !important;
+	}
+}
