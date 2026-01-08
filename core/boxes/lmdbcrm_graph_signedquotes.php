@@ -94,7 +94,6 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 		$yearN = (int) dol_print_date($now, '%Y');
 
 		$yearStart = dol_mktime(0, 0, 0, 1, 1, $yearN);
-		$yearEnd = dol_mktime(23, 59, 59, 12, 31, $yearN);
 		$todayEnd = dol_mktime(23, 59, 59, (int) dol_print_date($now, '%m'), (int) dol_print_date($now, '%d'), $yearN);
 
 		// Use prefixes ending with "_" so selectDate() generates <prefix>day/month/year as <prefix>day => lmdbcrm_sq_datestart_day
@@ -123,11 +122,6 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 			(int) dol_print_date($dateEndFilter, '%Y')
 		);
 
-		// RULE: If start date is 01/01 of current year, then end date must be 31/12 of same year
-		if ($this->isJanFirstOfYear($dateStartFilter, $yearN)) {
-			$dateEndFilter = $yearEnd;
-		}
-
 		// Swap if inverted
 		if ($dateStartFilter > $dateEndFilter) {
 			$tmp = $dateStartFilter;
@@ -135,9 +129,8 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 			$dateEndFilter = $tmp;
 		}
 
-		// Clamp to current year (X axis requirement)
-		$fromN = max($dateStartFilter, $yearStart);
-		$toN = min($dateEndFilter, $yearEnd);
+		$fromN = $dateStartFilter;
+		$toN = $dateEndFilter;
 
 		$this->info_box_head = array(
 			'text' => $langs->trans('LmdbCrmSignedQuotesCurveTitle'),
@@ -168,24 +161,6 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 		$contentHtml .= '</form>';
 		$contentHtml .= '</div>';
 
-		// If selected range is outside current year
-		if ($fromN > $toN) {
-			$contentHtml .= '<div class="center opacitymedium">'.$langs->trans('LmdbCrmSignedQuotesCurveNoData').'</div>';
-
-			$this->info_box_contents = array();
-			$this->info_box_contents[] = array(
-				0 => array(
-					'td' => 'class="center"',
-					'asis' => 1,
-					'align' => 'center',
-					'css' => 'nohover center',
-					'url' => '',
-					'text' => $contentHtml,
-				),
-			);
-			return;
-		}
-
 		// Same period shifted by -1 year for N-1
 		$fromN1 = dol_time_plus_duree($fromN, -1, 'y');
 		$toN1 = dol_time_plus_duree($toN, -1, 'y');
@@ -203,7 +178,7 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 
 		foreach ($months as $monthInfo) {
 			$keyN = $monthInfo['key']; // YYYY-MM (year N)
-			$keyN1 = sprintf('%04d-%02d', $yearN - 1, (int) $monthInfo['month']); // same month, year N-1
+			$keyN1 = sprintf('%04d-%02d', (int) $monthInfo['year'] - 1, (int) $monthInfo['month']); // same month, year N-1
 
 			$vCompanyN = isset($companyN[$keyN]) ? (int) $companyN[$keyN] : 0;
 			$vCompanyN1 = isset($companyN1[$keyN1]) ? (int) $companyN1[$keyN1] : 0;
@@ -247,11 +222,14 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 			$graph = new DolGraph();
 			$graph->SetData($graphData);
 
+			$rangeLabelCurrent = $this->buildYearRangeLabel($fromN, $toN);
+			$rangeLabelPrev = $this->buildYearRangeLabel($fromN1, $toN1);
+
 			$graph->SetLegend(array(
-				$langs->trans('LmdbCrmSignedQuotesLegendCompany', $yearN),
-				$langs->trans('LmdbCrmSignedQuotesLegendCompany', $yearN - 1),
-				$langs->trans('LmdbCrmSignedQuotesLegendMe', $yearN),
-				$langs->trans('LmdbCrmSignedQuotesLegendMe', $yearN - 1),
+				$langs->trans('LmdbCrmSignedQuotesLegendCompany', $rangeLabelCurrent),
+				$langs->trans('LmdbCrmSignedQuotesLegendCompany', $rangeLabelPrev),
+				$langs->trans('LmdbCrmSignedQuotesLegendMe', $rangeLabelCurrent),
+				$langs->trans('LmdbCrmSignedQuotesLegendMe', $rangeLabelPrev),
 			));
 
 			$graph->SetDataColor(array('#2e78c2', '#a3a3a3', '#2da44e', '#d8a200'));
@@ -313,21 +291,8 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 	}
 
 	/**
-	 * Check if timestamp is 01/01 of given year.
-	 *
-	 * @param int $ts
-	 * @param int $year
-	 * @return bool
-	 */
-	protected function isJanFirstOfYear($ts, $year)
-	{
-		return ((int) dol_print_date($ts, '%Y') === (int) $year
-			&& (int) dol_print_date($ts, '%m') === 1
-			&& (int) dol_print_date($ts, '%d') === 1);
-	}
-
-	/**
-	 * Build month keys and labels for a range inside the current year.
+	 * EN: Build month keys and labels for any date range (inclusive).
+	 * FR: Construire les clés et libellés mensuels pour une période quelconque (inclusive).
 	 *
 	 * @param int $fromDate
 	 * @param int $toDate
@@ -337,17 +302,21 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 	{
 		$months = array();
 
-		$y = (int) dol_print_date($fromDate, '%Y');
-		$mStart = (int) dol_print_date($fromDate, '%m');
-		$mEnd = (int) dol_print_date($toDate, '%m');
+		$includeYear = ((int) dol_print_date($fromDate, '%Y') !== (int) dol_print_date($toDate, '%Y'));
+		$ts = dol_mktime(12, 0, 0, (int) dol_print_date($fromDate, '%m'), 1, (int) dol_print_date($fromDate, '%Y'));
+		$tsEnd = dol_mktime(12, 0, 0, (int) dol_print_date($toDate, '%m'), 1, (int) dol_print_date($toDate, '%Y'));
 
-		for ($m = $mStart; $m <= $mEnd; $m++) {
-			$ts = dol_mktime(12, 0, 0, $m, 1, $y);
+		while ($ts <= $tsEnd) {
+			$year = (int) dol_print_date($ts, '%Y');
+			$month = (int) dol_print_date($ts, '%m');
+
 			$months[] = array(
 				'key' => dol_print_date($ts, '%Y-%m'),
-				'label' => dol_print_date($ts, '%b'),
-				'month' => $m,
+				'label' => dol_print_date($ts, $includeYear ? '%b %Y' : '%b'),
+				'month' => $month,
+				'year' => $year,
 			);
+			$ts = dol_time_plus_duree($ts, 1, 'm');
 		}
 
 		return $months;
@@ -413,5 +382,25 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 		}
 
 		return $data;
+	}
+
+	/**
+	 * EN: Build a year or year range label for legends.
+	 * FR: Construire un libellé d'année ou de plage d'années pour les légendes.
+	 *
+	 * @param int $fromDate
+	 * @param int $toDate
+	 * @return string
+	 */
+	protected function buildYearRangeLabel($fromDate, $toDate)
+	{
+		$fromYear = (int) dol_print_date($fromDate, '%Y');
+		$toYear = (int) dol_print_date($toDate, '%Y');
+
+		if ($fromYear === $toYear) {
+			return (string) $fromYear;
+		}
+
+		return $fromYear.'-'.$toYear;
 	}
 }
