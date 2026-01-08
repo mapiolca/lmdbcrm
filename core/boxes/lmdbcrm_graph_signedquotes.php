@@ -20,12 +20,13 @@
 /**
  * \file    lmdbcrm/core/boxes/lmdbcrm_graph_signedquotes.php
  * \ingroup lmdbcrm
- * \brief   Line graph widget for signed quotes count by month on current year (Company vs Me, N vs N-1).
+ * \brief   Line graph widget for signed quotes count by month on current year (Company vs Me, N vs N-1), with date filters.
  */
 
 require_once DOL_DOCUMENT_ROOT.'/core/boxes/modules_boxes.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/dolgraph.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.form.class.php';
+require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/comm/propal/class/propal.class.php';
 
 /**
@@ -94,16 +95,53 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 
 		$yearStart = dol_mktime(0, 0, 0, 1, 1, $yearN);
 		$yearEnd = dol_mktime(23, 59, 59, 12, 31, $yearN);
+		$todayEnd = dol_mktime(23, 59, 59, (int) dol_print_date($now, '%m'), (int) dol_print_date($now, '%d'), $yearN);
 
-		// Filters (datepickers) - default: Jan 1st to today (clamped in current year)
-		$dateStartFilter = GETPOSTDATE('lmdbcrm_sq_datestart');
-		$dateEndFilter = GETPOSTDATE('lmdbcrm_sq_dateend');
+		// Prefixes for date selectors
+		$prefixStart = 'lmdbcrm_sq_datestart';
+		$prefixEnd = 'lmdbcrm_sq_dateend';
 
+		// Detect if end date has been provided explicitly (avoid overriding user choice)
+		$endProvided = $this->isDateProvidedInRequest($prefixEnd);
+
+		// Read filters (support both naming styles produced by selectDate)
+		$dateStartFilter = $this->getDateFromRequest($prefixStart, 0);
+		$dateEndFilter = $this->getDateFromRequest($prefixEnd, 0);
+
+		// Defaults
 		if (empty($dateStartFilter)) $dateStartFilter = $yearStart;
-		if (empty($dateEndFilter)) $dateEndFilter = $now;
+
+		// Rule requested:
+		// If start is 01/01 of current year, and end is not explicitly provided, then end must be 31/12 of same year.
+		if (empty($dateEndFilter)) {
+			$isStartJan1 = ((int) dol_print_date($dateStartFilter, '%Y') === $yearN
+				&& (int) dol_print_date($dateStartFilter, '%m') === 1
+				&& (int) dol_print_date($dateStartFilter, '%d') === 1);
+
+			if ($isStartJan1 && !$endProvided) {
+				$dateEndFilter = $yearEnd;
+			} else {
+				$dateEndFilter = $todayEnd;
+			}
+		}
+
+		// Normalize to be inclusive (start at 00:00:00, end at 23:59:59)
+		$dateStartFilter = dol_mktime(
+			0, 0, 0,
+			(int) dol_print_date($dateStartFilter, '%m'),
+			(int) dol_print_date($dateStartFilter, '%d'),
+			(int) dol_print_date($dateStartFilter, '%Y')
+		);
+
+		$dateEndFilter = dol_mktime(
+			23, 59, 59,
+			(int) dol_print_date($dateEndFilter, '%m'),
+			(int) dol_print_date($dateEndFilter, '%d'),
+			(int) dol_print_date($dateEndFilter, '%Y')
+		);
 
 		// Swap if inverted
-		if (!empty($dateStartFilter) && !empty($dateEndFilter) && $dateStartFilter > $dateEndFilter) {
+		if ($dateStartFilter > $dateEndFilter) {
 			$tmp = $dateStartFilter;
 			$dateStartFilter = $dateEndFilter;
 			$dateEndFilter = $tmp;
@@ -112,8 +150,6 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 		// Clamp filter to current year (X axis requirement: current year)
 		$fromN = max($dateStartFilter, $yearStart);
 		$toN = min($dateEndFilter, $yearEnd);
-
-		$contentHtml = '';
 
 		// Header tooltip (same style as your signed turnover box)
 		$this->info_box_head = array(
@@ -124,46 +160,26 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 			'subclass' => 'classfortooltip',
 		);
 
-		// ---- Filters (same prefix for selectDate + GETPOSTDATE) ----
-		$prefixStart = 'lmdbcrm_sq_datestart_';
-		$prefixEnd = 'lmdbcrm_sq_dateend_';
-		
-		$dateStartFilter = GETPOSTDATE($prefixStart);	// Reads ${prefix}day/month/year
-		$dateEndFilter = GETPOSTDATE($prefixEnd);
-		
-		// Defaults
-		if (empty($dateStartFilter)) $dateStartFilter = $yearStart;
-		if (empty($dateEndFilter)) $dateEndFilter = $today;
-		
-		// Normalize to be inclusive
-		$sy = (int) dol_print_date($dateStartFilter, '%Y');
-		$sm = (int) dol_print_date($dateStartFilter, '%m');
-		$sd = (int) dol_print_date($dateStartFilter, '%d');
-		$dateStartFilter = dol_mktime(0, 0, 0, $sm, $sd, $sy);
-		
-		$ey = (int) dol_print_date($dateEndFilter, '%Y');
-		$em = (int) dol_print_date($dateEndFilter, '%m');
-		$ed = (int) dol_print_date($dateEndFilter, '%d');
-		$dateEndFilter = dol_mktime(23, 59, 59, $em, $ed, $ey);
-		
-		if ($dateEndFilter < $dateStartFilter) $dateEndFilter = $dateStartFilter;
-		
-		// ---- In your filter form ----
-		$contentHtml .= '<form method="GET" action="'.dol_escape_htmltag($_SERVER['PHP_SELF']).'">';
+		$contentHtml = '';
+
+		// Filter form
+		$form = new Form($this->db);
+		$contentHtml .= '<div class="center" style="margin-bottom: 6px;">';
+		$contentHtml .= '<form method="GET" action="'.dol_escape_htmltag($_SERVER['PHP_SELF']).'" class="inline-block">';
 		$contentHtml .= '<input type="hidden" name="mainmenu" value="'.dol_escape_htmltag(GETPOST('mainmenu', 'aZ09')).'">';
 		$contentHtml .= '<input type="hidden" name="leftmenu" value="'.dol_escape_htmltag(GETPOST('leftmenu', 'aZ09')).'">';
-		
-		$contentHtml .= '<span class="nowraponall">';
-		$contentHtml .= $form->selectDate($dateStartFilter, $prefixStart, 0, 0, 1, '', 1, 0, 0);
-		$contentHtml .= '</span> ';
-		
-		$contentHtml .= '<span class="nowraponall">';
-		$contentHtml .= $form->selectDate($dateEndFilter, $prefixEnd, 0, 0, 1, '', 1, 0, 0);
-		$contentHtml .= '</span> ';
-		
-		$contentHtml .= '<button class="button smallpaddingimp" type="submit">'.$langs->trans("Filter").'</button>';
-		$contentHtml .= '</form>';
 
+		$contentHtml .= '<span class="nowrapfordate">';
+		$contentHtml .= $form->selectDate($fromN, $prefixStart, 0, 0, 1, '', 1, 0, 0, '', '', '', '', 1, '', $langs->trans('From'));
+		$contentHtml .= '</span> ';
+
+		$contentHtml .= '<span class="nowrapfordate">';
+		$contentHtml .= $form->selectDate($toN, $prefixEnd, 0, 0, 1, '', 1, 0, 0, '', '', '', '', 1, '', $langs->trans('to'));
+		$contentHtml .= '</span> ';
+
+		$contentHtml .= '<input class="button smallpaddingimp" type="submit" value="'.$langs->trans('Refresh').'">';
+		$contentHtml .= '</form>';
+		$contentHtml .= '</div>';
 
 		// If selected range is outside current year
 		if ($fromN > $toN) {
@@ -193,7 +209,7 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 		$meN = $this->fetchSignedQuotesCountByMonth($fromN, $toN, (int) $user->id);
 		$meN1 = $this->fetchSignedQuotesCountByMonth($fromN1, $toN1, (int) $user->id);
 
-		$months = $this->buildMonthSequenceByRange($fromN, $toN); // months in current year, within selected range
+		$months = $this->buildMonthSequenceByRange($fromN, $toN);
 
 		$graphData = array();
 		$totalCount = 0;
@@ -222,8 +238,11 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 			var_dump(array(
 				'debug_scope' => 'lmdbcrm_graph_signedquotes::loadBox',
 				'yearN' => $yearN,
-				'filter_start' => $dateStartFilter,
-				'filter_end' => $dateEndFilter,
+				'prefixStart' => $prefixStart,
+				'prefixEnd' => $prefixEnd,
+				'endProvided' => $endProvided,
+				'dateStartFilter_raw_normalized' => $dateStartFilter,
+				'dateEndFilter_raw_normalized' => $dateEndFilter,
 				'fromN' => $fromN,
 				'toN' => $toN,
 				'fromN1' => $fromN1,
@@ -253,9 +272,7 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 
 			$graph->SetLegend($legend);
 
-			// Colors: keep readable and distinct
 			$graph->SetDataColor(array('#2e78c2', '#a3a3a3', '#2da44e', '#d8a200'));
-
 			$graph->SetType(array('lines'));
 			$graph->setHeight('320');
 			$graph->setWidth('740');
@@ -295,6 +312,63 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 	}
 
 	/**
+	 * Check if a date selector has been provided in request (GET/POST),
+	 * supporting both naming styles: prefixday/prefixmonth/prefixyear and prefix_day/prefix_month/prefix_year.
+	 *
+	 * @param string $prefix Prefix used in selectDate()
+	 * @return bool
+	 */
+	protected function isDateProvidedInRequest($prefix)
+	{
+		$names = array(
+			$prefix.'day', $prefix.'month', $prefix.'year',
+			$prefix.'_day', $prefix.'_month', $prefix.'_year',
+		);
+
+		foreach ($names as $n) {
+			$v = GETPOST($n, 'alphanohtml');
+			if ($v !== '' && $v !== null) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get date from request for a selectDate() prefix.
+	 * Supports both naming styles: prefixday/prefixmonth/prefixyear and prefix_day/prefix_month/prefix_year.
+	 *
+	 * @param string $prefix Prefix used in selectDate()
+	 * @param int $default Default timestamp if not provided
+	 * @return int Timestamp
+	 */
+	protected function getDateFromRequest($prefix, $default = 0)
+	{
+		$day = GETPOSTINT($prefix.'day');
+		$month = GETPOSTINT($prefix.'month');
+		$year = GETPOSTINT($prefix.'year');
+
+		if (empty($day) && empty($month) && empty($year)) {
+			$day = GETPOSTINT($prefix.'_day');
+			$month = GETPOSTINT($prefix.'_month');
+			$year = GETPOSTINT($prefix.'_year');
+		}
+
+		if (!empty($year) && !empty($month) && !empty($day)) {
+			return dol_mktime(0, 0, 0, $month, $day, $year);
+		}
+
+		// Fallback if something else populated (rare)
+		$ts = GETPOSTDATE($prefix);
+		if (!empty($ts)) {
+			return $ts;
+		}
+
+		return (int) $default;
+	}
+
+	/**
 	 * Build month keys and labels for a range inside the current year.
 	 *
 	 * @param int $fromDate Timestamp
@@ -326,8 +400,7 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 	 *
 	 * Uses p.date_signature and signed/billed statuses (same base as signed turnover).
 	 *
-	 * User filter:
-	 * - By default this filters on p.fk_user_author (creator). If you want "commercial", change here.
+	 * User scope = author (creator) of the proposal: p.fk_user_author
 	 *
 	 * @param int $fromDate Timestamp start date
 	 * @param int $toDate Timestamp end date
@@ -382,6 +455,5 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 			));
 		}
 
-		return $data;
-	}
-}
+		return 
+::contentReference[oaicite:0]{index=0}
