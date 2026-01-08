@@ -266,7 +266,7 @@ class lmdbcrm_graph_signedturnover extends ModeleBoxes
 		for ($i = 0; $i < 12; $i++) {
 			$current = dol_time_plus_duree($startDate, $i, 'm');
 			$key = dol_print_date($current, '%Y-%m');
-			$label = dol_print_date($current, '%b %y');
+			$label = dol_print_date($current, '%b');
 			$months[] = array(
 				'key' => $key,
 				'label' => $label,
