@@ -94,7 +94,7 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 		$yearN = (int) dol_print_date($now, '%Y');
 
 		$yearStart = dol_mktime(0, 0, 0, 1, 1, $yearN);
-		$todayEnd = dol_mktime(23, 59, 59, (int) dol_print_date($now, '%m'), (int) dol_print_date($now, '%d'), $yearN);
+		$yearEnd = dol_mktime(23, 59, 59, 12, 31, $yearN);
 
 		// Use prefixes ending with "_" so selectDate() generates <prefix>day/month/year as <prefix>day => lmdbcrm_sq_datestart_day
 		$prefixStart = 'lmdbcrm_sq_datestart_';
@@ -105,7 +105,7 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 
 		// Defaults
 		if (empty($dateStartFilter)) $dateStartFilter = $yearStart;
-		if (empty($dateEndFilter)) $dateEndFilter = $todayEnd;
+		if (empty($dateEndFilter)) $dateEndFilter = $yearEnd;
 
 		// Normalize to inclusive day range
 		$dateStartFilter = dol_mktime(
