@@ -3,6 +3,11 @@
 ## 1.3 - 08/01/2026
 - Ajout du widget `lmdbcrm_graph_signedquotes.php` affichant l'évolution des devis signés avec filtre de période. / Added the `lmdbcrm_graph_signedquotes.php` widget showing signed quotes evolution with a period filter.
 
+## 1.2.1 - 08/01/2026
+- Ajustement des légendes du graphique du CA signé pour afficher les années N, N-1 et N-2 sur l'année de fin d'exercice. / Adjusted signed turnover graph legends to show years N, N-1, and N-2 based on fiscal year end.
+- Utilisation explicite de la date de signature pour l'agrégation du CA signé (sans date de validation). / Explicitly use the signature date for signed turnover aggregation (no validation date).
+- Affichage des abscisses avec le mois uniquement (sans année). / Display x-axis labels with month only (no year).
+
 ## 1.2.0 - 26/12/2025
 - Nouveau widget graphique `lmdbcrm_graph_signedturnover.php` affichant le CA signé par mois et superposant l'exercice en cours et les deux exercices précédents, avec sorties de debug optionnelles. / New graph widget `lmdbcrm_graph_signedturnover.php` showing signed revenue per month overlaying current and previous two fiscal years, with optional debug outputs.
 
