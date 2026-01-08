@@ -1,4 +1,11 @@
+.lmdbcrm-graph-cell {
+	min-width: 340px;
+}
 @media (max-width: 768px) {
+	.lmdbcrm-graph-cell {
+		min-width: 0 !important;
+		width: 100%;
+	}
 	.dolgraphchart {
 		width: 100% !important;
 		max-width: 100% !important;

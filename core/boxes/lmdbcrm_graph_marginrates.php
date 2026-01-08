@@ -134,8 +134,8 @@ class lmdbcrm_graph_marginrates extends ModeleBoxes
 		$companyGraph = $this->renderMarginGraph($companyData, 'company', $langs->trans('LmdbCrmMarginCompanyLabel'));
 
 		$graphsHtml = '<div class="center">'.$filterform.'<div class="flexcontainer wrap center">';
-		$graphsHtml .= '<div class="center" style="min-width:340px;">'.$userGraph.'</div>';
-		$graphsHtml .= '<div class="center" style="min-width:340px;">'.$companyGraph.'</div>';
+		$graphsHtml .= '<div class="center lmdbcrm-graph-cell">'.$userGraph.'</div>';
+		$graphsHtml .= '<div class="center lmdbcrm-graph-cell">'.$companyGraph.'</div>';
 		$graphsHtml .= '</div></div>';
 
 		$this->info_box_contents = array();
@@ -234,8 +234,12 @@ class lmdbcrm_graph_marginrates extends ModeleBoxes
 		}
 
 		$graph->SetType(array('pie'));
-		$graph->setHeight('280');
-		$graph->setWidth('340');
+		// EN: Reduce chart size on small screens (render size) while keeping responsive CSS.
+		// FR: Réduire la taille du graphique sur petits écrans (taille de rendu) tout en gardant le CSS responsive.
+		$graphWidth = !empty($conf->dol_optimize_smallscreen) ? 300 : 340;
+		$graphHeight = !empty($conf->dol_optimize_smallscreen) ? 240 : 280;
+		$graph->setHeight((string) $graphHeight);
+		$graph->setWidth((string) $graphWidth);
 
 		$graphid = 'lmdbcrmmarg_'.$suffix.'_e'.((int) $conf->entity);
 		$graph->draw($graphid);

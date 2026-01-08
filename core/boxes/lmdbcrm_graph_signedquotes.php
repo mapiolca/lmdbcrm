@@ -234,8 +234,12 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 
 			$graph->SetDataColor(array('#2e78c2', '#a3a3a3', '#2da44e', '#d8a200'));
 			$graph->SetType(array('lines'));
-			$graph->setHeight('320');
-			$graph->setWidth('720');
+			// EN: Reduce chart size on small screens (render size) while keeping responsive CSS.
+			// FR: Réduire la taille du graphique sur petits écrans (taille de rendu) tout en gardant le CSS responsive.
+			$graphWidth = !empty($conf->dol_optimize_smallscreen) ? 360 : 720;
+			$graphHeight = !empty($conf->dol_optimize_smallscreen) ? 240 : 320;
+			$graph->setHeight((string) $graphHeight);
+			$graph->setWidth((string) $graphWidth);
 			$graph->setShowLegend(1);
 			$graph->setMinValue(0);
 
