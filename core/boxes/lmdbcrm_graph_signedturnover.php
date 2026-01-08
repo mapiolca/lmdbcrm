@@ -153,9 +153,9 @@ class lmdbcrm_graph_signedturnover extends ModeleBoxes
 		} else {
 			$graph = new DolGraph();
 			$graph->SetData($graphData);
-			$legendCurrent = dol_print_date($rangeCurrent['start'], '%Y');
-			$legendPrev1 = dol_print_date($rangePrev1['start'], '%Y');
-			$legendPrev2 = dol_print_date($rangePrev2['start'], '%Y');
+			$legendCurrent = dol_print_date($rangeCurrent['end'], '%Y');
+			$legendPrev1 = dol_print_date($rangePrev1['end'], '%Y');
+			$legendPrev2 = dol_print_date($rangePrev2['end'], '%Y');
 			$graph->SetLegend(array($legendCurrent, $legendPrev1, $legendPrev2));
 			$graph->SetDataColor(array('#2e78c2', '#a3a3a3', '#d8a200'));
 			$graph->SetType(array('lines'));
