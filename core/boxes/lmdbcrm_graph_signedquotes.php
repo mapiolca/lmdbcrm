@@ -77,7 +77,7 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 	}
 
 	/**
-	 * Load data into info_box_contents array to show array later. Called by Dolibarr before displaying the box.
+	 * Load data into info_box_contents array. Called by Dolibarr before displaying the box.
 	 *
 	 * @param int<0,max> $max Maximum number of records to load
 	 * @return void
@@ -97,35 +97,18 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 		$yearEnd = dol_mktime(23, 59, 59, 12, 31, $yearN);
 		$todayEnd = dol_mktime(23, 59, 59, (int) dol_print_date($now, '%m'), (int) dol_print_date($now, '%d'), $yearN);
 
-		// Prefixes for date selectors
-		$prefixStart = 'lmdbcrm_sq_datestart';
-		$prefixEnd = 'lmdbcrm_sq_dateend';
+		// Use prefixes ending with "_" so selectDate() generates <prefix>day/month/year as <prefix>day => lmdbcrm_sq_datestart_day
+		$prefixStart = 'lmdbcrm_sq_datestart_';
+		$prefixEnd = 'lmdbcrm_sq_dateend_';
 
-		// Detect if end date has been provided explicitly (avoid overriding user choice)
-		$endProvided = $this->isDateProvidedInRequest($prefixEnd);
-
-		// Read filters (support both naming styles produced by selectDate)
-		$dateStartFilter = $this->getDateFromRequest($prefixStart, 0);
-		$dateEndFilter = $this->getDateFromRequest($prefixEnd, 0);
+		$dateStartFilter = $this->getDateFromSelector($prefixStart);
+		$dateEndFilter = $this->getDateFromSelector($prefixEnd);
 
 		// Defaults
 		if (empty($dateStartFilter)) $dateStartFilter = $yearStart;
+		if (empty($dateEndFilter)) $dateEndFilter = $todayEnd;
 
-		// Rule requested:
-		// If start is 01/01 of current year, and end is not explicitly provided, then end must be 31/12 of same year.
-		if (empty($dateEndFilter)) {
-			$isStartJan1 = ((int) dol_print_date($dateStartFilter, '%Y') === $yearN
-				&& (int) dol_print_date($dateStartFilter, '%m') === 1
-				&& (int) dol_print_date($dateStartFilter, '%d') === 1);
-
-			if ($isStartJan1 && !$endProvided) {
-				$dateEndFilter = $yearEnd;
-			} else {
-				$dateEndFilter = $todayEnd;
-			}
-		}
-
-		// Normalize to be inclusive (start at 00:00:00, end at 23:59:59)
+		// Normalize to inclusive day range
 		$dateStartFilter = dol_mktime(
 			0, 0, 0,
 			(int) dol_print_date($dateStartFilter, '%m'),
@@ -140,6 +123,11 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 			(int) dol_print_date($dateEndFilter, '%Y')
 		);
 
+		// RULE: If start date is 01/01 of current year, then end date must be 31/12 of same year
+		if ($this->isJanFirstOfYear($dateStartFilter, $yearN)) {
+			$dateEndFilter = $yearEnd;
+		}
+
 		// Swap if inverted
 		if ($dateStartFilter > $dateEndFilter) {
 			$tmp = $dateStartFilter;
@@ -147,11 +135,10 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 			$dateEndFilter = $tmp;
 		}
 
-		// Clamp filter to current year (X axis requirement: current year)
+		// Clamp to current year (X axis requirement)
 		$fromN = max($dateStartFilter, $yearStart);
 		$toN = min($dateEndFilter, $yearEnd);
 
-		// Header tooltip (same style as your signed turnover box)
 		$this->info_box_head = array(
 			'text' => $langs->trans('LmdbCrmSignedQuotesCurveTitle'),
 			'limit' => 0,
@@ -238,11 +225,8 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 			var_dump(array(
 				'debug_scope' => 'lmdbcrm_graph_signedquotes::loadBox',
 				'yearN' => $yearN,
-				'prefixStart' => $prefixStart,
-				'prefixEnd' => $prefixEnd,
-				'endProvided' => $endProvided,
-				'dateStartFilter_raw_normalized' => $dateStartFilter,
-				'dateEndFilter_raw_normalized' => $dateEndFilter,
+				'dateStartFilter' => $dateStartFilter,
+				'dateEndFilter' => $dateEndFilter,
 				'fromN' => $fromN,
 				'toN' => $toN,
 				'fromN1' => $fromN1,
@@ -263,14 +247,12 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 			$graph = new DolGraph();
 			$graph->SetData($graphData);
 
-			$legend = array(
+			$graph->SetLegend(array(
 				$langs->trans('LmdbCrmSignedQuotesLegendCompany', $yearN),
 				$langs->trans('LmdbCrmSignedQuotesLegendCompany', $yearN - 1),
 				$langs->trans('LmdbCrmSignedQuotesLegendMe', $yearN),
 				$langs->trans('LmdbCrmSignedQuotesLegendMe', $yearN - 1),
-			);
-
-			$graph->SetLegend($legend);
+			));
 
 			$graph->SetDataColor(array('#2e78c2', '#a3a3a3', '#2da44e', '#d8a200'));
 			$graph->SetType(array('lines'));
@@ -299,7 +281,7 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 	}
 
 	/**
-	 * Method to show box. Called when the box needs to be displayed.
+	 * Method to show box.
 	 *
 	 * @param ?array $head Box header
 	 * @param ?array $contents Box contents
@@ -312,68 +294,44 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 	}
 
 	/**
-	 * Check if a date selector has been provided in request (GET/POST),
-	 * supporting both naming styles: prefixday/prefixmonth/prefixyear and prefix_day/prefix_month/prefix_year.
+	 * Read a date from a selectDate() selector prefix (expects <prefix>day/month/year).
 	 *
-	 * @param string $prefix Prefix used in selectDate()
-	 * @return bool
+	 * @param string $prefix
+	 * @return int Timestamp or 0 if not provided
 	 */
-	protected function isDateProvidedInRequest($prefix)
-	{
-		$names = array(
-			$prefix.'day', $prefix.'month', $prefix.'year',
-			$prefix.'_day', $prefix.'_month', $prefix.'_year',
-		);
-
-		foreach ($names as $n) {
-			$v = GETPOST($n, 'alphanohtml');
-			if ($v !== '' && $v !== null) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	/**
-	 * Get date from request for a selectDate() prefix.
-	 * Supports both naming styles: prefixday/prefixmonth/prefixyear and prefix_day/prefix_month/prefix_year.
-	 *
-	 * @param string $prefix Prefix used in selectDate()
-	 * @param int $default Default timestamp if not provided
-	 * @return int Timestamp
-	 */
-	protected function getDateFromRequest($prefix, $default = 0)
+	protected function getDateFromSelector($prefix)
 	{
 		$day = GETPOSTINT($prefix.'day');
 		$month = GETPOSTINT($prefix.'month');
 		$year = GETPOSTINT($prefix.'year');
 
-		if (empty($day) && empty($month) && empty($year)) {
-			$day = GETPOSTINT($prefix.'_day');
-			$month = GETPOSTINT($prefix.'_month');
-			$year = GETPOSTINT($prefix.'_year');
-		}
-
 		if (!empty($year) && !empty($month) && !empty($day)) {
 			return dol_mktime(0, 0, 0, $month, $day, $year);
 		}
 
-		// Fallback if something else populated (rare)
-		$ts = GETPOSTDATE($prefix);
-		if (!empty($ts)) {
-			return $ts;
-		}
+		return 0;
+	}
 
-		return (int) $default;
+	/**
+	 * Check if timestamp is 01/01 of given year.
+	 *
+	 * @param int $ts
+	 * @param int $year
+	 * @return bool
+	 */
+	protected function isJanFirstOfYear($ts, $year)
+	{
+		return ((int) dol_print_date($ts, '%Y') === (int) $year
+			&& (int) dol_print_date($ts, '%m') === 1
+			&& (int) dol_print_date($ts, '%d') === 1);
 	}
 
 	/**
 	 * Build month keys and labels for a range inside the current year.
 	 *
-	 * @param int $fromDate Timestamp
-	 * @param int $toDate Timestamp
-	 * @return array<int,array{key:string,label:string,month:int}>
+	 * @param int $fromDate
+	 * @param int $toDate
+	 * @return array
 	 */
 	protected function buildMonthSequenceByRange($fromDate, $toDate)
 	{
@@ -399,13 +357,12 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 	 * Fetch signed quotes count grouped by month.
 	 *
 	 * Uses p.date_signature and signed/billed statuses (same base as signed turnover).
-	 *
 	 * User scope = author (creator) of the proposal: p.fk_user_author
 	 *
-	 * @param int $fromDate Timestamp start date
-	 * @param int $toDate Timestamp end date
+	 * @param int $fromDate
+	 * @param int $toDate
 	 * @param int $userId 0 = all company, else filter
-	 * @return array<string,int>
+	 * @return array
 	 */
 	protected function fetchSignedQuotesCountByMonth($fromDate, $toDate, $userId = 0)
 	{
@@ -455,5 +412,6 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 			));
 		}
 
-		return 
-::contentReference[oaicite:0]{index=0}
+		return $data;
+	}
+}
