@@ -1,5 +1,8 @@
 # Journal des modifications / ChangeLog - LMDBCRM
 
+## 1.2.1 - 08/01/2026
+- Ajustement des légendes du graphique du CA signé pour afficher les années N, N-1 et N-2 sur l'année de fin d'exercice. / Adjusted signed turnover graph legends to show years N, N-1, and N-2 based on fiscal year end.
+
 ## 1.2.0 - 26/12/2025
 - Nouveau widget graphique `lmdbcrm_graph_signedturnover.php` affichant le CA signé par mois et superposant l'exercice en cours et les deux exercices précédents, avec sorties de debug optionnelles. / New graph widget `lmdbcrm_graph_signedturnover.php` showing signed revenue per month overlaying current and previous two fiscal years, with optional debug outputs.
 
@@ -13,5 +16,4 @@
 - Widget podium des 3 meilleurs commerciaux basé sur le Chiffre d'affaire signé des 30 derniers jours. / Podium widget: Top 3 sales reps based on signed revenue (turnover) over the last 30 days.
 - Widget Taux de conversion de l'uilisateur vs la société. / Conversion rate widget: User vs. company benchmark.
 - Support Multicompany et traductions en_US, fr_FR, de_DE, it_IT, es_ES. / Multicompany support and translations en_US, fr_FR, de_DE, it_IT, es_ES.
-
 
