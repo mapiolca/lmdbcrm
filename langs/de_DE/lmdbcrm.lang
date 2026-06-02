@@ -12,6 +12,13 @@ ModuleLmdbCrmDesc = Verschiedene CRM-Widgets und Funktionen als Ergänzung zu Ih
 LmdbCrmSetup = LmdbCrm-Einstellungen
 LmdbCrmNoSetupNeeded = Für dieses Modul sind keine zusätzlichen Einstellungen erforderlich.
 
+# Widget gelieferte, nicht fakturierte Kundenaufträge
+LmdbCrmDeliveredUnbilledOrdersBoxLabel = Gelieferte, nicht fakturierte Kundenaufträge
+LmdbCrmDeliveredUnbilledOrdersTitle = Die letzten %s gelieferten, nicht fakturierten Kundenaufträge
+LmdbCrmDeliveredUnbilledOrdersDescription = Liste der letzten Kundenaufträge, die als geliefert und nicht fakturiert klassifiziert sind.
+LmdbCrmDeliveredUnbilledOrdersEmpty = Kein gelieferter, nicht fakturierter Kundenauftrag
+LmdbCrmDeliveredUnbilledOrdersTooltip = Zeigt die letzten Kundenaufträge mit Status Geliefert und Fakturiert auf Nein. Das Badge zeigt die Gesamtzahl und öffnet die vorgefilterte Auftragsliste.
+
 # Widget Podium unterschriebene Angebote
 LmdbCrmSignedQuotesPodiumTitle = Top 3 Vertrieb (unterschriebene Angebote – rollierende 30 Tage)
 LmdbCrmSignedQuotesPodiumDescription = Podium der Vertriebsmitarbeitenden nach Anzahl unterschriebener Angebote in den letzten 30 rollierenden Tagen.

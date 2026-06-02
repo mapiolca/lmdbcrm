@@ -76,7 +76,7 @@ class modLmdbCrm extends DolibarrModules
 		$this->editor_squarred_logo = '';					// Must be image filename into the module/img directory followed with @modulename. Example: 'myimage.png@lmdbcrm'
 
 		// Possible values for version are: 'development', 'experimental', 'dolibarr', 'dolibarr_deprecated', 'experimental_deprecated' or a version string like 'x.y.z'
-		$this->version = '1.3';
+		$this->version = '1.4';
 		// Url to the file with your last numberversion of this module
 		//$this->url_last_version = 'http://www.example.com/versionmodule.txt';
 
@@ -128,9 +128,9 @@ class modLmdbCrm extends DolibarrModules
 		$this->langfiles = array("lmdbcrm@lmdbcrm");
 
 		// Prerequisites
-		$this->phpmin = array(7, 2); // Minimum version of PHP required by module
+		$this->phpmin = array(8, 0); // Minimum version of PHP required by module
 		// $this->phpmax = array(8, 0); // Maximum version of PHP required by module
-		$this->need_dolibarr_version = array(19, -3); // Minimum version of Dolibarr required by module
+		$this->need_dolibarr_version = array(20, 0); // Minimum version of Dolibarr required by module
 		// $this->max_dolibarr_version = array(19, -3); // Maximum version of Dolibarr required by module
 		$this->need_javascript_ajax = 0;
 
@@ -254,6 +254,11 @@ class modLmdbCrm extends DolibarrModules
 			5 => array(
 				'file' => 'lmdbcrm_graph_signedquotes.php@lmdbcrm',
 				'note' => 'LmdbCrmSignedQuotesCurveDescription',
+				'enabledbydefaulton' => 'Home',
+			),
+			6 => array(
+				'file' => 'lmdbcrm_orders_delivered_to_bill.php@lmdbcrm',
+				'note' => 'LmdbCrmDeliveredUnbilledOrdersDescription',
 				'enabledbydefaulton' => 'Home',
 			),
 		);
