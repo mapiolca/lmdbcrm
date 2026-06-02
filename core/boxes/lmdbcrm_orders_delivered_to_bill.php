@@ -91,7 +91,7 @@ class lmdbcrm_orders_delivered_to_bill extends ModeleBoxes
 		$deliveredStatus = defined('Commande::STATUS_CLOSED') ? Commande::STATUS_CLOSED : 3;
 		$listurl = DOL_URL_ROOT.'/commande/list.php?search_status='.urlencode((string) $deliveredStatus).'&search_billed=0&sortfield=c.tms&sortorder=DESC';
 		$total = $user->hasRight('commande', 'lire') ? $this->fetchDeliveredUnbilledTotal($deliveredStatus) : 0;
-		$totalBadge = '<a class="paddingleft" href="'.$listurl.'"><span class="badge">'.((int) $total).'</span></a>';
+		$totalBadge = '<a class="paddingleft" href="'.$listurl.'"><span class="badge">'.$total.'</span></a>';
 
 		$this->info_box_head = array(
 			'text' => $langs->trans('LmdbCrmDeliveredUnbilledOrdersTitle', $this->max).$totalBadge,
