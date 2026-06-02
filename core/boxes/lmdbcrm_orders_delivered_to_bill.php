@@ -95,7 +95,8 @@ class lmdbcrm_orders_delivered_to_bill extends ModeleBoxes
 		$text = $langs->trans('LmdbCrmDeliveredUnbilledOrdersTitle', $this->max);
 
 		$this->info_box_head = array(
-			'text' => $text.$totalBadge,
+			//'text' => $text.$totalBadge,
+			'text' => $text.'<a class="paddingleft" href="'.DOL_URL_ROOT.'/fourn/commande/list.php?sortfield=cf.tms&sortorder=DESC"><span class="badge">...</span></a>'
 			'limit' => 0,
 			'subpicto' => 'help',
 			'subtext' => dol_escape_htmltag($langs->transnoentitiesnoconv('LmdbCrmDeliveredUnbilledOrdersTooltip')),
