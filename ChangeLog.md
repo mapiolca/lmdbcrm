@@ -1,5 +1,9 @@
 # Journal des modifications / ChangeLog - LMDBCRM
 
+## 1.4 - 02/06/2026
+- Ajout du widget `lmdbcrm_orders_delivered_to_bill.php` listant les dernières commandes clients livrées non facturées, avec badge indiquant le total et lien vers la liste préfiltrée. / Added the `lmdbcrm_orders_delivered_to_bill.php` widget listing the latest delivered unbilled customer orders, with a total badge and a link to the prefiltered list.
+- Alignement du socle déclaré sur Dolibarr 20.0 et PHP 8.0. / Aligned declared compatibility baseline to Dolibarr 20.0 and PHP 8.0.
+
 ## 1.3 - 08/01/2026
 - Ajout du widget `lmdbcrm_graph_signedquotes.php` affichant l'évolution des devis signés avec filtre de période. / Added the `lmdbcrm_graph_signedquotes.php` widget showing signed quotes evolution with a period filter.
 - Centralisation du CSS responsive des DolGraph pour éviter le scroll horizontal sur mobile. / Centralized responsive DolGraph CSS to prevent horizontal scrolling on mobile.

@@ -12,6 +12,13 @@ ModuleLmdbCrmDesc = Varios widgets y funcionalidades de CRM para complementar tu
 LmdbCrmSetup = Configuración de LmdbCrm
 LmdbCrmNoSetupNeeded = No se requiere ninguna configuración adicional para este módulo.
 
+# Widget pedidos entregados no facturados
+LmdbCrmDeliveredUnbilledOrdersBoxLabel = Pedidos de clientes entregados no facturados
+LmdbCrmDeliveredUnbilledOrdersTitle = Los últimos %s pedidos de clientes entregados no facturados
+LmdbCrmDeliveredUnbilledOrdersDescription = Lista de los últimos pedidos de clientes clasificados como entregados y no facturados.
+LmdbCrmDeliveredUnbilledOrdersEmpty = Ningún pedido de cliente entregado no facturado
+LmdbCrmDeliveredUnbilledOrdersTooltip = Muestra los últimos pedidos de clientes con estado Entregado y Facturado en No. La insignia muestra el número total y abre la lista de pedidos prefiltrada.
+
 # Widget podio de presupuestos firmados
 LmdbCrmSignedQuotesPodiumTitle = Top 3 comerciales (presupuestos firmados - 30 días móviles)
 LmdbCrmSignedQuotesPodiumDescription = Podio de comerciales según el número de presupuestos firmados en los últimos 30 días móviles.

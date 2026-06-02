@@ -12,6 +12,13 @@ ModuleLmdbCrmDesc = Vari widget e funzionalità CRM per completare il tuo Doliba
 LmdbCrmSetup = Impostazioni LmdbCrm
 LmdbCrmNoSetupNeeded = Non è necessaria alcuna configurazione aggiuntiva per questo modulo.
 
+# Widget ordini clienti consegnati non fatturati
+LmdbCrmDeliveredUnbilledOrdersBoxLabel = Ordini clienti consegnati non fatturati
+LmdbCrmDeliveredUnbilledOrdersTitle = Ultimi %s ordini clienti consegnati non fatturati
+LmdbCrmDeliveredUnbilledOrdersDescription = Elenco degli ultimi ordini clienti classificati come consegnati e non fatturati.
+LmdbCrmDeliveredUnbilledOrdersEmpty = Nessun ordine cliente consegnato non fatturato
+LmdbCrmDeliveredUnbilledOrdersTooltip = Mostra gli ultimi ordini clienti con stato Consegnato e Fatturato impostato su No. Il badge mostra il numero totale e apre la lista ordini prefiltrata.
+
 # Widget podio preventivi firmati
 LmdbCrmSignedQuotesPodiumTitle = Top 3 commerciali (preventivi firmati - 30 giorni mobili)
 LmdbCrmSignedQuotesPodiumDescription = Podio dei commerciali in base al numero di preventivi firmati negli ultimi 30 giorni mobili.

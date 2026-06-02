@@ -12,6 +12,13 @@ ModuleLmdbCrmDesc = Various CRM widgets and features to complement your favorite
 LmdbCrmSetup = LmdbCrm setup
 LmdbCrmNoSetupNeeded = No additional setup is required for this module.
 
+# Delivered unbilled customer orders widget
+LmdbCrmDeliveredUnbilledOrdersBoxLabel = Delivered unbilled customer orders
+LmdbCrmDeliveredUnbilledOrdersTitle = Last %s delivered unbilled customer orders
+LmdbCrmDeliveredUnbilledOrdersDescription = List of the latest customer orders classified as delivered and not billed.
+LmdbCrmDeliveredUnbilledOrdersEmpty = No delivered unbilled customer order
+LmdbCrmDeliveredUnbilledOrdersTooltip = Shows the latest customer orders with Delivered status and Billed set to No. The badge shows the total number of delivered unbilled orders and opens the filtered order list.
+
 # Signed quotes podium widget
 LmdbCrmSignedQuotesPodiumTitle = Top 3 sales reps (signed quotes - rolling 30 days)
 LmdbCrmSignedQuotesPodiumDescription = Sales podium based on the number of signed quotes over the last 30 rolling days.

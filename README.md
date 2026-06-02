@@ -9,6 +9,7 @@ Divers widgets et fonctionnalités CRM pour compléter votre Dolibarr préféré
 - Widget graphique des taux de conversion utilisateur / entreprise avec filtres de période.
 - Widget graphique du CA signé par mois (exercice en cours et deux exercices précédents).
 - Widget graphique des devis signés (lmdbcrm_graph_signedquotes.php) avec filtre de période.
+- Widget des dernières commandes clients livrées non facturées, avec lien vers la liste préfiltrée.
 - CSS responsive global pour les widgets graphiques DolGraph (mobile sans scroll horizontal).
 - Page de classement des commerciaux avec filtres multi-utilisateurs et recherche textuelle.
 - Affichage des photos utilisateurs et des volumes signés pour motiver les équipes.
@@ -16,8 +17,8 @@ Divers widgets et fonctionnalités CRM pour compléter votre Dolibarr préféré
 - Traductions fournies : en_US, fr_FR, de_DE, it_IT, es_ES.
 
 ## Compatibilité Dolibarr
-- Version minimale : Dolibarr 21.0 (module testé sur 21.x et supérieur).
-- PHP minimal : 7.2.
+- Version minimale : Dolibarr 20.0 (module testé sur 20.x et supérieur).
+- PHP minimal : 8.0.
 
 ## Installation
 ### Depuis un paquet ZIP
@@ -76,6 +77,7 @@ Various CRM widgets and features to complement your favorite Dolibarr.
 - Conversion rate graph widget with period filters comparing user vs company.
 - Signed revenue line chart widget overlaying current and previous two fiscal years.
 - Signed quotes chart widget (lmdbcrm_graph_signedquotes.php) with a period filter.
+- Latest delivered unbilled customer orders widget, with a link to the prefiltered order list.
 - Global responsive CSS for DolGraph widgets (mobile without horizontal scrolling).
 - Sales rep ranking page with multi-user filters and keyword search.
 - Displays user pictures and signed volumes to motivate teams.
@@ -83,8 +85,8 @@ Various CRM widgets and features to complement your favorite Dolibarr.
 - Provided translations: en_US, fr_FR, de_DE, it_IT, es_ES.
 
 ## Dolibarr compatibility
-- Minimum version: Dolibarr 21.0 (module tested on 21.x and above).
-- Minimum PHP version: 7.2.
+- Minimum version: Dolibarr 20.0 (module tested on 20.x and above).
+- Minimum PHP version: 8.0.
 
 ## Installation
 ### From a ZIP package
