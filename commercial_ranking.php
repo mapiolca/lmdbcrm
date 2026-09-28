@@ -215,6 +215,10 @@ print '<form method="GET" action="'.dol_escape_htmltag($_SERVER['PHP_SELF']).'" 
 print '<input type="hidden" name="sortfield" value="'.$sortfield.'">';
 print '<input type="hidden" name="sortorder" value="'.$sortorder.'">';
 
+if (!$permissiontoreadall) {
+	print '<div class="info">'.dol_escape_htmltag($langs->trans('LmdbCrmOwnRankingNotice')).'</div>';
+}
+
 print '<div class="div-table-responsive">';
 print '<table class="tagtable liste">';
 
@@ -259,8 +263,6 @@ print '</div>';
 print '<div class="inline-block marginleftonly">';
 print '<input type="text" class="flat maxwidth150" name="search_user_keyword" value="'.dol_escape_htmltag($search_user_keyword).'" placeholder="'.$langs->trans('Search').'">';
 print '</div>';
-} else {
-	print dol_escape_htmltag($langs->trans('LmdbCrmOwnRankingNotice'));
 }
 print '</td>';
 print '<td class="liste_titre">';
