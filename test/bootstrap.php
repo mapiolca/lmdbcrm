@@ -71,7 +71,7 @@ class User
 	public $grants = array();
 	public function __construct($db = null) {}
 	public function hasRight($module, $first, $second = '') { return in_array($module.'.'.$first.($second === '' ? '' : '.'.$second), $this->grants, true); }
-	public function loadRights($module = '', $force = 0) { $this->grants = isset($GLOBALS['candidateRightsLoader']) ? ($GLOBALS['candidateRightsLoader'])($this->id) : ($GLOBALS['candidateGrants'][$this->id] ?? array('propal.creer')); }
+	public function loadRights($module = '', $force = 0) { $this->grants = isset($GLOBALS['candidateRightsLoader']) ? ($GLOBALS['candidateRightsLoader'])($this->id, $module) : ($GLOBALS['candidateGrants'][$this->id] ?? array('propal.creer')); }
 	public function getNomUrl(...$args) { return '<a>'.dol_escape_htmltag($this->login ?? 'OWN_USER').'</a>'; }
 	public function addrights(...$args) { throw new RuntimeException('Automatic grant attempted'); }
 	public function clearrights() { throw new RuntimeException('Implicit administrator grant reload'); }

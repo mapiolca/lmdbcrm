@@ -62,6 +62,7 @@ jobs:
           php test/run.php
           php test/nativegraph.php
           php test/menu.php
+          php test/proposalrights.php
       - name: MariaDB scope and native registration tests
         env:
           LMDBCRM_CORE_SOURCE: ${{ github.workspace }}/.test-cache/dolibarr/htdocs

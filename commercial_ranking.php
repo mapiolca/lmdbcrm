@@ -172,10 +172,10 @@ while (is_object($candidateRow = $db->fetch_object($candidates))) {
 			continue;
 		}
 	}
-	// loadRights() loads direct and group grants in the current entity on Dolibarr 20+.
+	// Native rights_def.module uses the historical name propale; hasRight() resolves the propal alias.
 	$candidate = new User($db);
 	$candidate->id = $candidateId;
-	$candidate->loadRights('propal');
+	$candidate->loadRights('propale');
 	if ($candidate->hasRight('propal', 'creer')) {
 		$eligibleUserIds[] = $candidateId;
 	}

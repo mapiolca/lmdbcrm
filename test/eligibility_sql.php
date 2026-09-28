@@ -1,29 +1,6 @@
 <?php
 /** Included by sql.php: real page SQL and native rights; Multicompany access is simulated. */
-$nativeUserMethods = '';
-$nativeTokens = token_get_all(file_get_contents($coreSource.'/user/class/user.class.php'));
-foreach (array('loadRights', 'hasRight') as $methodName) {
-	$found = false;
-	for ($i = 0; $i < count($nativeTokens); $i++) {
-		if (!is_array($nativeTokens[$i]) || $nativeTokens[$i][0] !== T_FUNCTION) continue;
-		$j = $i + 1;
-		while (is_array($nativeTokens[$j]) && $nativeTokens[$j][0] === T_WHITESPACE) $j++;
-		if (!is_array($nativeTokens[$j]) || $nativeTokens[$j][1] !== $methodName) continue;
-		$depth = 0; $started = false;
-		for (; $i < count($nativeTokens); $i++) {
-			$token = $nativeTokens[$i];
-			$nativeUserMethods .= is_array($token) ? $token[1] : $token;
-			if ($token === '{') { $depth++; $started = true; }
-			if ($token === '}') $depth--;
-			if ($started && $depth === 0) break;
-		}
-		$found = true;
-		break;
-	}
-	if (!$found) throw new RuntimeException('Native User method missing: '.$methodName);
-}
-// Execute unchanged native methods with a PDO adapter and explicit fixture properties.
-eval('class EligibilityNativeUser { public $db; public $id; public $admin = 0; public $rights; public $nb_rights = 0; public $_tab_loaded = array(); public $all_permissions_are_loaded = 0; '.$nativeUserMethods.' }');
+require_once __DIR__.'/nativeuser.php';
 class DaoMulticompany
 {
 	public function __construct($db) {}
@@ -52,19 +29,19 @@ foreach (array(101,102,103,104,105,106,107,108,109) as $fixtureId) {
 	$fixtureSoc = $fixtureId === 105 ? 10 : 0;
 	$pdo->exec("INSERT INTO test_user VALUES ($fixtureId,'Sales$fixtureId','','sales$fixtureId','','',$fixtureStatus,$fixtureEntity,$fixtureSoc)");
 }
-$pdo->exec("INSERT INTO test_rights_def (id, entity, module, perms, subperms) VALUES (21,1,'propal','creer',NULL),(21,2,'propal','creer',NULL)");
-foreach (array(101,103,104,105,107,108) as $fixtureId) $pdo->exec('INSERT INTO test_user_rights VALUES ('.$fixtureId.',21,1)');
-$pdo->exec('INSERT INTO test_user_rights VALUES (109,21,2)');
-$pdo->exec('INSERT INTO test_usergroup_rights VALUES (50,21,1)');
+$pdo->exec("INSERT INTO test_rights_def (id, entity, module, perms, subperms) VALUES (22,1,'propale','creer',NULL),(22,2,'propale','creer',NULL)");
+foreach (array(101,103,104,105,107,108) as $fixtureId) $pdo->exec('INSERT INTO test_user_rights VALUES ('.$fixtureId.',22,1)');
+$pdo->exec('INSERT INTO test_user_rights VALUES (109,22,2)');
+$pdo->exec('INSERT INTO test_usergroup_rights VALUES (50,22,1)');
 $pdo->exec('INSERT INTO test_usergroup_user VALUES (102,50,1),(108,51,1),(109,50,2)');
 resetContext();
 $db = new RegistrationDb($pdo);
-$candidateRightsLoader = function ($id) use ($db) {
+$candidateRightsLoader = function ($id, $module) use ($db) {
 	$native = new EligibilityNativeUser();
 	$native->db = $db;
 	$native->id = $id;
 	$native->admin = $id === 106 ? 1 : 0;
-	$native->loadRights('propal');
+	$native->loadRights($module);
 	return $native->hasRight('propal', 'creer') ? array('propal.creer') : array();
 };
 $user->grants[] = 'lmdbcrm.ranking.readall';
@@ -95,7 +72,7 @@ $user->grants = array('propal.lire', 'lmdbcrm.ranking.read');
 $user->id = 108;
 list($eligibleHtml, $eligibleIds) = renderEligibleRanking();
 sqlCheck(strpos($eligibleHtml, 'sales108') !== false && strpos($eligibleHtml, 'sales107') === false, 'personal ranking retains only own clear identity');
-$pdo->exec('DELETE FROM test_user_rights WHERE fk_id=21');
+$pdo->exec('DELETE FROM test_user_rights WHERE fk_id=22');
 $user->grants[] = 'lmdbcrm.ranking.readall';
 list($eligibleHtml, $eligibleIds) = renderEligibleRanking();
 sqlCheck($eligibleIds === array() && $selectedUserArgs[5] === array(-1), 'empty eligible set cannot reopen selector');
