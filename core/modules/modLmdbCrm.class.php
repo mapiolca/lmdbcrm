@@ -319,9 +319,10 @@ class modLmdbCrm extends DolibarrModules
 			'url' => '/lmdbcrm/commercial_ranking.php',
 			'langs' => 'lmdbcrm@lmdbcrm',
 			'position' => 1000,
-			'perms' => 'empty($user->socid) && $user->hasRight("propal", "lire") && ($user->hasRight("lmdbcrm", "ranking", "readall") || $user->hasRight("lmdbcrm", "ranking", "read"))',
+			'perms' => '$user->hasRight("propal", "lire") && ($user->hasRight("lmdbcrm", "ranking", "readall") || $user->hasRight("lmdbcrm", "ranking", "read"))',
 			'enabled' => 'isModEnabled("lmdbcrm") && isModEnabled("propal")',
 			'target' => '',
+			// Native menu user type filters external users; empty() is rejected by dol_eval v24.
 			'user' => 0,
 		);
 

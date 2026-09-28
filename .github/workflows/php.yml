@@ -44,6 +44,7 @@ jobs:
             htdocs/core/boxes
             htdocs/core/modules
             htdocs/core/class
+            htdocs/core/lib
       - name: Lint module and tests
         run: find . -path './.test-cache' -prune -o -name '*.php' -print0 | xargs -0 -n1 php -l
       - name: Permission and native renderer regression tests
@@ -53,6 +54,7 @@ jobs:
         run: |
           php test/run.php
           php test/nativegraph.php
+          php test/menu.php
       - name: MariaDB scope and native registration tests
         env:
           LMDBCRM_CORE_SOURCE: ${{ github.workspace }}/.test-cache/dolibarr/htdocs
