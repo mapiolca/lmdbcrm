@@ -10,7 +10,7 @@ $pdo = new PDO($dsn, getenv('LMDBCRM_TEST_USER'), getenv('LMDBCRM_TEST_PASSWORD'
 // CREATE without IF NOT EXISTS deliberately refuses a reused/nonempty test schema.
 foreach (array(
 	'const (name varchar(255), value varchar(255), entity int)',
-	'rights_def (id int, entity int, libelle varchar(255), module varchar(128), module_origin varchar(128), module_position varchar(64), type varchar(8), bydefault int, perms varchar(128), subperms varchar(128), enabled varchar(255), PRIMARY KEY(id, entity))',
+	'rights_def (id int, entity int, libelle varchar(255), module varchar(128), module_origin varchar(128), module_position varchar(64), family varchar(128), family_position varchar(64), type varchar(8), bydefault int, perms varchar(128), subperms varchar(128), enabled varchar(255), PRIMARY KEY(id, entity))',
 	'boxes_def (rowid int AUTO_INCREMENT PRIMARY KEY, file varchar(255), entity int, note varchar(255))',
 	'boxes (rowid int AUTO_INCREMENT PRIMARY KEY, box_id int, position int, box_order varchar(32), fk_user int, entity int)',
 	'user_rights (fk_user int, fk_id int, entity int)',
