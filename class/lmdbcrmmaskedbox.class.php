@@ -6,34 +6,10 @@
 require_once DOL_DOCUMENT_ROOT.'/core/boxes/modules_boxes.php';
 
 /**
- * Synthetic previews only. The distinct native cache class never receives business data.
+ * Synthetic sections only; personal widgets use the uncached LmdbCrmBox renderer.
  */
 class LmdbCrmMaskedBox extends ModeleBoxes
 {
-	/**
-	 * Prepare a preview with the original widget identity for native move/close actions.
-	 *
-	 * @param string $boxcode Widget code
-	 * @param int|string $boxid Native widget definition ID
-	 * @param string $label Translation key (not a previously rendered heading)
-	 * @param string $layout ranking, podium, orders or graph
-	 * @return void
-	 */
-	public function prepare($boxcode, $boxid, $label, $layout)
-	{
-		global $langs;
-
-		$langs->load('lmdbcrm@lmdbcrm');
-		$this->boxcode = $boxcode;
-		$this->box_id = $boxid;
-		$this->info_box_head = array('text' => $langs->trans($label), 'limit' => 0);
-		$this->info_box_contents = array(array(array(
-			'td' => 'class="nohover"',
-			'asis' => 1,
-			'text' => self::renderPlaceholder($layout),
-		)));
-	}
-
 	/**
 	 * Render fixed decorative shapes, never a sample or summary of real records.
 	 *

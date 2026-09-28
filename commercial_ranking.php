@@ -86,20 +86,11 @@ if (!isModEnabled('lmdbcrm') || !isModEnabled('propal')) {
 	accessforbidden();
 }
 if (!$user->hasRight('propal', 'lire')
-	|| (!$user->hasRight('lmdbcrm', 'ranking', 'read') && !$user->hasRight('lmdbcrm', 'ranking', 'readmasked'))) {
+	|| (!$user->hasRight('lmdbcrm', 'ranking', 'readall') && !$user->hasRight('lmdbcrm', 'ranking', 'read'))) {
 	accessforbidden();
 }
 
-// A preview is independent of records, filters, identities and result counts.
-if (!$user->hasRight('lmdbcrm', 'ranking', 'read')) {
-	$title = $langs->trans('LmdbCrmSalesRepRanking');
-	llxHeader('', $title);
-	print load_fiche_titre($title, '', 'chart');
-	print LmdbCrmMaskedBox::renderPlaceholder('ranking');
-	llxFooter();
-	$db->close();
-	exit;
-}
+$permissiontoreadall = $user->hasRight('lmdbcrm', 'ranking', 'readall');
 
 // Manage sorting and search parameters
 $sortfield = GETPOST('sortfield', 'aZ09');
@@ -138,6 +129,14 @@ if (empty($sortorder) || !in_array(dol_strtoupper($sortorder), array('ASC', 'DES
 	$sortorder = 'DESC';
 }
 
+// Personal reading keeps a stable ranking; forged filters cannot reveal other users.
+if (!$permissiontoreadall) {
+	$search_user = array();
+	$search_user_keyword = '';
+	$sortfield = 'signed_count';
+	$sortorder = 'DESC';
+}
+
 // Prepare url parameters for listing
 $param = '';
 if ($search_date_start > 0) {
@@ -166,7 +165,11 @@ print '<br>';
 
 // EN: Build SQL request for ranking
 // FR: Construire la requête SQL du classement
-$sql = "SELECT u.rowid as userid, u.lastname, u.firstname, u.login, u.photo, u.email";
+$sql = "SELECT u.rowid as userid";
+foreach (array('lastname', 'firstname', 'login', 'photo', 'email') as $field) {
+	$sql .= $permissiontoreadall ? ", u.".$field
+		: ", CASE WHEN u.rowid = ".((int) $user->id)." THEN u.".$field." ELSE NULL END as ".$field;
+}
 $sql .= ", COUNT(p.rowid) as total_count";
 $sql .= ", SUM(CASE WHEN p.fk_statut IN (2, 4) THEN 1 ELSE 0 END) as signed_count";
 $sql .= ", SUM(p.total_ht) as total_amount";
@@ -196,6 +199,7 @@ if ($search_user_keyword !== '') {
 $sql .= " GROUP BY u.rowid, u.lastname, u.firstname, u.login, u.photo, u.email";
 
 $sql .= $db->order($sortfield, $sortorder);
+$sql .= ", u.rowid ASC";
 
 $resql = $db->query($sql);
 if (!$resql) {
@@ -215,7 +219,7 @@ print '<div class="div-table-responsive">';
 print '<table class="tagtable liste">';
 
 print '<tr class="liste_titre_filter">';
-print '<td class="liste_titre" colspan="6">';
+print '<td class="liste_titre" colspan="7">';
 print '<div class="nowraponall">';
 print '<span class="opacitymedium">'.$langs->trans('PeriodRange').' : </span>';
 print $form->selectDate($search_date_start, 'search_date_start', 0, 0, 1, '', 1, 1);
@@ -226,9 +230,10 @@ print '</td>';
 print '</tr>';
 
 print '<tr class="liste_titre_filter">';
-print '<td class="liste_titre">';
+print '<td class="liste_titre" colspan="2">';
 // EN: User selector and text search
 // FR: Sélecteur utilisateur et recherche textuelle
+if ($permissiontoreadall) {
 print '<div class="inline-block">';
 print $form->select_dolusers(
 $search_user,
@@ -254,6 +259,9 @@ print '</div>';
 print '<div class="inline-block marginleftonly">';
 print '<input type="text" class="flat maxwidth150" name="search_user_keyword" value="'.dol_escape_htmltag($search_user_keyword).'" placeholder="'.$langs->trans('Search').'">';
 print '</div>';
+} else {
+	print dol_escape_htmltag($langs->trans('LmdbCrmOwnRankingNotice'));
+}
 print '</td>';
 print '<td class="liste_titre">';
 print '&nbsp;';
@@ -273,16 +281,27 @@ print '</td>';
 print '</tr>';
 
 print '<tr class="liste_titre">';
-print_liste_field_titre($langs->trans('LmdbCrmSalesRep'), $_SERVER['PHP_SELF'], 'userid', '', $param, '', $sortfield, $sortorder);
-print_liste_field_titre($langs->trans('LmdbCrmProposalsCount'), $_SERVER['PHP_SELF'], 'total_count', '', $param, '', $sortfield, $sortorder, 'center ');
-print_liste_field_titre($langs->trans('LmdbCrmSignedProposalsCount'), $_SERVER['PHP_SELF'], 'signed_count', '', $param, '', $sortfield, $sortorder, 'center ');
-print_liste_field_titre($langs->trans('LmdbCrmQuotedAmount'), $_SERVER['PHP_SELF'], 'total_amount', '', $param, '', $sortfield, $sortorder, 'right ');
-print_liste_field_titre($langs->trans('LmdbCrmSignedAmount'), $_SERVER['PHP_SELF'], 'signed_amount', '', $param, '', $sortfield, $sortorder, 'right ');
-print_liste_field_titre($langs->trans('LmdbCrmConversionRate'), $_SERVER['PHP_SELF'], 'conversion_rate', '', $param, '', $sortfield, $sortorder, 'center ');
+print '<th class="center">#</th>';
+print_liste_field_titre($langs->trans('LmdbCrmSalesRep'), $_SERVER['PHP_SELF'], $permissiontoreadall ? 'userid' : '', '', $param, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans('LmdbCrmProposalsCount'), $_SERVER['PHP_SELF'], $permissiontoreadall ? 'total_count' : '', '', $param, '', $sortfield, $sortorder, 'center ');
+print_liste_field_titre($langs->trans('LmdbCrmSignedProposalsCount'), $_SERVER['PHP_SELF'], $permissiontoreadall ? 'signed_count' : '', '', $param, '', $sortfield, $sortorder, 'center ');
+print_liste_field_titre($langs->trans('LmdbCrmQuotedAmount'), $_SERVER['PHP_SELF'], $permissiontoreadall ? 'total_amount' : '', '', $param, '', $sortfield, $sortorder, 'right ');
+print_liste_field_titre($langs->trans('LmdbCrmSignedAmount'), $_SERVER['PHP_SELF'], $permissiontoreadall ? 'signed_amount' : '', '', $param, '', $sortfield, $sortorder, 'right ');
+print_liste_field_titre($langs->trans('LmdbCrmConversionRate'), $_SERVER['PHP_SELF'], $permissiontoreadall ? 'conversion_rate' : '', '', $param, '', $sortfield, $sortorder, 'center ');
 print '</tr>';
 
 if ($num > 0) {
+	$rank = 0;
 	while ($obj = $db->fetch_object($resql)) {
+		$rank++;
+		if (!$permissiontoreadall && (int) $obj->userid !== (int) $user->id) {
+			print '<tr class="oddeven"><td class="center">'.$rank.'</td><td>'.dol_escape_htmltag($langs->trans('LmdbCrmOtherSalesRep')).'</td>';
+			for ($column = 0; $column < 5; $column++) {
+				print '<td><span class="lmdbcrm-masked-value" aria-label="'.dol_escape_htmltag($langs->trans('LmdbCrmDataMasked')).'"></span></td>';
+			}
+			print '</tr>';
+			continue;
+		}
 		$userstatic->id = $obj->userid;
 		$userstatic->lastname = $obj->lastname;
 		$userstatic->firstname = $obj->firstname;
@@ -291,6 +310,7 @@ if ($num > 0) {
 		$userstatic->photo = $obj->photo;
 		
 		print '<tr class="oddeven">';
+		print '<td class="center">'.$rank.'</td>';
 		print '<td class="nowraponall">'.$userstatic->getNomUrl(-1).'</td>';
 		print '<td class="center">'.(int) $obj->total_count.'</td>';
 		print '<td class="center">'.(int) $obj->signed_count.'</td>';
@@ -301,7 +321,7 @@ if ($num > 0) {
 		print '</tr>';
 	}
 } else {
-	print '<tr class="oddeven"><td colspan="6" class="opacitymedium center">'.$langs->trans('LmdbCrmNoRankingData').'</td></tr>';
+	print '<tr class="oddeven"><td colspan="7" class="opacitymedium center">'.$langs->trans('LmdbCrmNoRankingData').'</td></tr>';
 }
 
 print '</table>';

@@ -73,7 +73,7 @@ class lmdbcrm_orders_delivered_to_bill extends LmdbCrmBox
 		$this->param = $param;
 		$this->hidden = !isModEnabled('lmdbcrm') || !isModEnabled('commande') || !empty($user->socid)
 			|| !$user->hasRight('commande', 'lire')
-			|| (!$user->hasRight('lmdbcrm', 'widgets', 'read') && !$user->hasRight('lmdbcrm', 'widgets', 'readmasked'));
+			|| (!$user->hasRight('lmdbcrm', 'widgets', 'readall') && !$user->hasRight('lmdbcrm', 'widgets', 'read'));
 	}
 
 	/**
@@ -93,11 +93,12 @@ class lmdbcrm_orders_delivered_to_bill extends LmdbCrmBox
 		$this->lmdbcrmDataLoaded = false;
 		$this->hidden = !isModEnabled('lmdbcrm') || !isModEnabled('commande') || !empty($user->socid)
 			|| !$user->hasRight('commande', 'lire')
-			|| (!$user->hasRight('lmdbcrm', 'widgets', 'read') && !$user->hasRight('lmdbcrm', 'widgets', 'readmasked'));
-		if ($this->hidden || !$user->hasRight('lmdbcrm', 'widgets', 'read')) {
+			|| (!$user->hasRight('lmdbcrm', 'widgets', 'readall') && !$user->hasRight('lmdbcrm', 'widgets', 'read'));
+		if ($this->hidden) {
 			return;
 		}
 		$this->lmdbcrmDataLoaded = true;
+		$this->lmdbcrmLoadedAll = $user->hasRight('lmdbcrm', 'widgets', 'readall');
 
 		$this->max = ($max > 0 ? $max : 5);
 
@@ -230,20 +231,18 @@ class lmdbcrm_orders_delivered_to_bill extends LmdbCrmBox
 
 		$this->hidden = !isModEnabled('lmdbcrm') || !isModEnabled('commande') || !empty($user->socid)
 			|| !$user->hasRight('commande', 'lire')
-			|| (!$user->hasRight('lmdbcrm', 'widgets', 'read') && !$user->hasRight('lmdbcrm', 'widgets', 'readmasked'));
+			|| (!$user->hasRight('lmdbcrm', 'widgets', 'readall') && !$user->hasRight('lmdbcrm', 'widgets', 'read'));
 		if ($this->hidden) {
 			$this->info_box_head = array();
 			$this->info_box_contents = array();
 			$this->lmdbcrmDataLoaded = false;
 			return '';
 		}
-		if (!$user->hasRight('lmdbcrm', 'widgets', 'read')) {
+		// Never reuse a previously loaded scope after a permission transition.
+		if ($this->lmdbcrmLoadedAll !== $user->hasRight('lmdbcrm', 'widgets', 'readall')) {
 			$this->info_box_head = array();
 			$this->info_box_contents = array();
 			$this->lmdbcrmDataLoaded = false;
-			$preview = new LmdbCrmMaskedBox($this->db);
-			$preview->prepare($this->boxcode, $this->box_id, $this->boxlabel, 'orders');
-			return $preview->showBox($preview->info_box_head, $preview->info_box_contents, $nooutput);
 		}
 		if (!$this->lmdbcrmDataLoaded) {
 			return '';
@@ -285,14 +284,14 @@ class lmdbcrm_orders_delivered_to_bill extends LmdbCrmBox
 		global $user;
 
 		$sql = " FROM ".MAIN_DB_PREFIX."commande as c, ".MAIN_DB_PREFIX."societe as s";
-		if (empty($user->socid) && !$user->hasRight('societe', 'client', 'voir')) {
+		if (empty($user->socid) && (!$user->hasRight('societe', 'client', 'voir') || !$user->hasRight('lmdbcrm', 'widgets', 'readall'))) {
 			$sql .= ", ".MAIN_DB_PREFIX."societe_commerciaux as sc";
 		}
 		$sql .= " WHERE c.fk_soc = s.rowid";
 		$sql .= " AND c.entity IN (".getEntity('commande').")";
 		$sql .= " AND c.fk_statut = ".((int) $deliveredStatus);
 		$sql .= " AND c.facture = 0";
-		if (empty($user->socid) && !$user->hasRight('societe', 'client', 'voir')) {
+		if (empty($user->socid) && (!$user->hasRight('societe', 'client', 'voir') || !$user->hasRight('lmdbcrm', 'widgets', 'readall'))) {
 			$sql .= " AND s.rowid = sc.fk_soc AND sc.fk_user = ".((int) $user->id);
 		}
 		if ($user->socid) {

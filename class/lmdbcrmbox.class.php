@@ -15,6 +15,9 @@ class LmdbCrmBox extends ModeleBoxes
 	/** @var bool Whether loadBox has reached the authorised business-data branch. */
 	protected $lmdbcrmDataLoaded = false;
 
+	/** @var bool Full-read scope used by the last successful load. */
+	protected $lmdbcrmLoadedAll = false;
+
 	/**
 	 * ModeleBoxes v20+ caches HTML by user/entity but not by permissions or filters.
 	 * Invalidate only this widget's old cache and suppress cache writes during the

@@ -73,7 +73,7 @@ class lmdbcrm_podium_signedquotes extends LmdbCrmBox
 		$this->param = $param;
 		$this->hidden = !isModEnabled('lmdbcrm') || !isModEnabled('propal') || !empty($user->socid)
 			|| !$user->hasRight('propal', 'lire')
-			|| (!$user->hasRight('lmdbcrm', 'widgets', 'read') && !$user->hasRight('lmdbcrm', 'widgets', 'readmasked'));
+			|| (!$user->hasRight('lmdbcrm', 'widgets', 'readall') && !$user->hasRight('lmdbcrm', 'widgets', 'read'));
 	}
 
 	/**
@@ -93,11 +93,12 @@ class lmdbcrm_podium_signedquotes extends LmdbCrmBox
 		$this->lmdbcrmDataLoaded = false;
 		$this->hidden = !isModEnabled('lmdbcrm') || !isModEnabled('propal') || !empty($user->socid)
 			|| !$user->hasRight('propal', 'lire')
-			|| (!$user->hasRight('lmdbcrm', 'widgets', 'read') && !$user->hasRight('lmdbcrm', 'widgets', 'readmasked'));
-		if ($this->hidden || !$user->hasRight('lmdbcrm', 'widgets', 'read')) {
+			|| (!$user->hasRight('lmdbcrm', 'widgets', 'readall') && !$user->hasRight('lmdbcrm', 'widgets', 'read'));
+		if ($this->hidden) {
 			return;
 		}
 		$this->lmdbcrmDataLoaded = true;
+		$this->lmdbcrmLoadedAll = $user->hasRight('lmdbcrm', 'widgets', 'readall');
 
 		$this->max = ($max > 0 ? $max : 3);
 
@@ -142,7 +143,11 @@ class lmdbcrm_podium_signedquotes extends LmdbCrmBox
 		$now = dol_now();
 		$fromDate = dol_time_plus_duree($now, -30, 'd');
 
-		$sql = "SELECT p.fk_user_author as userid, COUNT(p.rowid) as qty, u.lastname, u.firstname, u.login, u.photo, u.statut";
+		$sql = "SELECT p.fk_user_author as userid, COUNT(p.rowid) as qty";
+		foreach (array('lastname', 'firstname', 'login', 'photo', 'statut') as $field) {
+			$sql .= $user->hasRight('lmdbcrm', 'widgets', 'readall') ? ", u.".$field
+				: ", CASE WHEN p.fk_user_author = ".((int) $user->id)." THEN u.".$field." ELSE NULL END as ".$field;
+		}
 		$sql .= " FROM ".MAIN_DB_PREFIX."propal as p";
 		$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."user as u ON u.rowid = p.fk_user_author";
 		$sql .= " WHERE p.entity IN (".getEntity('propal').")";
@@ -155,15 +160,31 @@ class lmdbcrm_podium_signedquotes extends LmdbCrmBox
 		$sql .= " AND p.date_signature IS NOT NULL";
 		$sql .= " AND p.date_signature >= '".$this->db->idate($fromDate)."'";
 		$sql .= " GROUP BY p.fk_user_author, u.lastname, u.firstname, u.login, u.photo, u.statut";
-		$sql .= " ORDER BY qty DESC";
-		$sql .= $this->db->plimit($this->max);
+		$sql .= " ORDER BY qty DESC, p.fk_user_author ASC";
+		if ($user->hasRight('lmdbcrm', 'widgets', 'readall')) {
+			$sql .= $this->db->plimit($this->max);
+		}
 
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$num = $this->db->num_rows($resql);
 			if ($num > 0) {
 				$rank = 1;
+				$ownRowFound = false;
 				while ($obj = $this->db->fetch_object($resql)) {
+					if (!$user->hasRight('lmdbcrm', 'widgets', 'readall') && (int) $obj->userid !== (int) $user->id) {
+						if ($rank <= $this->max) {
+							$this->info_box_contents[] = array(
+								array('text' => (string) $rank, 'align' => 'center'),
+								array('text' => $langs->trans('LmdbCrmOtherSalesRep')),
+								array('text' => '<span class="lmdbcrm-masked-value" aria-label="'.dol_escape_htmltag($langs->trans('LmdbCrmDataMasked')).'"></span>', 'asis' => 1),
+							);
+						}
+						$rank++;
+						continue;
+					}
+
+					if ((int) $obj->userid === (int) $user->id) $ownRowFound = true;
 					$userlink = dol_escape_htmltag($langs->trans('Unknown'));
 					$photohtml = '';
 					if (!empty($obj->userid)) {
@@ -208,6 +229,9 @@ class lmdbcrm_podium_signedquotes extends LmdbCrmBox
 					);
 					$rank++;
 				}
+				if (!$user->hasRight('lmdbcrm', 'widgets', 'readall') && !$ownRowFound) {
+					$this->info_box_contents[] = array(array('text' => $langs->trans('LmdbCrmOwnNoSignedProposal'), 'td' => 'colspan="3"'));
+				}
 			} else {
 				$this->info_box_contents[] = array(
 					0 => array(
@@ -251,20 +275,18 @@ class lmdbcrm_podium_signedquotes extends LmdbCrmBox
 
 		$this->hidden = !isModEnabled('lmdbcrm') || !isModEnabled('propal') || !empty($user->socid)
 			|| !$user->hasRight('propal', 'lire')
-			|| (!$user->hasRight('lmdbcrm', 'widgets', 'read') && !$user->hasRight('lmdbcrm', 'widgets', 'readmasked'));
+			|| (!$user->hasRight('lmdbcrm', 'widgets', 'readall') && !$user->hasRight('lmdbcrm', 'widgets', 'read'));
 		if ($this->hidden) {
 			$this->info_box_head = array();
 			$this->info_box_contents = array();
 			$this->lmdbcrmDataLoaded = false;
 			return '';
 		}
-		if (!$user->hasRight('lmdbcrm', 'widgets', 'read')) {
+		// Never reuse a previously loaded scope after a permission transition.
+		if ($this->lmdbcrmLoadedAll !== $user->hasRight('lmdbcrm', 'widgets', 'readall')) {
 			$this->info_box_head = array();
 			$this->info_box_contents = array();
 			$this->lmdbcrmDataLoaded = false;
-			$preview = new LmdbCrmMaskedBox($this->db);
-			$preview->prepare($this->boxcode, $this->box_id, $this->boxlabel, 'podium');
-			return $preview->showBox($preview->info_box_head, $preview->info_box_contents, $nooutput);
 		}
 		if (!$this->lmdbcrmDataLoaded) {
 			return '';

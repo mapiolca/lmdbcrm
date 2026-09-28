@@ -22,22 +22,33 @@ Divers widgets et fonctionnalités CRM pour compléter votre Dolibarr préféré
 
 ## Permissions du classement et des widgets
 
-Les permissions LMDBCRM se règlent dans les fiches natives **Utilisateurs / Groupes**. Le classement et les sept widgets (y compris les commandes livrées non facturées) sont indépendants :
+Les droits natifs utilisateurs/groupes apparaissent dans cet ordre :
 
-| Ensemble | Aperçu masqué | Lecture complète |
-|---|---|---|
-| Classement des commerciaux | `ranking.readmasked` | `ranking.read` |
-| Widgets CRM | `widgets.readmasked` | `widgets.read` |
+1. **Lire le classement des commerciaux (uniquement ses données en clair)** — `ranking.read`.
+2. **Lire toutes les données du classement des commerciaux en clair** — `ranking.readall`.
+3. **Lire les widgets CRM (uniquement ses données en clair)** — `widgets.read`.
+4. **Lire toutes les données des widgets CRM en clair** — `widgets.readall`.
 
-Sans aucun droit de l’ensemble, son menu/widget est absent et son accès direct est refusé. L’aperçu masqué conserve uniquement les titres et des formes neutres : aucune identité, aucun rang réel, montant, compteur, lien métier ou série graphique n’est chargé. La lecture complète suffit seule et prend priorité lorsque les deux droits sont accordés, y compris via des groupes différents.
+Les deux ensembles sont indépendants. Sans droit : accès refusé. Le droit complet suffit seul et prend priorité lorsque les deux sont attribués. Aucune attribution automatique aux utilisateurs, groupes ou administrateurs.
 
-Ces permissions concernent les utilisateurs internes. Elles s’ajoutent à la lecture native des devis (classement et six widgets) ou des commandes (widget des commandes). Les lectures complètes respectent les entités partagées et, sans le droit natif de voir tous les clients, les tiers affectés au commercial. Les indicateurs « entreprise » représentent alors le périmètre accessible, pas nécessairement toute l’entreprise.
+La lecture personnelle affiche sa propre ligne en clair, à sa position réelle dans le périmètre accessible. Les autres commerciaux et leurs valeurs sont remplacés côté serveur par des libellés et formes neutres ; leurs identités et valeurs ne sont pas envoyées au navigateur. Le classement personnel est fixé au nombre de devis signés décroissant, avec départage stable par identifiant utilisateur ; les filtres d’identité et le tri transmis dans l’URL sont ignorés. Les filtres de dates restent disponibles. Les podiums conservent le top 3 anonymisé et ajoutent sa propre ligne lorsqu’elle se trouve plus bas. Sans devis signé, un message signale l’absence de classement personnel.
 
-**Après mise à jour :** désactiver/réactiver LMDBCRM depuis la gestion native des modules pour enregistrer les quatre droits, puis les attribuer explicitement aux utilisateurs ou groupes concernés. Aucun droit n’est accordé automatiquement, même aux administrateurs. Les identifiants `45001101` à `45001104`, les attributions explicites et les placements de widgets restent stables lors des réactivations. Aucun droit sur les autres modules n’est modifié.
+Les graphiques montrent uniquement les séries de l’utilisateur ; les comparatifs entreprise sont masqués et ne sont pas interrogés. Les propositions personnelles sont celles dont l’utilisateur est auteur. Pour les commandes livrées non facturées, le périmètre personnel correspond aux tiers affectés commercialement à l’utilisateur.
 
-Les aperçus utilisent un cache natif séparé, alimenté exclusivement par des formes neutres. Les affichages complets sont recalculés et leur ancien cache est invalidé à chaque rendu pour prendre en compte un changement de droits, de périmètre ou de filtre ; cela concerne uniquement les widgets LMDBCRM. Une erreur d’invalidation empêche l’affichage et est journalisée. La configuration globale du cache est conservée.
+Les utilisateurs doivent rester internes et posséder la lecture native des devis (classement et six widgets) ou des commandes (septième widget). Les entités accessibles et restrictions commerciales natives s’appliquent avant les agrégations, même avec `readall`. Une position n’est donc pas nécessairement celle de toute l’entreprise.
 
-Les changements de droits prennent effet lors d’une nouvelle requête après leur rechargement natif par Dolibarr ; ils ne retirent pas rétroactivement un contenu déjà téléchargé dans un navigateur.
+Tous les rendus de widgets, personnels ou complets, invalident leur ancien cache HTML et sont recalculés sans écrire de nouveau cache métier. Les formes neutres ne contiennent aucune valeur réelle. Un changement de niveau de permission entre chargement et rendu refuse le contenu déjà chargé. Les droits s’appliquent après leur rechargement natif lors d’une nouvelle requête.
+
+**Après mise à jour :** réactiver LMDBCRM dans chaque entité concernée pour enregistrer les nouveaux droits et migrer les attributions existantes. Les offsets 1 à 4 restent réservés ; les nouveaux IDs sont `45001105` à `45001108` dans l’ordre ci-dessus. La migration conserve la distinction entre accès restreint et complet :
+
+| Ancien ID et droit | Nouveau ID et droit |
+|---|---|
+| 45001101 — classement masqué | 45001105 — classement personnel |
+| 45001102 — classement complet | 45001106 — classement complet |
+| 45001103 — widgets masqués | 45001107 — widgets personnels |
+| 45001104 — widgets complets | 45001108 — widgets complets |
+
+La migration traite utilisateurs et groupes dans l’entité active, sans doublon, et retire les anciennes attributions pour ne pas rétablir un droit ultérieurement révoqué. Les placements des widgets sont conservés. Les anciens accès masqués ne deviennent jamais des accès complets. Après migration, les réglages restent administrables dans les écrans natifs.
 
 ## Installation
 ### Depuis un paquet ZIP
@@ -109,13 +120,13 @@ Various CRM widgets and features to complement your favorite Dolibarr.
 
 ## Ranking and widget permissions
 
-Configure LMDBCRM rights in the native **Users / Groups** permission screens. Ranking (`ranking.readmasked`, `ranking.read`) and all seven CRM widgets (`widgets.readmasked`, `widgets.read`) form two independent groups. No right means no access; masked preview shows only titles and fixed neutral shapes; full read takes precedence if both rights are granted.
+Native rights are ordered as: personal ranking (`ranking.read`), full ranking (`ranking.readall`), personal widgets (`widgets.read`), full widgets (`widgets.readall`). The two groups are independent; full read takes precedence and is sufficient alone. No right means no access. No automatic grants, including to administrators.
 
-Preview mode does not fetch or transmit real names, rankings, amounts, counts, business links or chart data. These interfaces are for internal users and also require the native proposal/order read permission. Full results respect shared entities and customer assignments; company indicators are limited to the viewer’s accessible scope.
+Personal reading displays the viewer’s own values and actual position within the accessible scope. Other names and values are hidden server-side. The personal ranking uses signed proposal count descending with user ID as stable tie-breaker; identity filters and custom sorting are ignored, while date filters remain available. Podiums retain the anonymous top three and include the viewer even below third place. Personal charts query only the viewer’s series, not company totals. Personal proposals are authored by the viewer; personal orders belong to their assigned customers.
 
-**Upgrade:** disable/re-enable LMDBCRM through the native module manager to register the four rights, then explicitly assign them to users or groups. No automatic grants are made, including to administrators. Permission IDs `45001101`–`45001104`, explicit assignments and personalised widget positions survive reactivation.
+Native proposal/order rights, internal-user restrictions, commercial assignments and entity sharing still apply, including with full read. All widget HTML caches are invalidated before rendering; personal data is never put into a reusable preview cache.
 
-Masked previews have a separate native cache containing synthetic content only. Full CRM widgets invalidate their own previous cache and render fresh authorised results without writing a new full-data cache. The global cache configuration is preserved; a failed invalidation suppresses output and is logged. Changes apply to subsequent requests after native permission reloading, not to content already downloaded.
+**Upgrade:** reactivate LMDBCRM in each relevant entity. Legacy offsets 1–4 remain reserved. User/group assignments migrate once from IDs `45001101`–`45001104` to `45001105`–`45001108`, respectively: masked access becomes personal access, full access remains full. Old assignments are removed so subsequent reactivation cannot restore a revoked right. Existing widget positions and other entities remain untouched. Manage later changes in native user/group permission screens.
 
 ## Installation
 ### From a ZIP package

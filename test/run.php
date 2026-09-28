@@ -28,9 +28,9 @@ foreach ($classes as $index => $class) {
 	foreach (array(0, 1, 2, 3) as $rights) {
 		resetContext();
 		$user->admin = 1;
-		$user->grants[] = 'lmdbcrm.ranking.read'; // Independent of widget rights.
-		if ($rights & 1) $user->grants[] = 'lmdbcrm.widgets.readmasked';
-		if ($rights & 2) $user->grants[] = 'lmdbcrm.widgets.read';
+		$user->grants[] = 'lmdbcrm.ranking.readall'; // Independent of widget rights.
+		if ($rights & 1) $user->grants[] = 'lmdbcrm.widgets.read';
+		if ($rights & 2) $user->grants[] = 'lmdbcrm.widgets.readall';
 		$box = new $class($db);
 		$box->box_id = 100 + $index;
 		check($box->hidden === ($rights === 0), $class.' catalogue visibility');
@@ -39,41 +39,41 @@ foreach ($classes as $index => $class) {
 		$html = $box->showBox(null, null, 1);
 		check(strpos($html, 'SECRET_OLD_CACHE') === false, $class.' stale cache');
 		check(getDolGlobalInt('MAIN_ACTIVATE_FILECACHE') === 1, $class.' restored cache setting');
-		if (!($rights & 2)) {
-			check(!$db->queries && $debug === '', $class.' no data queries/debug without full right');
-			check($rights === 0 ? $html === '' : strpos($html, 'LmdbCrmDataMasked') !== false, $class.' preview/denied output');
-			check(strpos($html, 'REAL_USER_SELECTOR') === false && strpos($html, '<canvas') === false, $class.' no real selectors/chart');
-			if ($rights === 1) check(strpos($html, 'id="boxto_'.$box->box_id.'"') !== false && strpos($html, 'id="imgclose'.$box->box_id.'"') !== false, $class.' native move/close identity');
+		if ($rights === 0) {
+			check(!$db->queries && $debug === '' && $html === '', $class.' denied without queries or output');
 		} else {
-			check(count($db->queries) > 0 && $html !== '', $class.' full load');
-			check(!file_exists($cache), $class.' old full cache removed and not rewritten');
-			check(strpos($html, 'LmdbCrmDataMasked') === false, $class.' full takes priority');
+			check(count($db->queries) > 0 && $html !== '', $class.' authorised load');
+			check(!file_exists($cache), $class.' stale cache invalidated in both scopes');
+			check(strpos($html, 'id="boxto_'.$box->box_id.'"') !== false && strpos($html, 'id="imgclose'.$box->box_id.'"') !== false, $class.' native move/close identity');
+			if ($rights === 1) check($debug === '', $class.' personal mode ignores diagnostics');
 			foreach ($db->queries as $sql) {
 				check(strpos($sql, 'entity IN (1)') !== false, $class.' entity scope');
-				check(strpos($sql, 'sc.fk_user = 7') !== false, $class.' commercial scope');
+				check(strpos($sql, 'sc.fk_user = 7') !== false, $class.' native commercial scope');
+				if ($rights === 1 && strpos($class, 'graph_') !== false) check(strpos($sql, 'p.fk_user_author = 7') !== false, $class.' personal series only');
 			}
 		}
 	}
 	// Downgrade an already loaded object and an existing full cache, without reloading.
-	$user->grants = array('propal.lire', 'commande.lire', 'lmdbcrm.widgets.readmasked');
+	$user->grants = array('propal.lire', 'commande.lire', 'lmdbcrm.widgets.read');
 	$box->info_box_head = array('text' => 'SECRET_HEADER');
 	$box->info_box_contents = array(array(array('text' => 'SECRET_RECORD')));
 	oldCache($box, 'SECRET_OLD_CACHE');
 	$before = count($db->queries);
 	$html = $box->showBox(null, null, 1);
-	check(strpos($html, 'SECRET') === false && strpos($html, 'LmdbCrmDataMasked') !== false, $class.' downgrade clears stale data');
-	check(count($db->queries) === $before, $class.' preview performs no read');
+	check($html === '', $class.' downgrade refuses data loaded with previous scope');
+	check(count($db->queries) === $before, $class.' showBox does not reload implicitly');
 	check(!$box->info_box_head && !$box->info_box_contents, $class.' sensitive memory cleared');
-	check(captureLoad($box) === '' && captureLoad($box) === '', $class.' repeated preview load');
+	check(captureLoad($box) === '' && captureLoad($box) === '', $class.' repeated personal load');
+	check(strpos($box->showBox(null, null, 1), 'SECRET') === false, $class.' personal reload has no old content');
 	$user->grants = array('propal.lire', 'commande.lire');
 	check($box->showBox(null, null, 1) === '', $class.' preview to denied');
 
 	foreach (array('native', 'external', 'module', 'dependency') as $denial) {
 		resetContext();
+		$user->grants[] = 'lmdbcrm.widgets.readall';
 		$user->grants[] = 'lmdbcrm.widgets.read';
-		$user->grants[] = 'lmdbcrm.widgets.readmasked';
 		$source = strpos($class, 'orders_') !== false ? 'commande' : 'propal';
-		if ($denial === 'native') $user->grants = array('lmdbcrm.widgets.read', 'lmdbcrm.widgets.readmasked');
+		if ($denial === 'native') $user->grants = array('lmdbcrm.widgets.readall', 'lmdbcrm.widgets.read');
 		if ($denial === 'external') $user->socid = 42;
 		if ($denial === 'module') $enabledModules['lmdbcrm'] = false;
 		if ($denial === 'dependency') $enabledModules[$source] = false;
@@ -85,7 +85,7 @@ foreach ($classes as $index => $class) {
 	}
 	// Shared entities and expanded commercial rights.
 	resetContext();
-	$user->grants[] = 'lmdbcrm.widgets.read';
+	$user->grants[] = 'lmdbcrm.widgets.readall';
 	$user->grants[] = 'societe.client.voir';
 	$conf->entity = 2;
 	$entities = array('propal' => '1,2', 'commande' => '1,2', 'user' => '1,2');
@@ -115,13 +115,14 @@ foreach ($classes as $index => $class) {
 resetContext();
 $descriptor = new modLmdbCrm($db);
 check(count($descriptor->rights) === 4, 'four rights');
+check(array_column(array_values($descriptor->rights), 5) === array('read', 'readall', 'read', 'readall'), 'requested permission order');
 foreach ($descriptor->rights as $offset => $right) {
-	check($right[0] === 45001100 + $offset && $right[3] === 0, 'stable opt-in right');
+	check($offset >= 5 && $offset <= 8 && $right[0] === 45001100 + $offset && $right[3] === 0, 'stable opt-in right; legacy offsets reserved');
 }
 foreach (array(0, 1, 2, 3) as $rights) {
-	$user->grants = array('propal.lire', 'lmdbcrm.widgets.read');
-	if ($rights & 1) $user->grants[] = 'lmdbcrm.ranking.readmasked';
-	if ($rights & 2) $user->grants[] = 'lmdbcrm.ranking.read';
+	$user->grants = array('propal.lire', 'lmdbcrm.widgets.readall');
+	if ($rights & 1) $user->grants[] = 'lmdbcrm.ranking.read';
+	if ($rights & 2) $user->grants[] = 'lmdbcrm.ranking.readall';
 	check((bool) eval('return '.$descriptor->menu[0]['perms'].';') === ($rights !== 0), 'native menu expression');
 }
 $user->admin = 1;
@@ -140,10 +141,17 @@ foreach (array('none', 'masked', 'full', 'both', 'widgets-only', 'external', 'di
 	if (in_array($scenario, array('full', 'both'), true)) {
 		check(strpos($output, 'REAL_USER_SELECTOR') !== false && strpos($output, 'sc.fk_user = 7') !== false, 'ranking full scope');
 	} elseif ($scenario === 'masked') {
-		check(strpos($output, 'LmdbCrmDataMasked') !== false && strpos($output, 'QUERIES=[]') !== false, 'ranking masked without SQL');
+		check(strpos($output, 'LmdbCrmOwnRankingNotice') !== false && strpos($output, 'CASE WHEN u.rowid = 7') !== false, 'ranking personal scope');
 		check(strpos($output, 'REAL_USER_SELECTOR') === false, 'ranking no identity selector');
 	} else {
 		check(strpos($output, 'ACCESS_DENIED') !== false && strpos($output, 'QUERIES=[]') !== false, 'ranking denied before SQL');
 	}
+}
+foreach (array('ranking', 'lmdbcrm_podium_signedquotes', 'lmdbcrm_podium_signedturnover', 'lmdbcrm_graph_conversionrates', 'lmdbcrm_graph_marginrates', 'lmdbcrm_graph_signedquotes', 'lmdbcrm_graph_signedturnover') as $target) {
+	$process = proc_open(array(PHP_BINARY, __DIR__.'/personal.php', $target), array(1 => array('pipe', 'w'), 2 => array('pipe', 'w')), $pipes);
+	$output = stream_get_contents($pipes[1]); $error = stream_get_contents($pipes[2]);
+	fclose($pipes[1]); fclose($pipes[2]);
+	check(proc_close($process) === 0 && $error === '', $target.' populated personal render: '.$error);
+	check(strpos($output, 'OK populated') !== false, $target.' personal assertions completed');
 }
 print 'OK: '.$checks.' checks; native Dolibarr '.DOL_VERSION.' renderer/permissions; simulated session, SQL and cache helpers.'.PHP_EOL;

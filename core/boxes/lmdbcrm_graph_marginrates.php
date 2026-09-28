@@ -74,7 +74,7 @@ class lmdbcrm_graph_marginrates extends LmdbCrmBox
 		$this->param = $param;
 		$this->hidden = !isModEnabled('lmdbcrm') || !isModEnabled('propal') || !empty($user->socid)
 			|| !$user->hasRight('propal', 'lire')
-			|| (!$user->hasRight('lmdbcrm', 'widgets', 'read') && !$user->hasRight('lmdbcrm', 'widgets', 'readmasked'));
+			|| (!$user->hasRight('lmdbcrm', 'widgets', 'readall') && !$user->hasRight('lmdbcrm', 'widgets', 'read'));
 	}
 
 	/**
@@ -94,11 +94,12 @@ class lmdbcrm_graph_marginrates extends LmdbCrmBox
 		$this->lmdbcrmDataLoaded = false;
 		$this->hidden = !isModEnabled('lmdbcrm') || !isModEnabled('propal') || !empty($user->socid)
 			|| !$user->hasRight('propal', 'lire')
-			|| (!$user->hasRight('lmdbcrm', 'widgets', 'read') && !$user->hasRight('lmdbcrm', 'widgets', 'readmasked'));
-		if ($this->hidden || !$user->hasRight('lmdbcrm', 'widgets', 'read')) {
+			|| (!$user->hasRight('lmdbcrm', 'widgets', 'readall') && !$user->hasRight('lmdbcrm', 'widgets', 'read'));
+		if ($this->hidden) {
 			return;
 		}
 		$this->lmdbcrmDataLoaded = true;
+		$this->lmdbcrmLoadedAll = $user->hasRight('lmdbcrm', 'widgets', 'readall');
 
 		$now = dol_now();
 
@@ -129,7 +130,7 @@ class lmdbcrm_graph_marginrates extends LmdbCrmBox
 		);
 
 		$userData = $this->fetchMarginData($fromdate, $todate, (int) $user->id);
-		$companyData = $this->fetchMarginData($fromdate, $todate, 0);
+		$companyData = $user->hasRight('lmdbcrm', 'widgets', 'readall') ? $this->fetchMarginData($fromdate, $todate, 0) : array();
 
 		$form = new Form($this->db);
 
@@ -144,7 +145,9 @@ class lmdbcrm_graph_marginrates extends LmdbCrmBox
 		$filterform .= '</form>';
 
 		$userGraph = $this->renderMarginGraph($userData, 'user', $langs->trans('LmdbCrmMarginUserLabel'));
-		$companyGraph = $this->renderMarginGraph($companyData, 'company', $langs->trans('LmdbCrmMarginCompanyLabel'));
+		$companyGraph = $user->hasRight('lmdbcrm', 'widgets', 'readall')
+			? $this->renderMarginGraph($companyData, 'company', $langs->trans('LmdbCrmMarginCompanyLabel'))
+			: LmdbCrmMaskedBox::renderPlaceholder('graph');
 
 		$graphsHtml = '<div class="center">'.$filterform.'<div class="flexcontainer wrap center">';
 		$graphsHtml .= '<div class="center lmdbcrm-graph-cell">'.$userGraph.'</div>';
@@ -186,20 +189,18 @@ class lmdbcrm_graph_marginrates extends LmdbCrmBox
 
 		$this->hidden = !isModEnabled('lmdbcrm') || !isModEnabled('propal') || !empty($user->socid)
 			|| !$user->hasRight('propal', 'lire')
-			|| (!$user->hasRight('lmdbcrm', 'widgets', 'read') && !$user->hasRight('lmdbcrm', 'widgets', 'readmasked'));
+			|| (!$user->hasRight('lmdbcrm', 'widgets', 'readall') && !$user->hasRight('lmdbcrm', 'widgets', 'read'));
 		if ($this->hidden) {
 			$this->info_box_head = array();
 			$this->info_box_contents = array();
 			$this->lmdbcrmDataLoaded = false;
 			return '';
 		}
-		if (!$user->hasRight('lmdbcrm', 'widgets', 'read')) {
+		// Never reuse a previously loaded scope after a permission transition.
+		if ($this->lmdbcrmLoadedAll !== $user->hasRight('lmdbcrm', 'widgets', 'readall')) {
 			$this->info_box_head = array();
 			$this->info_box_contents = array();
 			$this->lmdbcrmDataLoaded = false;
-			$preview = new LmdbCrmMaskedBox($this->db);
-			$preview->prepare($this->boxcode, $this->box_id, $this->boxlabel, 'graph');
-			return $preview->showBox($preview->info_box_head, $preview->info_box_contents, $nooutput);
 		}
 		if (!$this->lmdbcrmDataLoaded) {
 			return '';
@@ -217,7 +218,7 @@ class lmdbcrm_graph_marginrates extends LmdbCrmBox
 	 */
 	protected function renderMarginGraph($data, $suffix, $title)
 	{
-		global $langs, $conf;
+		global $langs, $conf, $user;
 
 		$turnover = (float) $data['turnover'];
 		$cost = (float) $data['cost'];
@@ -276,7 +277,7 @@ class lmdbcrm_graph_marginrates extends LmdbCrmBox
 		$graph->setHeight((string) $graphHeight);
 		$graph->setWidth((string) $graphWidth);
 
-		$graphid = 'lmdbcrmmarg_'.$suffix.'_e'.((int) $conf->entity);
+		$graphid = 'lmdbcrmmarg_'.$suffix.'_e'.((int) $conf->entity).'_u'.((int) $user->id).'_'.($user->hasRight('lmdbcrm', 'widgets', 'readall') ? 'all' : 'own');
 		$graph->draw($graphid);
 
 		return $label.$graph->show(0);

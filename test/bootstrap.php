@@ -70,6 +70,7 @@ class User
 	public $grants = array();
 	public function __construct($db = null) {}
 	public function hasRight($module, $first, $second = '') { return in_array($module.'.'.$first.($second === '' ? '' : '.'.$second), $this->grants, true); }
+	public function getNomUrl(...$args) { return '<a>'.dol_escape_htmltag($this->login ?? 'OWN_USER').'</a>'; }
 	public function addrights(...$args) { throw new RuntimeException('Automatic grant attempted'); }
 	public function clearrights() { throw new RuntimeException('Implicit administrator grant reload'); }
 }
@@ -87,6 +88,7 @@ class Translate
 {
 	public $defaultlang = 'fr_FR';
 	public $charset_output = 'UTF-8';
+	public function getCurrencySymbol($currency) { return $currency; }
 	public function load($file) {}
 	public function loadLangs($files) {}
 	public function trans($key, ...$args) { return $key; }
@@ -95,7 +97,11 @@ class Translate
 }
 class DolGraph
 {
-	public function __construct() { throw new RuntimeException('Unexpected real chart in empty/preview fixture'); }
+	public $data = array();
+	public function __construct() { if (empty($GLOBALS['allowTestGraphs'])) throw new RuntimeException('Unexpected chart in empty fixture'); }
+	public function SetData($data) { $this->data = $data; }
+	public function __call($name, $args) { return null; }
+	public function show($mode = 0) { return '<span class="test-graph">'.htmlspecialchars(json_encode($this->data), ENT_QUOTES, 'UTF-8').'</span>'; }
 }
 class AccessDenied extends RuntimeException {}
 class InfoBox { public static function getListOfPagesForBoxes() { return array(0 => 'Home'); } }
@@ -127,6 +133,7 @@ function llxFooter(...$args) { print '</body></html>'; }
 function load_fiche_titre($title, ...$args) { return '<h1>'.$title.'</h1>'; }
 function print_liste_field_titre($title, ...$args) { print '<th>'.$title.'</th>'; }
 function dol_print_error(...$args) { throw new RuntimeException('SQL error'); }
+function price($value, ...$args) { return (string) $value; }
 function natural_search($fields, $value) { return ''; }
 
 function resetContext()

@@ -165,9 +165,9 @@ class modLmdbCrm extends DolibarrModules
 		/* END MODULEBUILDER TABS */
 		// Example:
 		// To add a new tab identified by code tabname1
-		// $this->tabs[] = array('data' => 'objecttype:+tabname1:Title1:mylangfile@lmdbcrm:$user->hasRight('lmdbcrm', 'myobject', 'read'):/lmdbcrm/mynewtab1.php?id=__ID__');
+		// $this->tabs[] = array('data' => 'objecttype:+tabname1:Title1:mylangfile@lmdbcrm:$user->hasRight('lmdbcrm', 'myobject', 'readall'):/lmdbcrm/mynewtab1.php?id=__ID__');
 		// To add another new tab identified by code tabname2. Label will be result of calling all substitution functions on 'Title2' key.
-		// $this->tabs[] = array('data' => 'objecttype:+tabname2:SUBSTITUTION_Title2:mylangfile@lmdbcrm:$user->hasRight('othermodule', 'otherobject', 'read'):/lmdbcrm/mynewtab2.php?id=__ID__',
+		// $this->tabs[] = array('data' => 'objecttype:+tabname2:SUBSTITUTION_Title2:mylangfile@lmdbcrm:$user->hasRight('othermodule', 'otherobject', 'readall'):/lmdbcrm/mynewtab2.php?id=__ID__',
 		// To remove an existing tab identified by code tabname
 		// $this->tabs[] = array('data' => 'objecttype:-tabname:NU:conditiontoremove');
 		//
@@ -269,34 +269,36 @@ class modLmdbCrm extends DolibarrModules
 		// Permissions provided by this module
 		$this->rights = array();
 		$r = 0;
+		// Offsets 1-4 remain reserved for the former masked/full permissions.
+		$r += 4;
 
 		$r++;
 		$this->rights[$r][0] = $this->numero * 100 + $r;
-		$this->rights[$r][1] = 'LmdbCrmPermissionRankingMasked';
-		$this->rights[$r][3] = 0;
-		$this->rights[$r][4] = 'ranking';
-		$this->rights[$r][5] = 'readmasked';
-
-		$r++;
-		$this->rights[$r][0] = $this->numero * 100 + $r;
-		$this->rights[$r][1] = 'LmdbCrmPermissionRankingRead';
+		$this->rights[$r][1] = 'LmdbCrmPermissionRankingOwn';
 		$this->rights[$r][3] = 0;
 		$this->rights[$r][4] = 'ranking';
 		$this->rights[$r][5] = 'read';
 
 		$r++;
 		$this->rights[$r][0] = $this->numero * 100 + $r;
-		$this->rights[$r][1] = 'LmdbCrmPermissionWidgetsMasked';
+		$this->rights[$r][1] = 'LmdbCrmPermissionRankingAll';
 		$this->rights[$r][3] = 0;
-		$this->rights[$r][4] = 'widgets';
-		$this->rights[$r][5] = 'readmasked';
+		$this->rights[$r][4] = 'ranking';
+		$this->rights[$r][5] = 'readall';
 
 		$r++;
 		$this->rights[$r][0] = $this->numero * 100 + $r;
-		$this->rights[$r][1] = 'LmdbCrmPermissionWidgetsRead';
+		$this->rights[$r][1] = 'LmdbCrmPermissionWidgetsOwn';
 		$this->rights[$r][3] = 0;
 		$this->rights[$r][4] = 'widgets';
 		$this->rights[$r][5] = 'read';
+
+		$r++;
+		$this->rights[$r][0] = $this->numero * 100 + $r;
+		$this->rights[$r][1] = 'LmdbCrmPermissionWidgetsAll';
+		$this->rights[$r][3] = 0;
+		$this->rights[$r][4] = 'widgets';
+		$this->rights[$r][5] = 'readall';
 
 
 		// Main menu entries to add
@@ -311,7 +313,7 @@ class modLmdbCrm extends DolibarrModules
 			'url' => '/lmdbcrm/commercial_ranking.php',
 			'langs' => 'lmdbcrm@lmdbcrm',
 			'position' => 1000,
-			'perms' => 'empty($user->socid) && $user->hasRight("propal", "lire") && ($user->hasRight("lmdbcrm", "ranking", "read") || $user->hasRight("lmdbcrm", "ranking", "readmasked"))',
+			'perms' => 'empty($user->socid) && $user->hasRight("propal", "lire") && ($user->hasRight("lmdbcrm", "ranking", "readall") || $user->hasRight("lmdbcrm", "ranking", "read"))',
 			'enabled' => 'isModEnabled("lmdbcrm") && isModEnabled("propal")',
 			'target' => '',
 			'user' => 0,
@@ -372,7 +374,18 @@ class modLmdbCrm extends DolibarrModules
 		$sql = array();
 		
 		// Existing definitions are kept by remove(); native insertion is idempotent.
-		return $this->_init($sql, $options);
+		if ($this->db->begin() <= 0) {
+			return -1;
+		}
+		$result = $this->_init($sql, $options);
+		if ($result <= 0 || $this->migrateConsultationRights() < 0) {
+			$this->db->rollback();
+			return -1;
+		}
+		if ($this->db->commit() <= 0) {
+			return -1;
+		}
+		return 1;
 	}
 
 	/**
@@ -388,6 +401,35 @@ class modLmdbCrm extends DolibarrModules
 		$sql = array();
 		// Disabling execution must not erase personalised widget positions.
 		return $this->_remove($sql, $options.' noboxes');
+	}
+
+	/**
+	 * Transfer explicit legacy assignments once, without promoting masked access to full access.
+	 * Old definitions remain reserved; deleting old assignments makes revocation durable.
+	 * Runs inside init's transaction, in the active entity only.
+	 *
+	 * @return int 1 on success, -1 on SQL error
+	 */
+	private function migrateConsultationRights()
+	{
+		global $conf;
+
+		foreach (array('user_rights' => 'fk_user', 'usergroup_rights' => 'fk_usergroup') as $table => $actor) {
+			foreach (array(1 => 5, 2 => 6, 3 => 7, 4 => 8) as $oldOffset => $newOffset) {
+				$oldId = $this->numero * 100 + $oldOffset;
+				$newId = $this->numero * 100 + $newOffset;
+				$sql = "INSERT INTO ".MAIN_DB_PREFIX.$table." (".$actor.", fk_id, entity)";
+				$sql .= " SELECT oldright.".$actor.", ".$newId.", oldright.entity FROM ".MAIN_DB_PREFIX.$table." as oldright";
+				$sql .= " WHERE oldright.fk_id = ".$oldId." AND oldright.entity = ".((int) $conf->entity);
+				$sql .= " AND NOT EXISTS (SELECT 1 FROM ".MAIN_DB_PREFIX.$table." as existing";
+				$sql .= " WHERE existing.".$actor." = oldright.".$actor." AND existing.entity = oldright.entity AND existing.fk_id = ".$newId.")";
+				if (!$this->db->query($sql) || !$this->db->query("DELETE FROM ".MAIN_DB_PREFIX.$table." WHERE fk_id = ".$oldId." AND entity = ".((int) $conf->entity))) {
+					$this->error = $this->db->lasterror();
+					return -1;
+				}
+			}
+		}
+		return 1;
 	}
 
 	/**

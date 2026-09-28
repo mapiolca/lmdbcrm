@@ -73,7 +73,7 @@ class lmdbcrm_graph_signedturnover extends LmdbCrmBox
 		$this->param = $param;
 		$this->hidden = !isModEnabled('lmdbcrm') || !isModEnabled('propal') || !empty($user->socid)
 			|| !$user->hasRight('propal', 'lire')
-			|| (!$user->hasRight('lmdbcrm', 'widgets', 'read') && !$user->hasRight('lmdbcrm', 'widgets', 'readmasked'));
+			|| (!$user->hasRight('lmdbcrm', 'widgets', 'readall') && !$user->hasRight('lmdbcrm', 'widgets', 'read'));
 	}
 
 	/**
@@ -93,13 +93,14 @@ class lmdbcrm_graph_signedturnover extends LmdbCrmBox
 		$this->lmdbcrmDataLoaded = false;
 		$this->hidden = !isModEnabled('lmdbcrm') || !isModEnabled('propal') || !empty($user->socid)
 			|| !$user->hasRight('propal', 'lire')
-			|| (!$user->hasRight('lmdbcrm', 'widgets', 'read') && !$user->hasRight('lmdbcrm', 'widgets', 'readmasked'));
-		if ($this->hidden || !$user->hasRight('lmdbcrm', 'widgets', 'read')) {
+			|| (!$user->hasRight('lmdbcrm', 'widgets', 'readall') && !$user->hasRight('lmdbcrm', 'widgets', 'read'));
+		if ($this->hidden) {
 			return;
 		}
 		$this->lmdbcrmDataLoaded = true;
+		$this->lmdbcrmLoadedAll = $user->hasRight('lmdbcrm', 'widgets', 'readall');
 
-		$debug = GETPOSTINT('debug_lmdbcrmsignedturnover');
+		$debug = $user->hasRight('lmdbcrm', 'widgets', 'readall') && GETPOSTINT('debug_lmdbcrmsignedturnover');
 
 		$rangeCurrent = $this->getFiscalYearRange(0);
 		$rangePrev1 = $this->getFiscalYearRange(-1);
@@ -159,7 +160,7 @@ class lmdbcrm_graph_signedturnover extends LmdbCrmBox
 			'subclass' => 'classfortooltip',
 		);
 
-		$contentHtml = '';
+		$contentHtml = $user->hasRight('lmdbcrm', 'widgets', 'readall') ? '' : '<p class="opacitymedium center">'.dol_escape_htmltag($langs->trans('LmdbCrmOwnDataOnly')).'</p>';
 
 		if ($totalAmount <= 0) {
 			$contentHtml .= '<div class="center opacitymedium">'.$langs->trans('LmdbCrmSignedTurnoverCurveNoData').'</div>';
@@ -181,7 +182,7 @@ class lmdbcrm_graph_signedturnover extends LmdbCrmBox
 			$graph->setShowLegend(1);
 			$graph->setMinValue(0);
 
-			$graphId = 'lmdbcrmsignedturnoverfy_e'.((int) $conf->entity);
+			$graphId = 'lmdbcrmsignedturnoverfy_e'.((int) $conf->entity).'_u'.((int) $user->id).'_'.($user->hasRight('lmdbcrm', 'widgets', 'readall') ? 'all' : 'own');
 			$graph->draw($graphId);
 
 			$contentHtml .= '<div class="center">'.$graph->show(0).'</div>';
@@ -214,20 +215,18 @@ class lmdbcrm_graph_signedturnover extends LmdbCrmBox
 
 		$this->hidden = !isModEnabled('lmdbcrm') || !isModEnabled('propal') || !empty($user->socid)
 			|| !$user->hasRight('propal', 'lire')
-			|| (!$user->hasRight('lmdbcrm', 'widgets', 'read') && !$user->hasRight('lmdbcrm', 'widgets', 'readmasked'));
+			|| (!$user->hasRight('lmdbcrm', 'widgets', 'readall') && !$user->hasRight('lmdbcrm', 'widgets', 'read'));
 		if ($this->hidden) {
 			$this->info_box_head = array();
 			$this->info_box_contents = array();
 			$this->lmdbcrmDataLoaded = false;
 			return '';
 		}
-		if (!$user->hasRight('lmdbcrm', 'widgets', 'read')) {
+		// Never reuse a previously loaded scope after a permission transition.
+		if ($this->lmdbcrmLoadedAll !== $user->hasRight('lmdbcrm', 'widgets', 'readall')) {
 			$this->info_box_head = array();
 			$this->info_box_contents = array();
 			$this->lmdbcrmDataLoaded = false;
-			$preview = new LmdbCrmMaskedBox($this->db);
-			$preview->prepare($this->boxcode, $this->box_id, $this->boxlabel, 'graph');
-			return $preview->showBox($preview->info_box_head, $preview->info_box_contents, $nooutput);
 		}
 		if (!$this->lmdbcrmDataLoaded) {
 			return '';
@@ -333,11 +332,14 @@ class lmdbcrm_graph_signedturnover extends LmdbCrmBox
 
 		$signedStatus = (defined('Propal::STATUS_SIGNED') ? Propal::STATUS_SIGNED : 2);
 		$billedStatus = (defined('Propal::STATUS_BILLED') ? Propal::STATUS_BILLED : 4);
-		$debug = GETPOSTINT('debug_lmdbcrmsignedturnover');
+		$debug = $user->hasRight('lmdbcrm', 'widgets', 'readall') && GETPOSTINT('debug_lmdbcrmsignedturnover');
 
 		$sql = "SELECT YEAR(p.".$dateField.") as y, MONTH(p.".$dateField.") as m, SUM(p.total_ht) as amount";
 		$sql .= " FROM ".MAIN_DB_PREFIX."propal as p";
 		$sql .= " WHERE p.entity IN (".getEntity('propal').")";
+		if (!$user->hasRight('lmdbcrm', 'widgets', 'readall')) {
+			$sql .= " AND p.fk_user_author = ".((int) $user->id);
+		}
 		if (!$user->hasRight('societe', 'client', 'voir')) {
 			$sql .= " AND EXISTS (SELECT sc.fk_soc FROM ".MAIN_DB_PREFIX."societe_commerciaux as sc";
 			$sql .= " WHERE sc.fk_soc = p.fk_soc AND sc.fk_user = ".((int) $user->id).")";
