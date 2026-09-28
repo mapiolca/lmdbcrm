@@ -86,7 +86,7 @@ class lmdbcrm_podium_signedturnover extends LmdbCrmBox
 	{
 		global $langs, $conf, $user;
 
-		$langs->loadLangs(array('lmdbcrm@lmdbcrm', 'propal', 'users'));
+		$langs->loadLangs(array('main', 'lmdbcrm@lmdbcrm', 'propal', 'users'));
 
 		$this->info_box_head = array();
 		$this->info_box_contents = array();
@@ -242,21 +242,17 @@ class lmdbcrm_podium_signedturnover extends LmdbCrmBox
 				}
 			} else {
 				$this->info_box_contents[] = array(
-					0 => array(
-						'td' => 'class="center"',
-						'asis' => 1,
-						'colspan' => 3,
-						'align' => 'center',
-						'text' => $langs->trans('NoData'),
+					array(
+						'td' => 'class="center opacitymedium" colspan="3"',
+						'text' => $langs->trans('NoRecordFound'),
 					),
 				);
 			}
 		} else {
 			$this->info_box_contents[] = array(
 				0 => array(
-					'td' => 'class="center"',
+					'td' => 'class="center" colspan="3"',
 					'asis' => 1,
-					'colspan' => 3,
 					'align' => 'center',
 					'text' => $langs->trans('Error').' '.$this->db->lasterror(),
 				),

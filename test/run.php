@@ -112,6 +112,27 @@ foreach ($classes as $index => $class) {
 
 }
 
+// Empty podiums must produce one native cell spanning all three columns.
+foreach (array('lmdbcrm_podium_signedquotes', 'lmdbcrm_podium_signedturnover') as $class) {
+	foreach (array('read', 'readall') as $right) {
+		resetContext();
+		$user->grants[] = 'lmdbcrm.widgets.'.$right;
+		$box = new $class($db);
+		$box->box_id = 300;
+		foreach (array(false, false, true) as $queryFails) {
+			$db->failQuery = $queryFails;
+			captureLoad($box);
+			$html = $box->showBox(null, null, 1);
+			$message = $queryFails ? 'SIMULATED_SQL_ERROR' : 'NoRecordFound';
+			preg_match_all('/<tr\b[^>]*>(.*?)<\/tr>/s', $html, $rows);
+			$matching = array_values(array_filter($rows[1], function ($row) use ($message) { return strpos($row, $message) !== false; }));
+			check(count($matching) === 1, $class.' '.$right.' empty/error message once');
+			check(substr_count($matching[0], '<td') === 1 && strpos($matching[0], 'colspan="3"') !== false, $class.' single full-width empty/error cell');
+			check(strpos($html, 'NoData') === false && strpos($html, '\\"') === false, $class.' no untranslated key or escaped attributes');
+		}
+	}
+}
+
 resetContext();
 $descriptor = new modLmdbCrm($db);
 check(count($descriptor->rights) === 4, 'four rights');
