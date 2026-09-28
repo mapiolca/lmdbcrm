@@ -103,3 +103,6 @@ LmdbCrmOtherSalesRep = Autre commercial
 LmdbCrmOwnDataOnly = Seules vos données sont affichées en clair.
 LmdbCrmOwnRankingNotice = Votre position est calculée parmi les données accessibles, par nombre de devis signés. Les autres commerciaux et leurs valeurs sont masqués.
 LmdbCrmOwnNoSignedProposal = Aucun devis signé à votre nom sur cette période.
+
+LmdbCrmSignedTurnoverEntitiesTitle=CA signé par mois multi-entités
+LmdbCrmSignedTurnoverEntitiesTooltip=Une courbe de CA signé HT par entité partageant ses devis, sur l’exercice courant de l’entité consultée. Les droits commerciaux et CRM restent appliqués. Aucun exercice précédent.

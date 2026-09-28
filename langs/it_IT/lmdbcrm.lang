@@ -93,3 +93,6 @@ LmdbCrmOtherSalesRep = Altro commerciale
 LmdbCrmOwnDataOnly = Solo i propri dati sono visualizzati in chiaro.
 LmdbCrmOwnRankingNotice = La posizione è calcolata sui dati accessibili in base al numero di preventivi firmati. Gli altri commerciali e i loro valori sono nascosti.
 LmdbCrmOwnNoSignedProposal = Nessun preventivo firmato a proprio nome in questo periodo.
+
+LmdbCrmSignedTurnoverEntitiesTitle=Fatturato firmato mensile per entità
+LmdbCrmSignedTurnoverEntitiesTooltip=Una curva degli importi firmati al netto delle imposte per entità con preventivi condivisi, durante l’esercizio corrente dell’entità consultata. Restano applicati i permessi commerciali e CRM. Nessun esercizio precedente.

@@ -16,7 +16,7 @@ php test/run.php
 
 The harness copies the selected native `ModeleBoxes` and `DolibarrModules` into an isolated directory under `.test-cache`. It executes the real renderer and permission-registration method. Session, date, SQL, language and filesystem helper implementations are test doubles; the suite does not load an instance configuration or use real users. Warnings fail tests; native deprecations from older Dolibarr versions on newer PHP are excluded.
 
-Coverage includes all seven widgets, all four permission combinations, independent ranking rights, the ranking entry point in subprocesses, native menu conditions, direct load/render calls, module/native-right/external-user denials, repeated loads, stale-data downgrades, cache failures, and configuration restoration. Empty podiums and SQL failures are rendered through the native renderer in personal/full modes: a single message cell must span the three columns, including after repeated loads. Language calls remain simulated; the empty message uses the native `NoRecordFound` key. Debug parameters are deliberately enabled. Populated fixtures verify the viewer’s fourth position outside the podium, their own clear values and the absence of third-party secrets, including forged identity filters.
+Coverage includes all eight widgets, all four permission combinations, independent ranking rights, the ranking entry point in subprocesses, native menu conditions, direct load/render calls, module/native-right/external-user denials, repeated loads, stale-data downgrades, cache failures, and configuration restoration. Empty podiums and SQL failures are rendered through the native renderer in personal/full modes: a single message cell must span the three columns, including after repeated loads. Language calls remain simulated; the empty message uses the native `NoRecordFound` key. Debug parameters are deliberately enabled. Populated fixtures verify the viewer’s fourth position outside the podium, their own clear values and the absence of third-party secrets, including forged identity filters.
 
 ## Real SQL and registration
 
@@ -36,3 +36,13 @@ CI runs both suites with Dolibarr 20.0.0 / 24.0.0 and PHP 8.0 / 8.4. No dependen
 - Reactivate the module twice and compare user/group assignments and widget positions.
 
 No production instance, browser or Multicompany installation is validated by the automated harness alone.
+
+## Multi-entity turnover coverage
+
+`test/entities.php` runs within `test/run.php`: rights matrix, native rights, external users, missing module/sharing, one query for the current fiscal year, twelve entities, missing months, zero amounts, shifted fiscal year, empty/error states, repeated loads, cache invalidation and sharing/permission changes before rendering. SQL and graphs are simulated in this suite.
+
+`php test/nativegraph.php` separately executes the unmodified native DolGraph and ModeleBoxes classes for twelve series and checks every legend/colour, on Dolibarr 20.0.0 and 24.0.0. Session, theme and utility helpers remain simulated; this is generated HTML/JavaScript validation, not a browser test. The CI checkout includes `htdocs/core/class` for this test.
+
+`test/sql.php` executes the per-entity aggregation against MariaDB: independent entity totals, restricted/personal access, an empty shared entity and exclusion of an unshared entity. Eight catalogue definitions and seven unchanged default placements are checked through native registration.
+
+Source inspection: Multicompany 24.0.2, local commit `44e62e9`, `sql/llx_entity.sql` (`rowid`, `label`) and `ActionsMulticompany::getEntity()` confirm the entity-label schema and proposal-sharing scope. This is not a live test of the plugin, nor proof of all older Multicompany versions. On a deployed test instance, verify the installed plugin’s sharing configuration, fiscal starting month, entity names, legend readability with many entities, mobile rendering, and that only the current fiscal year is shown.

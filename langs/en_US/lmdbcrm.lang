@@ -103,3 +103,6 @@ LmdbCrmOtherSalesRep = Other sales representative
 LmdbCrmOwnDataOnly = Only your own data is shown in clear text.
 LmdbCrmOwnRankingNotice = Your position is calculated within accessible data, by signed proposal count. Other sales representatives and their values are hidden.
 LmdbCrmOwnNoSignedProposal = No signed proposal in your name for this period.
+
+LmdbCrmSignedTurnoverEntitiesTitle=Monthly signed turnover by entity
+LmdbCrmSignedTurnoverEntitiesTooltip=One signed turnover line excluding tax per shared proposal entity, over the viewing entity’s current fiscal year. Commercial and CRM permissions still apply. No previous years.

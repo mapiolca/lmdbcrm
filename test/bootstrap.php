@@ -95,13 +95,18 @@ class Translate
 	public function transnoentities($key, ...$args) { return $key; }
 	public function transnoentitiesnoconv($key, ...$args) { return $key; }
 }
+if (getenv('LMDBCRM_NATIVE_GRAPH')) {
+	require $coreSource.'/core/class/dolgraph.class.php';
+} else {
 class DolGraph
 {
 	public $data = array();
+	public $datacolor = array();
 	public function __construct() { if (empty($GLOBALS['allowTestGraphs'])) throw new RuntimeException('Unexpected chart in empty fixture'); }
-	public function SetData($data) { $this->data = $data; }
-	public function __call($name, $args) { return null; }
+	public function SetData($data) { $this->data = $data; $GLOBALS['lastTestGraph'] = $this; }
+	public function __call($name, $args) { $GLOBALS['testGraphCalls'][$name] = $args; return null; }
 	public function show($mode = 0) { return '<span class="test-graph">'.htmlspecialchars(json_encode($this->data), ENT_QUOTES, 'UTF-8').'</span>'; }
+}
 }
 class AccessDenied extends RuntimeException {}
 class InfoBox { public static function getListOfPagesForBoxes() { return array(0 => 'Home'); } }

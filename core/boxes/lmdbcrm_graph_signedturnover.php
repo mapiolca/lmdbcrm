@@ -270,8 +270,8 @@ class lmdbcrm_graph_signedturnover extends LmdbCrmBox
 			$endMonth = 12;
 		}
 		$endYear = $startYear + ($fiscalStartMonth > 1 ? 1 : 0);
-		$endDay = dol_get_last_day($endYear, $endMonth, 0);
-		$endDate = dol_mktime(23, 59, 59, $endMonth, $endDay, $endYear);
+		// Native helper already returns the final day's timestamp at 23:59:59.
+		$endDate = dol_get_last_day($endYear, $endMonth, 0);
 		if (empty($endDate)) {
 			$endDate = dol_time_plus_duree($startDate, 12, 'm') - 1;
 		}

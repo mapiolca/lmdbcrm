@@ -2,13 +2,14 @@
 /** Real MariaDB queries and native registration; no running Dolibarr instance required. */
 require __DIR__.'/bootstrap.php';
 require $moduleRoot.'/core/modules/modLmdbCrm.class.php';
-foreach (glob($moduleRoot.'/core/boxes/lmdbcrm_*.php') as $file) require $file;
+foreach (glob($moduleRoot.'/core/boxes/lmdbcrm_*.php') as $file) require_once $file;
 $dsn = getenv('LMDBCRM_TEST_DSN');
 if (!$dsn) throw new RuntimeException('LMDBCRM_TEST_DSN must point to an empty, disposable test database.');
 $pdo = new PDO($dsn, getenv('LMDBCRM_TEST_USER'), getenv('LMDBCRM_TEST_PASSWORD'), array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
 
 // CREATE without IF NOT EXISTS deliberately refuses a reused/nonempty test schema.
 foreach (array(
+	'entity (rowid int PRIMARY KEY, label varchar(255))',
 	'const (name varchar(255), value varchar(255), entity int)',
 	'rights_def (id int, entity int, libelle varchar(255), module varchar(128), module_origin varchar(128), module_position varchar(64), family varchar(128), family_position varchar(64), type varchar(8), bydefault int, perms varchar(128), subperms varchar(128), enabled varchar(255), PRIMARY KEY(id, entity))',
 	'boxes_def (rowid int AUTO_INCREMENT PRIMARY KEY, file varchar(255), entity int, note varchar(255))',
@@ -33,6 +34,7 @@ foreach (array(array(1,10,7,1,100), array(2,20,8,1,900), array(3,30,9,2,5000)) a
 	$pdo->exec('INSERT INTO test_propaldet VALUES ('.$id.','.$id.','.$amount.','.($amount / 2).',1)');
 	$pdo->exec("INSERT INTO test_commande VALUES ($id,$soc,$entity,'CO$id','2026-09-20','2026-09-20','',3,0,$amount,0,$amount)");
 }
+$pdo->exec("INSERT INTO test_entity VALUES (1,'First'),(2,'Shared'),(3,'FORBIDDEN'),(4,'Empty')");
 $checks = 0;
 function sqlCheck($condition, $message) { global $checks; $checks++; if (!$condition) throw new RuntimeException($message); }
 
@@ -47,6 +49,7 @@ foreach (array('restricted', 'expanded', 'shared', 'shared-restricted') as $scop
 		if ($expanded) $user->grants[] = 'societe.client.voir';
 		if ($shared) { $conf->entity = 2; $entities = array('propal' => '1,2', 'commande' => '1,2', 'user' => '1,2'); }
 		$class = basename($file, '.php');
+		if ($class === 'lmdbcrm_graph_signedturnover_entities') $enabledModules['multicompany'] = true;
 		$box = new $class($db);
 		ob_start(); try { $box->loadBox(); } finally { ob_end_clean(); }
 		foreach ($db->queries as $sql) {
@@ -73,6 +76,27 @@ foreach (array('restricted', 'expanded', 'shared', 'shared-restricted') as $scop
 }
 
 }
+
+// Per-entity SQL grouping must preserve independent series and empty shared entities.
+$pdo->exec("INSERT INTO test_propal VALUES (91,10,7,1,2,'2025-09-20','2025-09-20','2025-09-20',99999), (92,10,7,1,2,'2027-09-20','2027-09-20','2027-09-20',66666), (93,10,7,1,0,'2026-09-20','2026-09-20','2026-09-20',88888), (94,10,7,3,2,'2026-09-20','2026-09-20','2026-09-20',77777)");
+foreach (array('own', 'all', 'restricted') as $access) {
+	resetContext();
+	$enabledModules['multicompany'] = true;
+	$entities['propal'] = '1,2,4';
+	$user->grants[] = $access === 'own' ? 'lmdbcrm.widgets.read' : 'lmdbcrm.widgets.readall';
+	if ($access !== 'restricted') $user->grants[] = 'societe.client.voir';
+	$box = new lmdbcrm_graph_signedturnover_entities($db);
+	$box->loadBox();
+	sqlCheck(count($db->queries) === 1, 'one entity aggregation query');
+	$rows = $pdo->query($db->queries[0])->fetchAll(PDO::FETCH_ASSOC);
+	$amounts = array_column($rows, 'amount', 'entity');
+	sqlCheck(array_keys($amounts) === array(1, 2, 4), 'only shared entity labels and rows');
+	sqlCheck((float) $amounts[1] === ($access === 'all' ? 1000.0 : 100.0), 'first entity independent sum');
+	sqlCheck((float) $amounts[2] === ($access === 'all' ? 5000.0 : 0.0), 'second entity independent sum and commercial restriction');
+	sqlCheck($amounts[4] === null, 'empty authorised entity retained');
+}
+
+$pdo->exec('DELETE FROM test_propal WHERE rowid >= 91');
 
 // Exercise the ranking query itself, including the restricted LEFT JOIN aggregation.
 foreach (array('restricted' => array(1, 100), 'expanded' => array(2, 1000), 'shared' => array(3, 6000), 'shared-restricted' => array(1, 100)) as $scope => $expected) {
@@ -141,7 +165,7 @@ for ($i = 0; $i < 2; $i++) {
 	sqlCheck($module->remove() === 1 && $module->init() === 1, 'disable/reactivate');
 	sqlCheck($before === $pdo->query('SELECT * FROM test_boxes ORDER BY rowid')->fetchAll(PDO::FETCH_ASSOC), 'positions retained');
 	sqlCheck((int) $pdo->query('SELECT COUNT(*) FROM test_rights_def')->fetchColumn() === 4, 'no duplicate rights');
-	sqlCheck((int) $pdo->query('SELECT COUNT(*) FROM test_boxes_def')->fetchColumn() === 7, 'no duplicate definitions');
+	sqlCheck((int) $pdo->query('SELECT COUNT(*) FROM test_boxes_def')->fetchColumn() === 8, 'no duplicate definitions');
 	sqlCheck((int) $pdo->query('SELECT COUNT(*) FROM test_user_rights')->fetchColumn() === 3, 'explicit user assignment retained');
 	sqlCheck((int) $pdo->query('SELECT COUNT(*) FROM test_usergroup_rights')->fetchColumn() === 2, 'explicit group assignment retained');
 }

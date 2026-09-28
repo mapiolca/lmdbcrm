@@ -261,6 +261,11 @@ class modLmdbCrm extends DolibarrModules
 				'note' => 'LmdbCrmDeliveredUnbilledOrdersDescription',
 				'enabledbydefaulton' => 'Home',
 			),
+			7 => array(
+				'file' => 'lmdbcrm_graph_signedturnover_entities.php@lmdbcrm',
+				'note' => 'LmdbCrmSignedTurnoverEntitiesTooltip',
+				'enabledbydefaulton' => '',
+			),
 		);
 
 		// Cronjobs

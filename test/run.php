@@ -1,7 +1,7 @@
 <?php
 require __DIR__.'/bootstrap.php';
 require $moduleRoot.'/core/modules/modLmdbCrm.class.php';
-foreach (glob($moduleRoot.'/core/boxes/lmdbcrm_*.php') as $file) require $file;
+foreach (glob($moduleRoot.'/core/boxes/lmdbcrm_*.php') as $file) require_once $file;
 
 $checks = 0;
 function check($condition, $message)
@@ -25,6 +25,7 @@ function oldCache($box, $value)
 
 $classes = array_map(function ($path) { return basename($path, '.php'); }, glob($moduleRoot.'/core/boxes/lmdbcrm_*.php'));
 foreach ($classes as $index => $class) {
+	if ($class === 'lmdbcrm_graph_signedturnover_entities') continue; // Dedicated sharing scenarios below.
 	foreach (array(0, 1, 2, 3) as $rights) {
 		resetContext();
 		$user->admin = 1;
@@ -181,4 +182,5 @@ foreach (array('ranking', 'lmdbcrm_podium_signedquotes', 'lmdbcrm_podium_signedt
 	fclose($pipes[1]); fclose($pipes[2]);
 	check(proc_close($process) === 0 && $error === '', $target.' full read precedence: '.$error);
 }
+require __DIR__.'/entities.php';
 print 'OK: '.$checks.' checks; native Dolibarr '.DOL_VERSION.' renderer/permissions; simulated session, SQL and cache helpers.'.PHP_EOL;

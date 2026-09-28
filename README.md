@@ -20,6 +20,14 @@ Divers widgets et fonctionnalités CRM pour compléter votre Dolibarr préféré
 - Version minimale : Dolibarr 20.0. Les contrôles automatisés et les limites des essais sont décrits dans [test/README.md](test/README.md).
 - PHP minimal : 8.0.
 
+## CA signé par mois multi-entités
+
+Un widget supplémentaire, **CA signé par mois multi-entités**, est proposé lorsque Multicompany est actif et que `getEntity('propal')` autorise plusieurs entités. Après mise à jour, réactiver le module pour enregistrer ce widget, puis l’ajouter depuis le catalogue natif : il n’est pas placé automatiquement et les widgets existants sont conservés.
+
+Chaque entité autorisée possède sa courbe et son nom dans la légende. La période commune est l’exercice courant de l’entité consultée ; aucun exercice précédent ni courbe globale supplémentaire n’est affiché. Les montants HT des devis signés ou facturés sont ventilés selon leur date de signature. Les mois et entités sans devis restent à zéro ; une période entièrement vide affiche le message natif d’absence de données. Une erreur de lecture est signalée séparément.
+
+Les droits `widgets.read` et `widgets.readall` gardent leur sens : seuls ses devis en lecture personnelle, ou tous les devis dans le périmètre commercial natif en lecture complète. Le partage n’accorde aucun droit supplémentaire. Les libellés d’entité sont limités au périmètre partagé des devis. Un retrait de partage entre chargement et rendu invalide le contenu déjà chargé.
+
 ## Permissions du classement et des widgets
 
 Les droits natifs utilisateurs/groupes apparaissent dans cet ordre :
@@ -35,7 +43,7 @@ La lecture personnelle affiche sa propre ligne en clair, à sa position réelle 
 
 Les graphiques montrent uniquement les séries de l’utilisateur ; les comparatifs entreprise sont masqués et ne sont pas interrogés. Les propositions personnelles sont celles dont l’utilisateur est auteur. Pour les commandes livrées non facturées, le périmètre personnel correspond aux tiers affectés commercialement à l’utilisateur.
 
-Les utilisateurs doivent rester internes et posséder la lecture native des devis (classement et six widgets) ou des commandes (septième widget). Les entités accessibles et restrictions commerciales natives s’appliquent avant les agrégations, même avec `readall`. Une position n’est donc pas nécessairement celle de toute l’entreprise.
+Les utilisateurs doivent rester internes et posséder la lecture native des devis (classement et sept widgets) ou des commandes (widget des commandes livrées). Les entités accessibles et restrictions commerciales natives s’appliquent avant les agrégations, même avec `readall`. Une position n’est donc pas nécessairement celle de toute l’entreprise.
 
 Tous les rendus de widgets, personnels ou complets, invalident leur ancien cache HTML et sont recalculés sans écrire de nouveau cache métier. Les formes neutres ne contiennent aucune valeur réelle. Un changement de niveau de permission entre chargement et rendu refuse le contenu déjà chargé. Les droits s’appliquent après leur rechargement natif lors d’une nouvelle requête.
 
@@ -172,3 +180,9 @@ Native proposal/order rights, internal-user restrictions, commercial assignments
 ## License
 - Code: GPLv3 or any later version (see `COPYING`).
 - Documentation: GFDL 1.3 (see the [license](https://www.gnu.org/licenses/fdl-1.3.en.html)).
+
+### Monthly signed turnover by entity
+
+The additional widget is available only with Multicompany enabled and multiple entities in the native proposal-sharing scope (`getEntity('propal')`). Reactivate LMDBCRM after upgrading, then add it from the native widget catalogue; it is not placed automatically. Existing placements are preserved.
+
+Each authorised entity has its own labelled line over the viewing entity’s current fiscal year, with no historical or additional total series. Signed/billed proposals use their signature date and amount excluding tax. Missing months/entities are zero; an entirely empty period uses the native empty-state message, while a query failure remains an error. Personal/full CRM rights and native commercial restrictions still apply before aggregation. A sharing change between loading and rendering invalidates the loaded result.
