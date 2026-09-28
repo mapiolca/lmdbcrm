@@ -43,6 +43,7 @@ foreach ($classes as $index => $class) {
 			check(!$db->queries && $debug === '', $class.' no data queries/debug without full right');
 			check($rights === 0 ? $html === '' : strpos($html, 'LmdbCrmDataMasked') !== false, $class.' preview/denied output');
 			check(strpos($html, 'REAL_USER_SELECTOR') === false && strpos($html, '<canvas') === false, $class.' no real selectors/chart');
+			if ($rights === 1) check(strpos($html, 'id="boxto_'.$box->box_id.'"') !== false && strpos($html, 'id="imgclose'.$box->box_id.'"') !== false, $class.' native move/close identity');
 		} else {
 			check(count($db->queries) > 0 && $html !== '', $class.' full load');
 			check(!file_exists($cache), $class.' old full cache removed and not rewritten');

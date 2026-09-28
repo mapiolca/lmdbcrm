@@ -61,7 +61,7 @@ foreach (array('restricted', 'expanded', 'shared', 'shared-restricted') as $scop
 			foreach (array('amount', 'turnover', 'total_ht') as $metric) {
 				if ($rows && array_key_exists($metric, $rows[0])) sqlCheck((float) array_sum(array_column($rows, $metric)) === (float) $amount, $class.' '.$scope.' '.$metric);
 			}
-			if ($rows && array_key_exists('cost', $rows[0])) sqlCheck((float) array_sum(array_column($rows, 'cost')) === $amount / 2, 'margin cost scope');
+			if ($rows && array_key_exists('cost', $rows[0])) sqlCheck((float) array_sum(array_column($rows, 'cost')) === (float) ($amount / 2), $class.' '.$scope.' margin cost scope');
 		}
 	}
 }
