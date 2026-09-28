@@ -154,4 +154,10 @@ foreach (array('ranking', 'lmdbcrm_podium_signedquotes', 'lmdbcrm_podium_signedt
 	check(proc_close($process) === 0 && $error === '', $target.' populated personal render: '.$error);
 	check(strpos($output, 'OK populated') !== false, $target.' personal assertions completed');
 }
+foreach (array('ranking', 'lmdbcrm_podium_signedquotes', 'lmdbcrm_podium_signedturnover') as $target) {
+	$process = proc_open(array(PHP_BINARY, __DIR__.'/personal.php', $target, 'all'), array(1 => array('pipe', 'w'), 2 => array('pipe', 'w')), $pipes);
+	$output = stream_get_contents($pipes[1]); $error = stream_get_contents($pipes[2]);
+	fclose($pipes[1]); fclose($pipes[2]);
+	check(proc_close($process) === 0 && $error === '', $target.' full read precedence: '.$error);
+}
 print 'OK: '.$checks.' checks; native Dolibarr '.DOL_VERSION.' renderer/permissions; simulated session, SQL and cache helpers.'.PHP_EOL;

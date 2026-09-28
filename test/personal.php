@@ -24,6 +24,8 @@ $db = new PersonalRenderDb();
 $user->grants[] = 'lmdbcrm.ranking.read';
 $user->grants[] = 'lmdbcrm.widgets.read';
 $user->grants[] = 'societe.client.voir';
+$fullRead = ($argv[2] ?? 'own') === 'all';
+if ($fullRead) { $user->grants[] = 'lmdbcrm.ranking.readall'; $user->grants[] = 'lmdbcrm.widgets.readall'; }
 $_GET['search_user'] = array(8);
 $_GET['search_user_keyword'] = 'SECRET_USER';
 $_GET['sortfield'] = 'total_amount';
@@ -39,10 +41,11 @@ if ($target === 'ranking') {
 	print $box->showBox(null, null, 1);
 }
 $html = ob_get_clean();
-if (strpos($html, 'SECRET') !== false || strpos($html, '994321') !== false || strpos($html, 'REAL_USER_SELECTOR') !== false) throw new RuntimeException($target.' exposed other users');
+if (!$fullRead && (strpos($html, 'SECRET') !== false || strpos($html, '994321') !== false || strpos($html, 'REAL_USER_SELECTOR') !== false)) throw new RuntimeException($target.' exposed other users');
 if (strpos($html, '42') === false && strpos($html, 'test-graph') === false) throw new RuntimeException($target.' lost own values');
 if ($target === 'ranking' || strpos($target, 'podium') !== false) {
 	if (strpos($html, 'OWN_USER') === false || strpos($html, '>4<') === false) throw new RuntimeException($target.' lost own fourth position');
-	if (strpos($html, 'LmdbCrmOtherSalesRep') === false) throw new RuntimeException($target.' lost anonymous ranking');
+	if (!$fullRead && strpos($html, 'LmdbCrmOtherSalesRep') === false) throw new RuntimeException($target.' lost anonymous ranking');
 }
+if ($fullRead && (strpos($html, 'SECRET_USER') === false || strpos($html, '994321') === false)) throw new RuntimeException('Full read must reveal authorised peers');
 print 'OK populated personal rendering: '.$target.PHP_EOL;

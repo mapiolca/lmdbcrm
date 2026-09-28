@@ -161,9 +161,7 @@ class lmdbcrm_podium_signedturnover extends LmdbCrmBox
 		$sql .= " AND p.date_signature >= '".$this->db->idate($fromDate)."'";
 		$sql .= " GROUP BY p.fk_user_author, u.lastname, u.firstname, u.login, u.photo, u.statut";
 		$sql .= " ORDER BY amount DESC, p.fk_user_author ASC";
-		if ($user->hasRight('lmdbcrm', 'widgets', 'readall')) {
-			$sql .= $this->db->plimit($this->max);
-		}
+		// Scan the scoped ranking once to retain the viewer even below the podium.
 
 		$resql = $this->db->query($sql);
 		if ($resql) {
@@ -172,6 +170,10 @@ class lmdbcrm_podium_signedturnover extends LmdbCrmBox
 				$rank = 1;
 				$ownRowFound = false;
 				while ($obj = $this->db->fetch_object($resql)) {
+					if ($rank > $this->max && (int) $obj->userid !== (int) $user->id) {
+						$rank++;
+						continue;
+					}
 					if (!$user->hasRight('lmdbcrm', 'widgets', 'readall') && (int) $obj->userid !== (int) $user->id) {
 						if ($rank <= $this->max) {
 							$this->info_box_contents[] = array(
