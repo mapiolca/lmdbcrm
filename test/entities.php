@@ -60,7 +60,7 @@ captureLoad($box);
 $html = $box->showBox(null, null, 1);
 check(count($lastTestGraph->data) === 12 && count($lastTestGraph->data[0]) === 13, '12 months and one series per entity without truncation');
 check(count($testGraphCalls['SetLegend'][0]) === 12 && $testGraphCalls['SetLegend'][0][0] === 'Entity &lt;1&gt;', 'escaped entity labels');
-check(count(array_unique($lastTestGraph->datacolor)) === 12, 'distinct stable colours beyond three entities');
+check($lastTestGraph->datacolor === array() && !isset($testGraphCalls['SetDataColor']), 'native graph palette is not overridden');
 check($lastTestGraph->data[8][1] === 0.0 && $lastTestGraph->data[8][12] === 1200.0, 'zero and positive series kept separately');
 check($lastTestGraph->data[0][12] === 0.0, 'missing months filled with zero');
 $db->zero = true;

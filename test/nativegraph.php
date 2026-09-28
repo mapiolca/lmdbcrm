@@ -24,13 +24,24 @@ $enabledModules['multicompany'] = true;
 $entities['propal'] = implode(',', range(1, 12));
 $user->grants[] = 'lmdbcrm.widgets.readall';
 $db = new NativeGraphDb();
-$box = new lmdbcrm_graph_signedturnover_entities($db);
-$box->box_id = 600;
-$box->loadBox();
-$html = $box->showBox(null, null, 1);
-foreach (range(1, 12) as $id) {
-	if (strpos($html, 'Entity '.$id) === false) throw new RuntimeException('Native chart lost entity '.$id);
-	if (strpos($html, '#'.substr(hash('sha256', 'lmdbcrm-entity-'.$id), 0, 6)) === false) throw new RuntimeException('Native chart lost colour '.$id);
+// Simulate two theme palettes; DolGraph loads and renders them without modification.
+$themeDir = DOL_DOCUMENT_ROOT.'/theme/eldy';
+mkdir($themeDir, 0777, true);
+foreach (array(12, 3) as $paletteSize) {
+	$palette = array();
+	foreach (range(1, $paletteSize) as $id) $palette[] = array($id * 10, 40, 90);
+	file_put_contents($themeDir.'/theme_vars.inc.php', '<?php $theme_datacolor = '.var_export($palette, true).';');
+	$box = new lmdbcrm_graph_signedturnover_entities($db);
+	$box->box_id = 600;
+	$box->loadBox();
+	$html = $box->showBox(null, null, 1);
+	foreach (range(1, 12) as $id) {
+		if (strpos($html, 'Entity '.$id) === false) throw new RuntimeException('Native chart lost entity '.$id);
+		if (strpos($html, '#'.substr(hash('sha256', 'lmdbcrm-entity-'.$id), 0, 6)) !== false) throw new RuntimeException('Custom colour still overrides theme');
+	}
+	foreach ($palette as $rgb) {
+		if (strpos($html, 'rgb('.implode(', ', $rgb)) === false) throw new RuntimeException('Native theme colour missing');
+	}
+	if (strpos($html, '2025') !== false || strpos($html, '2024') !== false) throw new RuntimeException('Historical series exposed');
 }
-if (strpos($html, '2025') !== false || strpos($html, '2024') !== false) throw new RuntimeException('Historical series exposed');
-print 'OK: native DolGraph '.DOL_VERSION.' renders all 12 entity series and colours.'.PHP_EOL;
+print 'OK: native DolGraph '.DOL_VERSION.' renders 12 entity series with simulated 12-colour and 3-colour themes.'.PHP_EOL;

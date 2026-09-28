@@ -103,10 +103,6 @@ class lmdbcrm_graph_signedturnover_entities extends lmdbcrm_graph_signedturnover
 				$graph = new DolGraph();
 				$graph->SetData($data);
 				$graph->SetLegend(array_map('dol_escape_htmltag', array_values($labels)));
-				// Stable colours for any number of entities (native default has only three).
-				foreach (array_keys($labels) as $index => $id) {
-					$graph->datacolor[$index] = '#'.substr(hash('sha256', 'lmdbcrm-entity-'.$id), 0, 6);
-				}
 				$graph->SetType(array('lines'));
 				$graph->setWidth(!empty($conf->dol_optimize_smallscreen) ? '350' : '720');
 				$graph->setHeight(!empty($conf->dol_optimize_smallscreen) ? '240' : '320');
