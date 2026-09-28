@@ -297,7 +297,7 @@ if ($num > 0) {
 		if (!$permissiontoreadall && (int) $obj->userid !== (int) $user->id) {
 			print '<tr class="oddeven"><td class="center">'.$rank.'</td><td>'.dol_escape_htmltag($langs->trans('LmdbCrmOtherSalesRep')).'</td>';
 			for ($column = 0; $column < 5; $column++) {
-				print '<td><span class="lmdbcrm-masked-value" aria-label="'.dol_escape_htmltag($langs->trans('LmdbCrmDataMasked')).'"></span></td>';
+				print '<td class="right"><span class="lmdbcrm-masked-value lmdbcrm-masked-value-right" aria-label="'.dol_escape_htmltag($langs->trans('LmdbCrmDataMasked')).'"></span></td>';
 			}
 			print '</tr>';
 			continue;

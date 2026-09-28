@@ -11,6 +11,9 @@
 	opacity: 0.15;
 	filter: blur(3px);
 }
+.lmdbcrm-masked-value-right {
+	margin-left: auto;
+}
 .lmdbcrm-masked-chart {
 	display: flex;
 	align-items: flex-end;
