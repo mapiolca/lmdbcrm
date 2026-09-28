@@ -71,8 +71,9 @@ if (!$res) {
 * @var User $user
 */
 
-dol_include_once('/core/lib/date.lib.php');
-dol_include_once('/user/class/user.class.php');
+require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
+require_once DOL_DOCUMENT_ROOT.'/user/class/user.class.php';
+require_once __DIR__.'/class/lmdbcrmmaskedbox.class.php';
 
 // Load translation files required by the page
 $langs->loadLangs(array('lmdbcrm@lmdbcrm', 'commercial', 'propal'));
@@ -81,12 +82,15 @@ $langs->loadLangs(array('lmdbcrm@lmdbcrm', 'commercial', 'propal'));
 if (!empty($user->socid)) {
 	accessforbidden();
 }
-if (!isModEnabled('propal')) {
+if (!isModEnabled('lmdbcrm') || !isModEnabled('propal')) {
 	accessforbidden();
 }
-if (empty($user->rights->propal->lire)) {
+if (!$user->hasRight('propal', 'lire')
+	|| (!$user->hasRight('lmdbcrm', 'ranking', 'readall') && !$user->hasRight('lmdbcrm', 'ranking', 'read'))) {
 	accessforbidden();
 }
+
+$permissiontoreadall = $user->hasRight('lmdbcrm', 'ranking', 'readall');
 
 // Manage sorting and search parameters
 $sortfield = GETPOST('sortfield', 'aZ09');
@@ -125,6 +129,60 @@ if (empty($sortorder) || !in_array(dol_strtoupper($sortorder), array('ASC', 'DES
 	$sortorder = 'DESC';
 }
 
+// Personal reading keeps a stable ranking; forged filters cannot reveal other users.
+if (!$permissiontoreadall) {
+	$search_user = array();
+	$search_user_keyword = '';
+	$sortfield = 'signed_count';
+	$sortorder = 'DESC';
+}
+
+// Resolve eligible sales representatives before ranking, using native effective rights.
+$eligibleUserIds = array();
+$entityAccess = null;
+if (isModEnabled('multicompany')) {
+	dol_include_once('/multicompany/class/dao_multicompany.class.php');
+	if (!class_exists('DaoMulticompany')) {
+		accessforbidden();
+	}
+	$entityAccess = new DaoMulticompany($db);
+}
+$candidateSql = "SELECT u.rowid FROM ".MAIN_DB_PREFIX."user as u WHERE u.statut = 1";
+$candidateSql .= " AND (u.fk_soc IS NULL OR u.fk_soc = 0)";
+$candidateSql .= " AND (u.entity IN (0,".((int) $conf->entity).")";
+if (isModEnabled('multicompany') && getDolGlobalInt('MULTICOMPANY_TRANSVERSE_MODE')) {
+	$candidateSql .= " OR EXISTS (SELECT ug.fk_user FROM ".MAIN_DB_PREFIX."usergroup_user as ug";
+	$candidateSql .= " WHERE ug.fk_user = u.rowid AND ug.entity = ".((int) $conf->entity).")";
+}
+$candidateSql .= ")";
+$candidates = $db->query($candidateSql);
+if (!$candidates) {
+	dol_print_error($db);
+	exit();
+}
+while (is_object($candidateRow = $db->fetch_object($candidates))) {
+	$candidateId = (int) $candidateRow->rowid;
+	if ($entityAccess !== null) {
+		$accessResult = $entityAccess->verifyRight((int) $conf->entity, $candidateId);
+		if ($accessResult < 0) {
+			dol_print_error($db);
+			exit();
+		}
+		if ($accessResult == 0) {
+			continue;
+		}
+	}
+	// Native rights_def.module uses the historical name propale; hasRight() resolves the propal alias.
+	$candidate = new User($db);
+	$candidate->id = $candidateId;
+	$candidate->loadRights('propale');
+	if ($candidate->hasRight('propal', 'creer')) {
+		$eligibleUserIds[] = $candidateId;
+	}
+}
+$db->free($candidates);
+$search_user = array_values(array_intersect($search_user, $eligibleUserIds));
+
 // Prepare url parameters for listing
 $param = '';
 if ($search_date_start > 0) {
@@ -153,7 +211,11 @@ print '<br>';
 
 // EN: Build SQL request for ranking
 // FR: Construire la requête SQL du classement
-$sql = "SELECT u.rowid as userid, u.lastname, u.firstname, u.login, u.photo, u.email";
+$sql = "SELECT u.rowid as userid";
+foreach (array('lastname', 'firstname', 'login', 'photo', 'email') as $field) {
+	$sql .= $permissiontoreadall ? ", u.".$field
+		: ", CASE WHEN u.rowid = ".((int) $user->id)." THEN u.".$field." ELSE NULL END as ".$field;
+}
 $sql .= ", COUNT(p.rowid) as total_count";
 $sql .= ", SUM(CASE WHEN p.fk_statut IN (2, 4) THEN 1 ELSE 0 END) as signed_count";
 $sql .= ", SUM(p.total_ht) as total_amount";
@@ -163,13 +225,17 @@ $sql .= " FROM ".$db->prefix()."user as u";
 $sql .= " LEFT JOIN ".$db->prefix()."propal as p ON p.fk_user_author = u.rowid";
 $sql .= " AND p.fk_statut IN (1, 2, 3, 4)";
 $sql .= " AND p.entity IN (".getEntity('propal').")";
+if (!$user->hasRight('societe', 'client', 'voir')) {
+	$sql .= " AND EXISTS (SELECT sc.fk_soc FROM ".MAIN_DB_PREFIX."societe_commerciaux as sc";
+	$sql .= " WHERE sc.fk_soc = p.fk_soc AND sc.fk_user = ".((int) $user->id).")";
+}
 if ($search_date_start > 0) {
 	$sql .= " AND p.datep >= '".$db->idate($search_date_start)."'";
 }
 if ($search_date_end > 0) {
 	$sql .= " AND p.datep <= '".$db->idate($search_date_end)."'";
 }
-$sql .= " WHERE u.entity IN (".getEntity('user').")";
+$sql .= " WHERE u.rowid IN (".implode(',', $eligibleUserIds ?: array(-1)).")";
 if (!empty($search_user)) {
 	$sql .= " AND u.rowid IN (".$db->sanitize(join(',', $search_user)).")";
 }
@@ -179,6 +245,7 @@ if ($search_user_keyword !== '') {
 $sql .= " GROUP BY u.rowid, u.lastname, u.firstname, u.login, u.photo, u.email";
 
 $sql .= $db->order($sortfield, $sortorder);
+$sql .= ", u.rowid ASC";
 
 $resql = $db->query($sql);
 if (!$resql) {
@@ -194,11 +261,15 @@ print '<form method="GET" action="'.dol_escape_htmltag($_SERVER['PHP_SELF']).'" 
 print '<input type="hidden" name="sortfield" value="'.$sortfield.'">';
 print '<input type="hidden" name="sortorder" value="'.$sortorder.'">';
 
+if (!$permissiontoreadall) {
+	print '<div class="info">'.dol_escape_htmltag($langs->trans('LmdbCrmOwnRankingNotice')).'</div>';
+}
+
 print '<div class="div-table-responsive">';
 print '<table class="tagtable liste">';
 
 print '<tr class="liste_titre_filter">';
-print '<td class="liste_titre" colspan="6">';
+print '<td class="liste_titre" colspan="7">';
 print '<div class="nowraponall">';
 print '<span class="opacitymedium">'.$langs->trans('PeriodRange').' : </span>';
 print $form->selectDate($search_date_start, 'search_date_start', 0, 0, 1, '', 1, 1);
@@ -209,9 +280,10 @@ print '</td>';
 print '</tr>';
 
 print '<tr class="liste_titre_filter">';
-print '<td class="liste_titre">';
+print '<td class="liste_titre" colspan="2">';
 // EN: User selector and text search
 // FR: Sélecteur utilisateur et recherche textuelle
+if ($permissiontoreadall) {
 print '<div class="inline-block">';
 print $form->select_dolusers(
 $search_user,
@@ -219,7 +291,7 @@ $search_user,
 0,               // show_empty
 null,            // exclude
 0,               // disabled
-'',              // include
+$eligibleUserIds ?: array(-1), // include only eligible sales representatives
 '',              // enableonly
 getEntity('user'), // force_entity
 0,               // maxlength
@@ -237,6 +309,7 @@ print '</div>';
 print '<div class="inline-block marginleftonly">';
 print '<input type="text" class="flat maxwidth150" name="search_user_keyword" value="'.dol_escape_htmltag($search_user_keyword).'" placeholder="'.$langs->trans('Search').'">';
 print '</div>';
+}
 print '</td>';
 print '<td class="liste_titre">';
 print '&nbsp;';
@@ -256,16 +329,27 @@ print '</td>';
 print '</tr>';
 
 print '<tr class="liste_titre">';
-print_liste_field_titre($langs->trans('LmdbCrmSalesRep'), $_SERVER['PHP_SELF'], 'userid', '', $param, '', $sortfield, $sortorder);
-print_liste_field_titre($langs->trans('LmdbCrmProposalsCount'), $_SERVER['PHP_SELF'], 'total_count', '', $param, '', $sortfield, $sortorder, 'center ');
-print_liste_field_titre($langs->trans('LmdbCrmSignedProposalsCount'), $_SERVER['PHP_SELF'], 'signed_count', '', $param, '', $sortfield, $sortorder, 'center ');
-print_liste_field_titre($langs->trans('LmdbCrmQuotedAmount'), $_SERVER['PHP_SELF'], 'total_amount', '', $param, '', $sortfield, $sortorder, 'right ');
-print_liste_field_titre($langs->trans('LmdbCrmSignedAmount'), $_SERVER['PHP_SELF'], 'signed_amount', '', $param, '', $sortfield, $sortorder, 'right ');
-print_liste_field_titre($langs->trans('LmdbCrmConversionRate'), $_SERVER['PHP_SELF'], 'conversion_rate', '', $param, '', $sortfield, $sortorder, 'center ');
+print '<th class="center">#</th>';
+print_liste_field_titre($langs->trans('LmdbCrmSalesRep'), $_SERVER['PHP_SELF'], $permissiontoreadall ? 'userid' : '', '', $param, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans('LmdbCrmProposalsCount'), $_SERVER['PHP_SELF'], $permissiontoreadall ? 'total_count' : '', '', $param, '', $sortfield, $sortorder, 'center ');
+print_liste_field_titre($langs->trans('LmdbCrmSignedProposalsCount'), $_SERVER['PHP_SELF'], $permissiontoreadall ? 'signed_count' : '', '', $param, '', $sortfield, $sortorder, 'center ');
+print_liste_field_titre($langs->trans('LmdbCrmQuotedAmount'), $_SERVER['PHP_SELF'], $permissiontoreadall ? 'total_amount' : '', '', $param, '', $sortfield, $sortorder, 'right ');
+print_liste_field_titre($langs->trans('LmdbCrmSignedAmount'), $_SERVER['PHP_SELF'], $permissiontoreadall ? 'signed_amount' : '', '', $param, '', $sortfield, $sortorder, 'right ');
+print_liste_field_titre($langs->trans('LmdbCrmConversionRate'), $_SERVER['PHP_SELF'], $permissiontoreadall ? 'conversion_rate' : '', '', $param, '', $sortfield, $sortorder, 'center ');
 print '</tr>';
 
 if ($num > 0) {
+	$rank = 0;
 	while ($obj = $db->fetch_object($resql)) {
+		$rank++;
+		if (!$permissiontoreadall && (int) $obj->userid !== (int) $user->id) {
+			print '<tr class="oddeven"><td class="center">'.$rank.'</td><td>'.dol_escape_htmltag($langs->trans('LmdbCrmOtherSalesRep')).'</td>';
+			foreach (array('center', 'center', 'right', 'right', 'center') as $alignment) {
+				print '<td class="'.$alignment.'"><span class="lmdbcrm-masked-value lmdbcrm-masked-value-inline" aria-label="'.dol_escape_htmltag($langs->trans('LmdbCrmDataMasked')).'"></span></td>';
+			}
+			print '</tr>';
+			continue;
+		}
 		$userstatic->id = $obj->userid;
 		$userstatic->lastname = $obj->lastname;
 		$userstatic->firstname = $obj->firstname;
@@ -274,6 +358,7 @@ if ($num > 0) {
 		$userstatic->photo = $obj->photo;
 		
 		print '<tr class="oddeven">';
+		print '<td class="center">'.$rank.'</td>';
 		print '<td class="nowraponall">'.$userstatic->getNomUrl(-1).'</td>';
 		print '<td class="center">'.(int) $obj->total_count.'</td>';
 		print '<td class="center">'.(int) $obj->signed_count.'</td>';
@@ -284,7 +369,7 @@ if ($num > 0) {
 		print '</tr>';
 	}
 } else {
-	print '<tr class="oddeven"><td colspan="6" class="opacitymedium center">'.$langs->trans('LmdbCrmNoRankingData').'</td></tr>';
+	print '<tr class="oddeven"><td colspan="7" class="opacitymedium center">'.$langs->trans('NoRecordFound').'</td></tr>';
 }
 
 print '</table>';

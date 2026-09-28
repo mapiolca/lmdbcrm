@@ -23,14 +23,14 @@
  * \brief   Podium widget for signed proposals on last 30 days.
  */
 
-require_once DOL_DOCUMENT_ROOT . '/core/boxes/modules_boxes.php';
+require_once __DIR__.'/../../class/lmdbcrmbox.class.php';
 require_once DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php';
 require_once DOL_DOCUMENT_ROOT . '/user/class/user.class.php';
 
 /**
  * Class to manage the signed proposals podium box
  */
-class lmdbcrm_podium_signedquotes extends ModeleBoxes
+class lmdbcrm_podium_signedquotes extends LmdbCrmBox
 {
 	/**
 	 * @var string Alphanumeric ID. Populated by the constructor.
@@ -71,7 +71,9 @@ class lmdbcrm_podium_signedquotes extends ModeleBoxes
 
 		$this->db = $db;
 		$this->param = $param;
-		$this->hidden = empty($user->rights->propal->lire);
+		$this->hidden = !isModEnabled('lmdbcrm') || !isModEnabled('propal') || !empty($user->socid)
+			|| !$user->hasRight('propal', 'lire')
+			|| (!$user->hasRight('lmdbcrm', 'widgets', 'readall') && !$user->hasRight('lmdbcrm', 'widgets', 'read'));
 	}
 
 	/**
@@ -82,9 +84,21 @@ class lmdbcrm_podium_signedquotes extends ModeleBoxes
 	 */
 	public function loadBox($max = 3)
 	{
-		global $langs;
+		global $langs, $conf, $user;
 
-		$langs->loadLangs(array('lmdbcrm@lmdbcrm', 'propal', 'users'));
+		$langs->loadLangs(array('main', 'lmdbcrm@lmdbcrm', 'propal', 'users'));
+
+		$this->info_box_head = array();
+		$this->info_box_contents = array();
+		$this->lmdbcrmDataLoaded = false;
+		$this->hidden = !isModEnabled('lmdbcrm') || !isModEnabled('propal') || !empty($user->socid)
+			|| !$user->hasRight('propal', 'lire')
+			|| (!$user->hasRight('lmdbcrm', 'widgets', 'readall') && !$user->hasRight('lmdbcrm', 'widgets', 'read'));
+		if ($this->hidden) {
+			return;
+		}
+		$this->lmdbcrmDataLoaded = true;
+		$this->lmdbcrmLoadedAll = $user->hasRight('lmdbcrm', 'widgets', 'readall');
 
 		$this->max = ($max > 0 ? $max : 3);
 
@@ -129,24 +143,50 @@ class lmdbcrm_podium_signedquotes extends ModeleBoxes
 		$now = dol_now();
 		$fromDate = dol_time_plus_duree($now, -30, 'd');
 
-		$sql = "SELECT p.fk_user_author as userid, COUNT(p.rowid) as qty, u.lastname, u.firstname, u.login, u.photo, u.statut";
+		$sql = "SELECT p.fk_user_author as userid, COUNT(p.rowid) as qty";
+		foreach (array('lastname', 'firstname', 'login', 'photo', 'statut') as $field) {
+			$sql .= $user->hasRight('lmdbcrm', 'widgets', 'readall') ? ", u.".$field
+				: ", CASE WHEN p.fk_user_author = ".((int) $user->id)." THEN u.".$field." ELSE NULL END as ".$field;
+		}
 		$sql .= " FROM ".MAIN_DB_PREFIX."propal as p";
 		$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."user as u ON u.rowid = p.fk_user_author";
 		$sql .= " WHERE p.entity IN (".getEntity('propal').")";
+		if (!$user->hasRight('societe', 'client', 'voir')) {
+			$sql .= " AND EXISTS (SELECT sc.fk_soc FROM ".MAIN_DB_PREFIX."societe_commerciaux as sc";
+			$sql .= " WHERE sc.fk_soc = p.fk_soc AND sc.fk_user = ".((int) $user->id).")";
+		}
 		$sql .= " AND p.fk_statut = ".Propal::STATUS_SIGNED;
 		$sql .= " AND p.fk_user_author IS NOT NULL";
 		$sql .= " AND p.date_signature IS NOT NULL";
 		$sql .= " AND p.date_signature >= '".$this->db->idate($fromDate)."'";
 		$sql .= " GROUP BY p.fk_user_author, u.lastname, u.firstname, u.login, u.photo, u.statut";
-		$sql .= " ORDER BY qty DESC";
-		$sql .= $this->db->plimit($this->max);
+		$sql .= " ORDER BY qty DESC, p.fk_user_author ASC";
+		// Scan the scoped ranking once to retain the viewer even below the podium.
 
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$num = $this->db->num_rows($resql);
 			if ($num > 0) {
 				$rank = 1;
+				$ownRowFound = false;
 				while ($obj = $this->db->fetch_object($resql)) {
+					if ($rank > $this->max && (int) $obj->userid !== (int) $user->id) {
+						$rank++;
+						continue;
+					}
+					if (!$user->hasRight('lmdbcrm', 'widgets', 'readall') && (int) $obj->userid !== (int) $user->id) {
+						if ($rank <= $this->max) {
+							$this->info_box_contents[] = array(
+								array('text' => (string) $rank, 'align' => 'center'),
+								array('text' => $langs->trans('LmdbCrmOtherSalesRep')),
+								array('text' => '<span class="lmdbcrm-masked-value" aria-label="'.dol_escape_htmltag($langs->trans('LmdbCrmDataMasked')).'"></span>', 'asis' => 1),
+							);
+						}
+						$rank++;
+						continue;
+					}
+
+					if ((int) $obj->userid === (int) $user->id) $ownRowFound = true;
 					$userlink = dol_escape_htmltag($langs->trans('Unknown'));
 					$photohtml = '';
 					if (!empty($obj->userid)) {
@@ -157,7 +197,7 @@ class lmdbcrm_podium_signedquotes extends ModeleBoxes
 						$tmpuser->login = $obj->login;
 						$tmpuser->photo = $obj->photo;
 						$tmpuser->statut = $obj->statut;
-						$userlink = $tmpuser->getNomUrl(1);
+						$userlink = $tmpuser->getNomUrl(-1);
 						if (!empty($tmpuser->photo)) {
 							$photourl = dol_buildpath('/viewimage.php', 1).'?modulepart=userphoto&file='.urlencode($tmpuser->photo);
 							$photohtml = '<img class="inline-block" style="max-height:32px;max-width:32px;border-radius:50%;margin-right:6px;" src="'.$photourl.'" alt="'.$langs->trans('Photo').'">';
@@ -180,7 +220,7 @@ class lmdbcrm_podium_signedquotes extends ModeleBoxes
 						1 => array(
 							'td' => 'class="left"',
 							'asis' => 1,
-							'text' => $tmpuser->getNomUrl(-1),
+							'text' => $userlink,
 						),
 						2 => array(
 							'td' => 'class="right"',
@@ -191,19 +231,14 @@ class lmdbcrm_podium_signedquotes extends ModeleBoxes
 					);
 					$rank++;
 				}
+				if (!$user->hasRight('lmdbcrm', 'widgets', 'readall') && !$ownRowFound) {
+					$this->info_box_contents[] = array(array('text' => $langs->trans('LmdbCrmOwnNoSignedProposal'), 'td' => 'colspan="3"'));
+				}
 			} else {
 				$this->info_box_contents[] = array(
-					0 => array(
-						'td' => 'class=\"center\" colspan=\"3\"',
-						'text' => $langs->trans('LmdbCrmSignedQuotesPodiumEmpty'),
-					),
-					1 => array(
-						'td' => 'class=\"center\" colspan=\"3\"',
-						'text' => '',
-					),
-					2 => array(
-						'td' => 'class=\"center\" colspan=\"3\"',
-						'text' => '',
+					array(
+						'td' => 'class="center opacitymedium" colspan="3"',
+						'text' => $langs->trans('NoRecordFound'),
 					),
 				);
 			}
@@ -212,7 +247,7 @@ class lmdbcrm_podium_signedquotes extends ModeleBoxes
 		} else {
 			$this->info_box_contents[] = array(
 				0 => array(
-					'td' => 'class=\"center\" colspan=\"3\"',
+					'td' => 'class="center" colspan="3"',
 					'asis' => 1,
 					'text' => dol_escape_htmltag($this->db->lasterror()),
 				),
@@ -230,6 +265,26 @@ class lmdbcrm_podium_signedquotes extends ModeleBoxes
 	 */
 	public function showBox($head = null, $contents = null, $nooutput = 0)
 	{
+		global $user;
+
+		$this->hidden = !isModEnabled('lmdbcrm') || !isModEnabled('propal') || !empty($user->socid)
+			|| !$user->hasRight('propal', 'lire')
+			|| (!$user->hasRight('lmdbcrm', 'widgets', 'readall') && !$user->hasRight('lmdbcrm', 'widgets', 'read'));
+		if ($this->hidden) {
+			$this->info_box_head = array();
+			$this->info_box_contents = array();
+			$this->lmdbcrmDataLoaded = false;
+			return '';
+		}
+		// Never reuse a previously loaded scope after a permission transition.
+		if ($this->lmdbcrmLoadedAll !== $user->hasRight('lmdbcrm', 'widgets', 'readall')) {
+			$this->info_box_head = array();
+			$this->info_box_contents = array();
+			$this->lmdbcrmDataLoaded = false;
+		}
+		if (!$this->lmdbcrmDataLoaded) {
+			return '';
+		}
 		return parent::showBox($this->info_box_head, $this->info_box_contents, $nooutput);
 	}
 

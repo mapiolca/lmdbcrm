@@ -10,6 +10,68 @@ permissions:
   contents: read
 
 jobs:
+  permissions:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { php: '8.0', dolibarr: '20.0.0', ref: '697bf01970740a3339cd99cf055b4428fc5e051c' }
+          - { php: '8.4', dolibarr: '20.0.0', ref: '697bf01970740a3339cd99cf055b4428fc5e051c' }
+          - { php: '8.4', dolibarr: '21.0.0', ref: 'fd970b582a4d8c5779a2958a4e9f4fce225cf085' }
+          - { php: '8.4', dolibarr: '22.0.0', ref: '49b9a6d19f3deb6d410c0e9b3310e95be4ea7710' }
+          - { php: '8.4', dolibarr: '23.0.0', ref: '57a1f05d490a7a80944a8232e9c613e6556d2704' }
+          - { php: '8.4', dolibarr: '24.0.0', ref: '769c7db907099643558e77d7002c109cfda919e5' }
+          - { php: '8.4', dolibarr: '25.0.0-alpha', ref: '2d2e5779a8e6b036d09383987e2d5ef2a49a8ff2' }
+    services:
+      mariadb:
+        image: mariadb:11.4
+        env:
+          MARIADB_ROOT_PASSWORD: test-only
+          MARIADB_DATABASE: lmdbcrm_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=10s --health-timeout=5s --health-retries=10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: pdo_mysql
+          coverage: none
+      - uses: actions/checkout@v4
+        with:
+          repository: Dolibarr/dolibarr
+          ref: ${{ matrix.ref }}
+          path: .test-cache/dolibarr
+          sparse-checkout: |
+            htdocs/core/boxes
+            htdocs/core/modules
+            htdocs/core/class
+            htdocs/core/lib
+            htdocs/user/class
+      - name: Lint module and tests
+        run: find . -path './.test-cache' -prune -o -name '*.php' -print0 | xargs -0 -n1 php -l
+      - name: Permission and native renderer regression tests
+        env:
+          LMDBCRM_CORE_SOURCE: ${{ github.workspace }}/.test-cache/dolibarr/htdocs
+          LMDBCRM_CORE_VERSION: ${{ matrix.dolibarr }}
+        run: |
+          php test/run.php
+          php test/nativegraph.php
+          php test/menu.php
+          php test/proposalrights.php
+      - name: MariaDB scope and native registration tests
+        env:
+          LMDBCRM_CORE_SOURCE: ${{ github.workspace }}/.test-cache/dolibarr/htdocs
+          LMDBCRM_CORE_VERSION: ${{ matrix.dolibarr }}
+          LMDBCRM_TEST_DSN: 'mysql:host=127.0.0.1;port=3306;dbname=lmdbcrm_test'
+          LMDBCRM_TEST_USER: root
+          LMDBCRM_TEST_PASSWORD: test-only
+        run: php test/sql.php
+
   build:
 
     runs-on: ubuntu-latest

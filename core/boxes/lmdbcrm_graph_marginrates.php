@@ -23,7 +23,7 @@
  * \brief   Graph widget for global margin rate (user and company).
  */
 
-require_once DOL_DOCUMENT_ROOT . '/core/boxes/modules_boxes.php';
+require_once __DIR__.'/../../class/lmdbcrmbox.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.form.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/dolgraph.class.php';
 require_once DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php';
@@ -31,7 +31,7 @@ require_once DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php';
 /**
  * Class to manage the margin rates graph box
  */
-class lmdbcrm_graph_marginrates extends ModeleBoxes
+class lmdbcrm_graph_marginrates extends LmdbCrmBox
 {
 	/**
 	 * @var string Alphanumeric ID. Populated by the constructor.
@@ -72,7 +72,9 @@ class lmdbcrm_graph_marginrates extends ModeleBoxes
 
 		$this->db = $db;
 		$this->param = $param;
-		$this->hidden = empty($user->rights->propal->lire);
+		$this->hidden = !isModEnabled('lmdbcrm') || !isModEnabled('propal') || !empty($user->socid)
+			|| !$user->hasRight('propal', 'lire')
+			|| (!$user->hasRight('lmdbcrm', 'widgets', 'readall') && !$user->hasRight('lmdbcrm', 'widgets', 'read'));
 	}
 
 	/**
@@ -86,6 +88,18 @@ class lmdbcrm_graph_marginrates extends ModeleBoxes
 		global $langs, $conf, $user;
 
 		$langs->loadLangs(array('lmdbcrm@lmdbcrm', 'propal'));
+
+		$this->info_box_head = array();
+		$this->info_box_contents = array();
+		$this->lmdbcrmDataLoaded = false;
+		$this->hidden = !isModEnabled('lmdbcrm') || !isModEnabled('propal') || !empty($user->socid)
+			|| !$user->hasRight('propal', 'lire')
+			|| (!$user->hasRight('lmdbcrm', 'widgets', 'readall') && !$user->hasRight('lmdbcrm', 'widgets', 'read'));
+		if ($this->hidden) {
+			return;
+		}
+		$this->lmdbcrmDataLoaded = true;
+		$this->lmdbcrmLoadedAll = $user->hasRight('lmdbcrm', 'widgets', 'readall');
 
 		$now = dol_now();
 
@@ -116,7 +130,7 @@ class lmdbcrm_graph_marginrates extends ModeleBoxes
 		);
 
 		$userData = $this->fetchMarginData($fromdate, $todate, (int) $user->id);
-		$companyData = $this->fetchMarginData($fromdate, $todate, 0);
+		$companyData = $user->hasRight('lmdbcrm', 'widgets', 'readall') ? $this->fetchMarginData($fromdate, $todate, 0) : array();
 
 		$form = new Form($this->db);
 
@@ -131,7 +145,9 @@ class lmdbcrm_graph_marginrates extends ModeleBoxes
 		$filterform .= '</form>';
 
 		$userGraph = $this->renderMarginGraph($userData, 'user', $langs->trans('LmdbCrmMarginUserLabel'));
-		$companyGraph = $this->renderMarginGraph($companyData, 'company', $langs->trans('LmdbCrmMarginCompanyLabel'));
+		$companyGraph = $user->hasRight('lmdbcrm', 'widgets', 'readall')
+			? $this->renderMarginGraph($companyData, 'company', $langs->trans('LmdbCrmMarginCompanyLabel'))
+			: LmdbCrmMaskedBox::renderPlaceholder('graph');
 
 		$graphsHtml = '<div class="center">'.$filterform.'<div class="flexcontainer wrap center">';
 		$graphsHtml .= '<div class="center lmdbcrm-graph-cell">'.$userGraph.'</div>';
@@ -169,6 +185,26 @@ class lmdbcrm_graph_marginrates extends ModeleBoxes
 	 */
 	public function showBox($head = null, $contents = null, $nooutput = 0)
 	{
+		global $user;
+
+		$this->hidden = !isModEnabled('lmdbcrm') || !isModEnabled('propal') || !empty($user->socid)
+			|| !$user->hasRight('propal', 'lire')
+			|| (!$user->hasRight('lmdbcrm', 'widgets', 'readall') && !$user->hasRight('lmdbcrm', 'widgets', 'read'));
+		if ($this->hidden) {
+			$this->info_box_head = array();
+			$this->info_box_contents = array();
+			$this->lmdbcrmDataLoaded = false;
+			return '';
+		}
+		// Never reuse a previously loaded scope after a permission transition.
+		if ($this->lmdbcrmLoadedAll !== $user->hasRight('lmdbcrm', 'widgets', 'readall')) {
+			$this->info_box_head = array();
+			$this->info_box_contents = array();
+			$this->lmdbcrmDataLoaded = false;
+		}
+		if (!$this->lmdbcrmDataLoaded) {
+			return '';
+		}
 		return parent::showBox($this->info_box_head, $this->info_box_contents, $nooutput);
 	}
 
@@ -182,7 +218,7 @@ class lmdbcrm_graph_marginrates extends ModeleBoxes
 	 */
 	protected function renderMarginGraph($data, $suffix, $title)
 	{
-		global $langs, $conf;
+		global $langs, $conf, $user;
 
 		$turnover = (float) $data['turnover'];
 		$cost = (float) $data['cost'];
@@ -241,7 +277,7 @@ class lmdbcrm_graph_marginrates extends ModeleBoxes
 		$graph->setHeight((string) $graphHeight);
 		$graph->setWidth((string) $graphWidth);
 
-		$graphid = 'lmdbcrmmarg_'.$suffix.'_e'.((int) $conf->entity);
+		$graphid = 'lmdbcrmmarg_'.$suffix.'_e'.((int) $conf->entity).'_u'.((int) $user->id).'_'.($user->hasRight('lmdbcrm', 'widgets', 'readall') ? 'all' : 'own');
 		$graph->draw($graphid);
 
 		return $label.$graph->show(0);
@@ -258,6 +294,7 @@ class lmdbcrm_graph_marginrates extends ModeleBoxes
 	 */
 	protected function fetchMarginData($fromdate, $todate, $userid = 0)
 	{
+		global $user;
 		$turnover = 0.0;
 		$cost = 0.0;
 
@@ -273,6 +310,10 @@ class lmdbcrm_graph_marginrates extends ModeleBoxes
 			$sql .= " FROM ".MAIN_DB_PREFIX."propal as p";
 			$sql .= " INNER JOIN ".MAIN_DB_PREFIX."propaldet as pd ON (pd.fk_propal = p.rowid)";
 			$sql .= " WHERE p.entity IN (".getEntity('propal').")";
+			if (!$user->hasRight('societe', 'client', 'voir')) {
+				$sql .= " AND EXISTS (SELECT sc.fk_soc FROM ".MAIN_DB_PREFIX."societe_commerciaux as sc";
+				$sql .= " WHERE sc.fk_soc = p.fk_soc AND sc.fk_user = ".((int) $user->id).")";
+			}
 			$sql .= " AND p.datec IS NOT NULL";
 			$sql .= " AND p.datec >= '".$this->db->idate($fromdate)."'";
 			$sql .= " AND p.datec <= '".$this->db->idate($todate)."'";

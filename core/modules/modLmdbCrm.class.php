@@ -76,7 +76,7 @@ class modLmdbCrm extends DolibarrModules
 		$this->editor_squarred_logo = '';					// Must be image filename into the module/img directory followed with @modulename. Example: 'myimage.png@lmdbcrm'
 
 		// Possible values for version are: 'development', 'experimental', 'dolibarr', 'dolibarr_deprecated', 'experimental_deprecated' or a version string like 'x.y.z'
-		$this->version = '1.4';
+		$this->version = '1.5.0';
 		// Url to the file with your last numberversion of this module
 		//$this->url_last_version = 'http://www.example.com/versionmodule.txt';
 
@@ -165,9 +165,9 @@ class modLmdbCrm extends DolibarrModules
 		/* END MODULEBUILDER TABS */
 		// Example:
 		// To add a new tab identified by code tabname1
-		// $this->tabs[] = array('data' => 'objecttype:+tabname1:Title1:mylangfile@lmdbcrm:$user->hasRight('lmdbcrm', 'myobject', 'read'):/lmdbcrm/mynewtab1.php?id=__ID__');
+		// $this->tabs[] = array('data' => 'objecttype:+tabname1:Title1:mylangfile@lmdbcrm:$user->hasRight('lmdbcrm', 'myobject', 'readall'):/lmdbcrm/mynewtab1.php?id=__ID__');
 		// To add another new tab identified by code tabname2. Label will be result of calling all substitution functions on 'Title2' key.
-		// $this->tabs[] = array('data' => 'objecttype:+tabname2:SUBSTITUTION_Title2:mylangfile@lmdbcrm:$user->hasRight('othermodule', 'otherobject', 'read'):/lmdbcrm/mynewtab2.php?id=__ID__',
+		// $this->tabs[] = array('data' => 'objecttype:+tabname2:SUBSTITUTION_Title2:mylangfile@lmdbcrm:$user->hasRight('othermodule', 'otherobject', 'readall'):/lmdbcrm/mynewtab2.php?id=__ID__',
 		// To remove an existing tab identified by code tabname
 		// $this->tabs[] = array('data' => 'objecttype:-tabname:NU:conditiontoremove');
 		//
@@ -261,6 +261,12 @@ class modLmdbCrm extends DolibarrModules
 				'note' => 'LmdbCrmDeliveredUnbilledOrdersDescription',
 				'enabledbydefaulton' => 'Home',
 			),
+			7 => array(
+				'file' => 'lmdbcrm_graph_signedturnover_entities.php@lmdbcrm',
+				'note' => 'LmdbCrmSignedTurnoverEntitiesTooltip',
+				// Empty means every page in native insert_boxes(); use a non-page value.
+				'enabledbydefaulton' => 'none',
+			),
 		);
 
 		// Cronjobs
@@ -268,6 +274,38 @@ class modLmdbCrm extends DolibarrModules
 
 		// Permissions provided by this module
 		$this->rights = array();
+		$r = 0;
+		// Offsets 1-4 remain reserved for the former masked/full permissions.
+		$r += 4;
+
+		$r++;
+		$this->rights[$r][0] = $this->numero * 100 + $r;
+		$this->rights[$r][1] = 'LmdbCrmPermissionRankingOwn';
+		$this->rights[$r][3] = 0;
+		$this->rights[$r][4] = 'ranking';
+		$this->rights[$r][5] = 'read';
+
+		$r++;
+		$this->rights[$r][0] = $this->numero * 100 + $r;
+		$this->rights[$r][1] = 'LmdbCrmPermissionRankingAll';
+		$this->rights[$r][3] = 0;
+		$this->rights[$r][4] = 'ranking';
+		$this->rights[$r][5] = 'readall';
+
+		$r++;
+		$this->rights[$r][0] = $this->numero * 100 + $r;
+		$this->rights[$r][1] = 'LmdbCrmPermissionWidgetsOwn';
+		$this->rights[$r][3] = 0;
+		$this->rights[$r][4] = 'widgets';
+		$this->rights[$r][5] = 'read';
+
+		$r++;
+		$this->rights[$r][0] = $this->numero * 100 + $r;
+		$this->rights[$r][1] = 'LmdbCrmPermissionWidgetsAll';
+		$this->rights[$r][3] = 0;
+		$this->rights[$r][4] = 'widgets';
+		$this->rights[$r][5] = 'readall';
+
 
 		// Main menu entries to add
 		$this->menu = array();
@@ -281,10 +319,11 @@ class modLmdbCrm extends DolibarrModules
 			'url' => '/lmdbcrm/commercial_ranking.php',
 			'langs' => 'lmdbcrm@lmdbcrm',
 			'position' => 1000,
-			'perms' => '$user->rights->propal->lire',
-			'enabled' => 'isModEnabled("lmdbcrm")',
+			'perms' => '$user->hasRight("propal", "lire") && ($user->hasRight("lmdbcrm", "ranking", "readall") || $user->hasRight("lmdbcrm", "ranking", "read"))',
+			'enabled' => 'isModEnabled("lmdbcrm") && isModEnabled("propal")',
 			'target' => '',
-			'user' => 2,
+			// Native menu user type filters external users; empty() is rejected by dol_eval v24.
+			'user' => 0,
 		);
 
 		// Export definitions provided by this module
@@ -334,11 +373,26 @@ class modLmdbCrm extends DolibarrModules
 			return -1;
 		}
 		
-		$this->remove($options);
+		$result = $this->remove($options);
+		if ($result <= 0) {
+			return -1;
+		}
 		
 		$sql = array();
 		
-		return $this->_init($sql, $options);
+		// Existing definitions are kept by remove(); native insertion is idempotent.
+		if ($this->db->begin() <= 0) {
+			return -1;
+		}
+		$result = $this->_init($sql, $options);
+		if ($result <= 0 || $this->migrateConsultationRights() < 0) {
+			$this->db->rollback();
+			return -1;
+		}
+		if ($this->db->commit() <= 0) {
+			return -1;
+		}
+		return 1;
 	}
 
 	/**
@@ -352,6 +406,37 @@ class modLmdbCrm extends DolibarrModules
 	public function remove($options = '')
 	{
 		$sql = array();
-		return $this->_remove($sql, $options);
+		// Disabling execution must not erase personalised widget positions.
+		return $this->_remove($sql, $options.' noboxes');
 	}
+
+	/**
+	 * Transfer explicit legacy assignments once, without promoting masked access to full access.
+	 * Old definitions remain reserved; deleting old assignments makes revocation durable.
+	 * Runs inside init's transaction, in the active entity only.
+	 *
+	 * @return int 1 on success, -1 on SQL error
+	 */
+	private function migrateConsultationRights()
+	{
+		global $conf;
+
+		foreach (array('user_rights' => 'fk_user', 'usergroup_rights' => 'fk_usergroup') as $table => $actor) {
+			foreach (array(1 => 5, 2 => 6, 3 => 7, 4 => 8) as $oldOffset => $newOffset) {
+				$oldId = $this->numero * 100 + $oldOffset;
+				$newId = $this->numero * 100 + $newOffset;
+				$sql = "INSERT INTO ".MAIN_DB_PREFIX.$table." (".$actor.", fk_id, entity)";
+				$sql .= " SELECT oldright.".$actor.", ".$newId.", oldright.entity FROM ".MAIN_DB_PREFIX.$table." as oldright";
+				$sql .= " WHERE oldright.fk_id = ".$oldId." AND oldright.entity = ".((int) $conf->entity);
+				$sql .= " AND NOT EXISTS (SELECT 1 FROM ".MAIN_DB_PREFIX.$table." as existing";
+				$sql .= " WHERE existing.".$actor." = oldright.".$actor." AND existing.entity = oldright.entity AND existing.fk_id = ".$newId.")";
+				if (!$this->db->query($sql) || !$this->db->query("DELETE FROM ".MAIN_DB_PREFIX.$table." WHERE fk_id = ".$oldId." AND entity = ".((int) $conf->entity))) {
+					$this->error = $this->db->lasterror();
+					return -1;
+				}
+			}
+		}
+		return 1;
+	}
+
 }

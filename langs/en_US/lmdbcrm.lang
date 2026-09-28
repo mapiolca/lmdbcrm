@@ -90,3 +90,19 @@ LmdbCrmSignedQuotesCurveTooltip = Month-by-month signed quotes over the selected
 LmdbCrmSignedQuotesCurveNoData = No signed quotes for the selected period.
 LmdbCrmSignedQuotesLegendCompany = Company %s
 LmdbCrmSignedQuotesLegendMe = Me %s
+
+# Access permissions and synthetic previews
+LmdbCrmDataMasked = Data hidden according to your permissions
+LmdbCrmMaskedResult = Result
+
+LmdbCrmPermissionRankingOwn = Read the sales ranking (only own data in clear text)
+LmdbCrmPermissionRankingAll = Read all sales ranking data in clear text
+LmdbCrmPermissionWidgetsOwn = Read CRM widgets (only own data in clear text)
+LmdbCrmPermissionWidgetsAll = Read all CRM widget data in clear text
+LmdbCrmOtherSalesRep = Other sales representative
+LmdbCrmOwnDataOnly = Only your own data is shown in clear text.
+LmdbCrmOwnRankingNotice = Your position is calculated within accessible data, by signed proposal count. Other sales representatives and their values are hidden.
+LmdbCrmOwnNoSignedProposal = No signed proposal in your name for this period.
+
+LmdbCrmSignedTurnoverEntitiesTitle=Monthly signed turnover by entity
+LmdbCrmSignedTurnoverEntitiesTooltip=One signed turnover line excluding tax per shared proposal entity, over the viewing entity’s current fiscal year. Commercial and CRM permissions still apply. No previous years.

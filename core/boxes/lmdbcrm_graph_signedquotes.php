@@ -23,7 +23,7 @@
  * \brief   Line graph widget for signed quotes count by month on current year (Company vs Me, N vs N-1), with date filters.
  */
 
-require_once DOL_DOCUMENT_ROOT.'/core/boxes/modules_boxes.php';
+require_once __DIR__.'/../../class/lmdbcrmbox.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/dolgraph.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.form.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
@@ -32,7 +32,7 @@ require_once DOL_DOCUMENT_ROOT.'/comm/propal/class/propal.class.php';
 /**
  * Class to manage the signed quotes count graph box
  */
-class lmdbcrm_graph_signedquotes extends ModeleBoxes
+class lmdbcrm_graph_signedquotes extends LmdbCrmBox
 {
 	/**
 	 * @var string Alphanumeric ID. Populated by the constructor.
@@ -73,7 +73,9 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 
 		$this->db = $db;
 		$this->param = $param;
-		$this->hidden = empty($user->rights->propal->lire);
+		$this->hidden = !isModEnabled('lmdbcrm') || !isModEnabled('propal') || !empty($user->socid)
+			|| !$user->hasRight('propal', 'lire')
+			|| (!$user->hasRight('lmdbcrm', 'widgets', 'readall') && !$user->hasRight('lmdbcrm', 'widgets', 'read'));
 	}
 
 	/**
@@ -84,11 +86,23 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 	 */
 	public function loadBox($max = 1)
 	{
-		global $conf, $langs, $user;
+		global $langs, $conf, $user;
 
 		$langs->loadLangs(array('lmdbcrm@lmdbcrm', 'propal', 'main'));
 
-		$debug = GETPOSTINT('debug_lmdbcrmsignedquotes');
+		$this->info_box_head = array();
+		$this->info_box_contents = array();
+		$this->lmdbcrmDataLoaded = false;
+		$this->hidden = !isModEnabled('lmdbcrm') || !isModEnabled('propal') || !empty($user->socid)
+			|| !$user->hasRight('propal', 'lire')
+			|| (!$user->hasRight('lmdbcrm', 'widgets', 'readall') && !$user->hasRight('lmdbcrm', 'widgets', 'read'));
+		if ($this->hidden) {
+			return;
+		}
+		$this->lmdbcrmDataLoaded = true;
+		$this->lmdbcrmLoadedAll = $user->hasRight('lmdbcrm', 'widgets', 'readall');
+
+		$debug = $user->hasRight('lmdbcrm', 'widgets', 'readall') && GETPOSTINT('debug_lmdbcrmsignedquotes');
 
 		$now = dol_now();
 		$yearN = (int) dol_print_date($now, '%Y');
@@ -166,8 +180,8 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 		$toN1 = dol_time_plus_duree($toN, -1, 'y');
 
 		// Fetch data (4 curves)
-		$companyN = $this->fetchSignedQuotesCountByMonth($fromN, $toN, 0);
-		$companyN1 = $this->fetchSignedQuotesCountByMonth($fromN1, $toN1, 0);
+		$companyN = $user->hasRight('lmdbcrm', 'widgets', 'readall') ? $this->fetchSignedQuotesCountByMonth($fromN, $toN, 0) : array();
+		$companyN1 = $user->hasRight('lmdbcrm', 'widgets', 'readall') ? $this->fetchSignedQuotesCountByMonth($fromN1, $toN1, 0) : array();
 		$meN = $this->fetchSignedQuotesCountByMonth($fromN, $toN, (int) $user->id);
 		$meN1 = $this->fetchSignedQuotesCountByMonth($fromN1, $toN1, (int) $user->id);
 
@@ -187,13 +201,9 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 
 			$totalCount += ($vCompanyN + $vCompanyN1 + $vMeN + $vMeN1);
 
-			$graphData[] = array(
-				$monthInfo['label'],
-				$vCompanyN,
-				$vCompanyN1,
-				$vMeN,
-				$vMeN1
-			);
+			$graphData[] = $user->hasRight('lmdbcrm', 'widgets', 'readall')
+				? array($monthInfo['label'], $vCompanyN, $vCompanyN1, $vMeN, $vMeN1)
+				: array($monthInfo['label'], $vMeN, $vMeN1);
 		}
 
 		if ($debug) {
@@ -225,12 +235,16 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 			$rangeLabelCurrent = $this->buildYearRangeLabel($fromN, $toN);
 			$rangeLabelPrev = $this->buildYearRangeLabel($fromN1, $toN1);
 
-			$graph->SetLegend(array(
+			if ($user->hasRight('lmdbcrm', 'widgets', 'readall')) {
+				$graph->SetLegend(array(
 				$langs->trans('LmdbCrmSignedQuotesLegendCompany', $rangeLabelCurrent),
 				$langs->trans('LmdbCrmSignedQuotesLegendCompany', $rangeLabelPrev),
 				$langs->trans('LmdbCrmSignedQuotesLegendMe', $rangeLabelCurrent),
 				$langs->trans('LmdbCrmSignedQuotesLegendMe', $rangeLabelPrev),
 			));
+			} else {
+				$graph->SetLegend(array($langs->trans('LmdbCrmSignedQuotesLegendMe', $rangeLabelCurrent), $langs->trans('LmdbCrmSignedQuotesLegendMe', $rangeLabelPrev)));
+			}
 
 			$graph->SetDataColor(array('#2e78c2', '#a3a3a3', '#2da44e', '#d8a200'));
 			$graph->SetType(array('lines'));
@@ -243,10 +257,14 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 			$graph->setShowLegend(1);
 			$graph->setMinValue(0);
 
-			$graphId = 'lmdbcrmsignedquotescy_e'.((int) $conf->entity).'_'.substr(md5($fromN.'_'.$toN), 0, 8);
+			$graphId = 'lmdbcrmsignedquotescy_e'.((int) $conf->entity).'_'.substr(md5($fromN.'_'.$toN), 0, 8).'_u'.((int) $user->id).'_'.($user->hasRight('lmdbcrm', 'widgets', 'readall') ? 'all' : 'own');
 			$graph->draw($graphId);
 
 			$contentHtml .= '<div class="center">'.$graph->show(0).'</div>';
+		}
+
+		if (!$user->hasRight('lmdbcrm', 'widgets', 'readall')) {
+			$contentHtml .= LmdbCrmMaskedBox::renderPlaceholder('graph');
 		}
 
 		$this->info_box_contents = array();
@@ -272,6 +290,26 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 	 */
 	public function showBox($head = null, $contents = null, $nooutput = 0)
 	{
+		global $user;
+
+		$this->hidden = !isModEnabled('lmdbcrm') || !isModEnabled('propal') || !empty($user->socid)
+			|| !$user->hasRight('propal', 'lire')
+			|| (!$user->hasRight('lmdbcrm', 'widgets', 'readall') && !$user->hasRight('lmdbcrm', 'widgets', 'read'));
+		if ($this->hidden) {
+			$this->info_box_head = array();
+			$this->info_box_contents = array();
+			$this->lmdbcrmDataLoaded = false;
+			return '';
+		}
+		// Never reuse a previously loaded scope after a permission transition.
+		if ($this->lmdbcrmLoadedAll !== $user->hasRight('lmdbcrm', 'widgets', 'readall')) {
+			$this->info_box_head = array();
+			$this->info_box_contents = array();
+			$this->lmdbcrmDataLoaded = false;
+		}
+		if (!$this->lmdbcrmDataLoaded) {
+			return '';
+		}
 		return parent::showBox($this->info_box_head, $this->info_box_contents, $nooutput);
 	}
 
@@ -339,15 +377,20 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 	 */
 	protected function fetchSignedQuotesCountByMonth($fromDate, $toDate, $userId = 0)
 	{
+		global $user;
 		$data = array();
 
 		$signedStatus = (defined('Propal::STATUS_SIGNED') ? Propal::STATUS_SIGNED : 2);
 		$billedStatus = (defined('Propal::STATUS_BILLED') ? Propal::STATUS_BILLED : 4);
-		$debug = GETPOSTINT('debug_lmdbcrmsignedquotes');
+		$debug = $user->hasRight('lmdbcrm', 'widgets', 'readall') && GETPOSTINT('debug_lmdbcrmsignedquotes');
 
 		$sql = "SELECT YEAR(p.date_signature) as y, MONTH(p.date_signature) as m, COUNT(p.rowid) as nb";
 		$sql .= " FROM ".MAIN_DB_PREFIX."propal as p";
 		$sql .= " WHERE p.entity IN (".getEntity('propal').")";
+		if (!$user->hasRight('societe', 'client', 'voir')) {
+			$sql .= " AND EXISTS (SELECT sc.fk_soc FROM ".MAIN_DB_PREFIX."societe_commerciaux as sc";
+			$sql .= " WHERE sc.fk_soc = p.fk_soc AND sc.fk_user = ".((int) $user->id).")";
+		}
 		$sql .= " AND p.fk_statut IN (".((int) $signedStatus).",".((int) $billedStatus).")";
 		$sql .= " AND p.date_signature IS NOT NULL";
 		$sql .= " AND p.date_signature >= '".$this->db->idate($fromDate)."'";

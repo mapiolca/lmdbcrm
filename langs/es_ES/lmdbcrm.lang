@@ -80,3 +80,19 @@ LmdbCrmSignedQuotesCurveTooltip = Número mensual de presupuestos firmados en el
 LmdbCrmSignedQuotesCurveNoData = No hay presupuestos firmados para el periodo seleccionado.
 LmdbCrmSignedQuotesLegendCompany = Empresa %s
 LmdbCrmSignedQuotesLegendMe = Yo %s
+
+# Access permissions and synthetic previews
+LmdbCrmDataMasked = Datos ocultos según sus permisos
+LmdbCrmMaskedResult = Resultado
+
+LmdbCrmPermissionRankingOwn = Leer la clasificación comercial (solo datos propios visibles)
+LmdbCrmPermissionRankingAll = Leer todos los datos de la clasificación comercial sin ocultarlos
+LmdbCrmPermissionWidgetsOwn = Leer los widgets CRM (solo datos propios visibles)
+LmdbCrmPermissionWidgetsAll = Leer todos los datos de los widgets CRM sin ocultarlos
+LmdbCrmOtherSalesRep = Otro comercial
+LmdbCrmOwnDataOnly = Solo sus propios datos se muestran sin ocultarlos.
+LmdbCrmOwnRankingNotice = Su posición se calcula con los datos accesibles según el número de presupuestos firmados. Los demás comerciales y sus valores están ocultos.
+LmdbCrmOwnNoSignedProposal = No hay presupuestos firmados a su nombre en este período.
+
+LmdbCrmSignedTurnoverEntitiesTitle=Facturación firmada mensual por entidad
+LmdbCrmSignedTurnoverEntitiesTooltip=Una curva de importes firmados sin impuestos por entidad con presupuestos compartidos, durante el ejercicio actual de la entidad consultada. Se mantienen los permisos comerciales y CRM. Sin ejercicios anteriores.

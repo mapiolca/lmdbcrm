@@ -80,3 +80,19 @@ LmdbCrmSignedQuotesCurveTooltip = Monatliche Anzahl unterschriebener Angebote im
 LmdbCrmSignedQuotesCurveNoData = Keine unterschriebenen Angebote für den ausgewählten Zeitraum.
 LmdbCrmSignedQuotesLegendCompany = Unternehmen %s
 LmdbCrmSignedQuotesLegendMe = Ich %s
+
+# Access permissions and synthetic previews
+LmdbCrmDataMasked = Daten aufgrund Ihrer Berechtigungen ausgeblendet
+LmdbCrmMaskedResult = Ergebnis
+
+LmdbCrmPermissionRankingOwn = Vertriebsrangliste lesen (nur eigene Daten im Klartext)
+LmdbCrmPermissionRankingAll = Alle Daten der Vertriebsrangliste im Klartext lesen
+LmdbCrmPermissionWidgetsOwn = CRM-Widgets lesen (nur eigene Daten im Klartext)
+LmdbCrmPermissionWidgetsAll = Alle Daten der CRM-Widgets im Klartext lesen
+LmdbCrmOtherSalesRep = Anderer Vertriebsmitarbeiter
+LmdbCrmOwnDataOnly = Nur Ihre eigenen Daten werden im Klartext angezeigt.
+LmdbCrmOwnRankingNotice = Ihre Position wird anhand der zugänglichen Daten nach Anzahl unterzeichneter Angebote berechnet. Andere Vertriebsmitarbeiter und deren Werte sind ausgeblendet.
+LmdbCrmOwnNoSignedProposal = Keine unterzeichneten Angebote in Ihrem Namen in diesem Zeitraum.
+
+LmdbCrmSignedTurnoverEntitiesTitle=Monatlicher unterzeichneter Umsatz nach Mandant
+LmdbCrmSignedTurnoverEntitiesTooltip=Eine Umsatzkurve ohne Steuern je Mandant mit geteilten Angeboten, im aktuellen Geschäftsjahr des angezeigten Mandanten. Vertriebs- und CRM-Berechtigungen gelten weiterhin. Keine Vorjahre.

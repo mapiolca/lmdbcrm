@@ -23,14 +23,14 @@
  * \brief   Line graph widget for signed turnover by month on current fiscal year.
  */
 
-require_once DOL_DOCUMENT_ROOT.'/core/boxes/modules_boxes.php';
+require_once __DIR__.'/../../class/lmdbcrmbox.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/dolgraph.class.php';
 require_once DOL_DOCUMENT_ROOT.'/comm/propal/class/propal.class.php';
 
 /**
  * Class to manage the signed turnover fiscal year graph box
  */
-class lmdbcrm_graph_signedturnover extends ModeleBoxes
+class lmdbcrm_graph_signedturnover extends LmdbCrmBox
 {
 	/**
 	 * @var string Alphanumeric ID. Populated by the constructor.
@@ -71,7 +71,9 @@ class lmdbcrm_graph_signedturnover extends ModeleBoxes
 
 		$this->db = $db;
 		$this->param = $param;
-		$this->hidden = empty($user->rights->propal->lire);
+		$this->hidden = !isModEnabled('lmdbcrm') || !isModEnabled('propal') || !empty($user->socid)
+			|| !$user->hasRight('propal', 'lire')
+			|| (!$user->hasRight('lmdbcrm', 'widgets', 'readall') && !$user->hasRight('lmdbcrm', 'widgets', 'read'));
 	}
 
 	/**
@@ -82,11 +84,23 @@ class lmdbcrm_graph_signedturnover extends ModeleBoxes
 	 */
 	public function loadBox($max = 1)
 	{
-		global $conf, $langs;
+		global $langs, $conf, $user;
 
 		$langs->loadLangs(array('lmdbcrm@lmdbcrm', 'propal'));
 
-		$debug = GETPOSTINT('debug_lmdbcrmsignedturnover');
+		$this->info_box_head = array();
+		$this->info_box_contents = array();
+		$this->lmdbcrmDataLoaded = false;
+		$this->hidden = !isModEnabled('lmdbcrm') || !isModEnabled('propal') || !empty($user->socid)
+			|| !$user->hasRight('propal', 'lire')
+			|| (!$user->hasRight('lmdbcrm', 'widgets', 'readall') && !$user->hasRight('lmdbcrm', 'widgets', 'read'));
+		if ($this->hidden) {
+			return;
+		}
+		$this->lmdbcrmDataLoaded = true;
+		$this->lmdbcrmLoadedAll = $user->hasRight('lmdbcrm', 'widgets', 'readall');
+
+		$debug = $user->hasRight('lmdbcrm', 'widgets', 'readall') && GETPOSTINT('debug_lmdbcrmsignedturnover');
 
 		$rangeCurrent = $this->getFiscalYearRange(0);
 		$rangePrev1 = $this->getFiscalYearRange(-1);
@@ -146,7 +160,7 @@ class lmdbcrm_graph_signedturnover extends ModeleBoxes
 			'subclass' => 'classfortooltip',
 		);
 
-		$contentHtml = '';
+		$contentHtml = $user->hasRight('lmdbcrm', 'widgets', 'readall') ? '' : '<p class="opacitymedium center">'.dol_escape_htmltag($langs->trans('LmdbCrmOwnDataOnly')).'</p>';
 
 		if ($totalAmount <= 0) {
 			$contentHtml .= '<div class="center opacitymedium">'.$langs->trans('LmdbCrmSignedTurnoverCurveNoData').'</div>';
@@ -168,7 +182,7 @@ class lmdbcrm_graph_signedturnover extends ModeleBoxes
 			$graph->setShowLegend(1);
 			$graph->setMinValue(0);
 
-			$graphId = 'lmdbcrmsignedturnoverfy_e'.((int) $conf->entity);
+			$graphId = 'lmdbcrmsignedturnoverfy_e'.((int) $conf->entity).'_u'.((int) $user->id).'_'.($user->hasRight('lmdbcrm', 'widgets', 'readall') ? 'all' : 'own');
 			$graph->draw($graphId);
 
 			$contentHtml .= '<div class="center">'.$graph->show(0).'</div>';
@@ -197,6 +211,26 @@ class lmdbcrm_graph_signedturnover extends ModeleBoxes
 	 */
 	public function showBox($head = null, $contents = null, $nooutput = 0)
 	{
+		global $user;
+
+		$this->hidden = !isModEnabled('lmdbcrm') || !isModEnabled('propal') || !empty($user->socid)
+			|| !$user->hasRight('propal', 'lire')
+			|| (!$user->hasRight('lmdbcrm', 'widgets', 'readall') && !$user->hasRight('lmdbcrm', 'widgets', 'read'));
+		if ($this->hidden) {
+			$this->info_box_head = array();
+			$this->info_box_contents = array();
+			$this->lmdbcrmDataLoaded = false;
+			return '';
+		}
+		// Never reuse a previously loaded scope after a permission transition.
+		if ($this->lmdbcrmLoadedAll !== $user->hasRight('lmdbcrm', 'widgets', 'readall')) {
+			$this->info_box_head = array();
+			$this->info_box_contents = array();
+			$this->lmdbcrmDataLoaded = false;
+		}
+		if (!$this->lmdbcrmDataLoaded) {
+			return '';
+		}
 		return parent::showBox($this->info_box_head, $this->info_box_contents, $nooutput);
 	}
 
@@ -236,8 +270,8 @@ class lmdbcrm_graph_signedturnover extends ModeleBoxes
 			$endMonth = 12;
 		}
 		$endYear = $startYear + ($fiscalStartMonth > 1 ? 1 : 0);
-		$endDay = dol_get_last_day($endYear, $endMonth, 0);
-		$endDate = dol_mktime(23, 59, 59, $endMonth, $endDay, $endYear);
+		// Native helper already returns the final day's timestamp at 23:59:59.
+		$endDate = dol_get_last_day($endYear, $endMonth, 0);
 		if (empty($endDate)) {
 			$endDate = dol_time_plus_duree($startDate, 12, 'm') - 1;
 		}
@@ -289,6 +323,7 @@ class lmdbcrm_graph_signedturnover extends ModeleBoxes
 	 */
 	protected function fetchSignedTurnoverByMonth($fromDate, $toDate)
 	{
+		global $user;
 		$data = array();
 
 		// EN: Use signature date for signed turnover analytics.
@@ -297,11 +332,18 @@ class lmdbcrm_graph_signedturnover extends ModeleBoxes
 
 		$signedStatus = (defined('Propal::STATUS_SIGNED') ? Propal::STATUS_SIGNED : 2);
 		$billedStatus = (defined('Propal::STATUS_BILLED') ? Propal::STATUS_BILLED : 4);
-		$debug = GETPOSTINT('debug_lmdbcrmsignedturnover');
+		$debug = $user->hasRight('lmdbcrm', 'widgets', 'readall') && GETPOSTINT('debug_lmdbcrmsignedturnover');
 
 		$sql = "SELECT YEAR(p.".$dateField.") as y, MONTH(p.".$dateField.") as m, SUM(p.total_ht) as amount";
 		$sql .= " FROM ".MAIN_DB_PREFIX."propal as p";
 		$sql .= " WHERE p.entity IN (".getEntity('propal').")";
+		if (!$user->hasRight('lmdbcrm', 'widgets', 'readall')) {
+			$sql .= " AND p.fk_user_author = ".((int) $user->id);
+		}
+		if (!$user->hasRight('societe', 'client', 'voir')) {
+			$sql .= " AND EXISTS (SELECT sc.fk_soc FROM ".MAIN_DB_PREFIX."societe_commerciaux as sc";
+			$sql .= " WHERE sc.fk_soc = p.fk_soc AND sc.fk_user = ".((int) $user->id).")";
+		}
 		$sql .= " AND p.fk_statut IN (".((int) $signedStatus).",".((int) $billedStatus).")";
 		$sql .= " AND p.".$dateField." IS NOT NULL";
 		$sql .= " AND p.".$dateField." >= '".$this->db->idate($fromDate)."'";

@@ -23,14 +23,14 @@
  * \brief   Widget for latest delivered customer orders not yet billed.
  */
 
-require_once DOL_DOCUMENT_ROOT.'/core/boxes/modules_boxes.php';
+require_once __DIR__.'/../../class/lmdbcrmbox.class.php';
 require_once DOL_DOCUMENT_ROOT.'/commande/class/commande.class.php';
 require_once DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php';
 
 /**
  * Class to manage the delivered unbilled customer orders box.
  */
-class lmdbcrm_orders_delivered_to_bill extends ModeleBoxes
+class lmdbcrm_orders_delivered_to_bill extends LmdbCrmBox
 {
 	/**
 	 * @var string Alphanumeric ID. Populated by the constructor.
@@ -71,7 +71,9 @@ class lmdbcrm_orders_delivered_to_bill extends ModeleBoxes
 
 		$this->db = $db;
 		$this->param = $param;
-		$this->hidden = !$user->hasRight('commande', 'lire');
+		$this->hidden = !isModEnabled('lmdbcrm') || !isModEnabled('commande') || !empty($user->socid)
+			|| !$user->hasRight('commande', 'lire')
+			|| (!$user->hasRight('lmdbcrm', 'widgets', 'readall') && !$user->hasRight('lmdbcrm', 'widgets', 'read'));
 	}
 
 	/**
@@ -82,9 +84,21 @@ class lmdbcrm_orders_delivered_to_bill extends ModeleBoxes
 	 */
 	public function loadBox($max = 5)
 	{
-		global $conf, $langs, $user;
+		global $langs, $conf, $user;
 
 		$langs->loadLangs(array('lmdbcrm@lmdbcrm', 'orders', 'companies'));
+
+		$this->info_box_head = array();
+		$this->info_box_contents = array();
+		$this->lmdbcrmDataLoaded = false;
+		$this->hidden = !isModEnabled('lmdbcrm') || !isModEnabled('commande') || !empty($user->socid)
+			|| !$user->hasRight('commande', 'lire')
+			|| (!$user->hasRight('lmdbcrm', 'widgets', 'readall') && !$user->hasRight('lmdbcrm', 'widgets', 'read'));
+		if ($this->hidden) {
+			return;
+		}
+		$this->lmdbcrmDataLoaded = true;
+		$this->lmdbcrmLoadedAll = $user->hasRight('lmdbcrm', 'widgets', 'readall');
 
 		$this->max = ($max > 0 ? $max : 5);
 
@@ -131,6 +145,9 @@ class lmdbcrm_orders_delivered_to_bill extends ModeleBoxes
 
 			while ($line < $num) {
 				$objp = $this->db->fetch_object($resql);
+				if (!is_object($objp)) {
+					break;
+				}
 				$date = $this->db->jdate($objp->date_commande);
 				$datem = $this->db->jdate($objp->tms);
 
@@ -210,6 +227,26 @@ class lmdbcrm_orders_delivered_to_bill extends ModeleBoxes
 	 */
 	public function showBox($head = null, $contents = null, $nooutput = 0)
 	{
+		global $user;
+
+		$this->hidden = !isModEnabled('lmdbcrm') || !isModEnabled('commande') || !empty($user->socid)
+			|| !$user->hasRight('commande', 'lire')
+			|| (!$user->hasRight('lmdbcrm', 'widgets', 'readall') && !$user->hasRight('lmdbcrm', 'widgets', 'read'));
+		if ($this->hidden) {
+			$this->info_box_head = array();
+			$this->info_box_contents = array();
+			$this->lmdbcrmDataLoaded = false;
+			return '';
+		}
+		// Never reuse a previously loaded scope after a permission transition.
+		if ($this->lmdbcrmLoadedAll !== $user->hasRight('lmdbcrm', 'widgets', 'readall')) {
+			$this->info_box_head = array();
+			$this->info_box_contents = array();
+			$this->lmdbcrmDataLoaded = false;
+		}
+		if (!$this->lmdbcrmDataLoaded) {
+			return '';
+		}
 		return parent::showBox($this->info_box_head, $this->info_box_contents, $nooutput);
 	}
 
@@ -247,14 +284,14 @@ class lmdbcrm_orders_delivered_to_bill extends ModeleBoxes
 		global $user;
 
 		$sql = " FROM ".MAIN_DB_PREFIX."commande as c, ".MAIN_DB_PREFIX."societe as s";
-		if (empty($user->socid) && !$user->hasRight('societe', 'client', 'voir')) {
+		if (empty($user->socid) && (!$user->hasRight('societe', 'client', 'voir') || !$user->hasRight('lmdbcrm', 'widgets', 'readall'))) {
 			$sql .= ", ".MAIN_DB_PREFIX."societe_commerciaux as sc";
 		}
 		$sql .= " WHERE c.fk_soc = s.rowid";
 		$sql .= " AND c.entity IN (".getEntity('commande').")";
 		$sql .= " AND c.fk_statut = ".((int) $deliveredStatus);
 		$sql .= " AND c.facture = 0";
-		if (empty($user->socid) && !$user->hasRight('societe', 'client', 'voir')) {
+		if (empty($user->socid) && (!$user->hasRight('societe', 'client', 'voir') || !$user->hasRight('lmdbcrm', 'widgets', 'readall'))) {
 			$sql .= " AND s.rowid = sc.fk_soc AND sc.fk_user = ".((int) $user->id);
 		}
 		if ($user->socid) {

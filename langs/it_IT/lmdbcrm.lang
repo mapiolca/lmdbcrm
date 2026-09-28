@@ -80,3 +80,19 @@ LmdbCrmSignedQuotesCurveTooltip = Numero mensile di preventivi firmati nel perio
 LmdbCrmSignedQuotesCurveNoData = Nessun preventivo firmato per il periodo selezionato.
 LmdbCrmSignedQuotesLegendCompany = Azienda %s
 LmdbCrmSignedQuotesLegendMe = Io %s
+
+# Access permissions and synthetic previews
+LmdbCrmDataMasked = Dati nascosti in base ai tuoi permessi
+LmdbCrmMaskedResult = Risultato
+
+LmdbCrmPermissionRankingOwn = Leggere la classifica commerciale (solo i propri dati in chiaro)
+LmdbCrmPermissionRankingAll = Leggere tutti i dati della classifica commerciale in chiaro
+LmdbCrmPermissionWidgetsOwn = Leggere i widget CRM (solo i propri dati in chiaro)
+LmdbCrmPermissionWidgetsAll = Leggere tutti i dati dei widget CRM in chiaro
+LmdbCrmOtherSalesRep = Altro commerciale
+LmdbCrmOwnDataOnly = Solo i propri dati sono visualizzati in chiaro.
+LmdbCrmOwnRankingNotice = La posizione è calcolata sui dati accessibili in base al numero di preventivi firmati. Gli altri commerciali e i loro valori sono nascosti.
+LmdbCrmOwnNoSignedProposal = Nessun preventivo firmato a proprio nome in questo periodo.
+
+LmdbCrmSignedTurnoverEntitiesTitle=Fatturato firmato mensile per entità
+LmdbCrmSignedTurnoverEntitiesTooltip=Una curva degli importi firmati al netto delle imposte per entità con preventivi condivisi, durante l’esercizio corrente dell’entità consultata. Restano applicati i permessi commerciali e CRM. Nessun esercizio precedente.

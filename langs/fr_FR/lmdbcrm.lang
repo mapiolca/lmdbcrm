@@ -90,3 +90,19 @@ LmdbCrmSignedQuotesCurveTooltip = Courbe du nombre de devis signés, mois par mo
 LmdbCrmSignedQuotesCurveNoData = Aucun devis signé sur la période sélectionnée.
 LmdbCrmSignedQuotesLegendCompany = Entreprise %s
 LmdbCrmSignedQuotesLegendMe = Moi %s
+
+# Access permissions and synthetic previews
+LmdbCrmDataMasked = Données masquées selon vos permissions
+LmdbCrmMaskedResult = Résultat
+
+LmdbCrmPermissionRankingOwn = Lire le classement des commerciaux (uniquement ses données en clair)
+LmdbCrmPermissionRankingAll = Lire toutes les données du classement des commerciaux en clair
+LmdbCrmPermissionWidgetsOwn = Lire les widgets CRM (uniquement ses données en clair)
+LmdbCrmPermissionWidgetsAll = Lire toutes les données des widgets CRM en clair
+LmdbCrmOtherSalesRep = Autre commercial
+LmdbCrmOwnDataOnly = Seules vos données sont affichées en clair.
+LmdbCrmOwnRankingNotice = Votre position est calculée parmi les données accessibles, par nombre de devis signés. Les autres commerciaux et leurs valeurs sont masqués.
+LmdbCrmOwnNoSignedProposal = Aucun devis signé à votre nom sur cette période.
+
+LmdbCrmSignedTurnoverEntitiesTitle=CA signé par mois multi-entités
+LmdbCrmSignedTurnoverEntitiesTooltip=Une courbe de CA signé HT par entité partageant ses devis, sur l’exercice courant de l’entité consultée. Les droits commerciaux et CRM restent appliqués. Aucun exercice précédent.
