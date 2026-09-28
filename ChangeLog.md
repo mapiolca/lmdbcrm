@@ -1,6 +1,6 @@
 # Journal des modifications / ChangeLog - LMDBCRM
 
-## 1.5.0 — En préparation / Unreleased
+## 1.5.0 — 28/09/2026
 
 - Permissions natives indépendantes pour le classement commercial et les widgets : lecture personnelle avec classement anonymisé, ou lecture complète dans le périmètre commercial et Multicompany autorisé. Protection serveur des accès, diagnostics et caches, sans attribution automatique. / Independent native permissions for rankings and widgets: personal read with anonymized rankings, or full read within authorized sales and Multicompany scopes. Server-side access, diagnostics and cache protection, without automatic grants.
 - Nouveau widget de CA signé mensuel par entité partagée, limité à l’exercice courant, disponible dans le catalogue sans placement automatique. Correction du calcul de fin d’exercice. / New monthly signed revenue widget with one curve per shared entity for the current fiscal year, available in the catalogue without automatic placement. Fixed fiscal year end calculation.
