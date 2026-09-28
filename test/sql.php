@@ -10,7 +10,7 @@ $pdo = new PDO($dsn, getenv('LMDBCRM_TEST_USER'), getenv('LMDBCRM_TEST_PASSWORD'
 // CREATE without IF NOT EXISTS deliberately refuses a reused/nonempty test schema.
 foreach (array(
 	'const (name varchar(255), value varchar(255), entity int)',
-	'rights_def (id int, entity int, libelle varchar(255), module varchar(128), module_origin varchar(128), type varchar(8), bydefault int, perms varchar(128), subperms varchar(128), enabled varchar(255), PRIMARY KEY(id, entity))',
+	'rights_def (id int, entity int, libelle varchar(255), module varchar(128), module_origin varchar(128), module_position varchar(64), type varchar(8), bydefault int, perms varchar(128), subperms varchar(128), enabled varchar(255), PRIMARY KEY(id, entity))',
 	'boxes_def (rowid int AUTO_INCREMENT PRIMARY KEY, file varchar(255), entity int, note varchar(255))',
 	'boxes (rowid int AUTO_INCREMENT PRIMARY KEY, box_id int, position int, box_order varchar(32), fk_user int, entity int)',
 	'user_rights (fk_user int, fk_id int, entity int)',
@@ -64,6 +64,21 @@ foreach (array('restricted', 'expanded', 'shared', 'shared-restricted') as $scop
 			if ($rows && array_key_exists('cost', $rows[0])) sqlCheck((float) array_sum(array_column($rows, 'cost')) === (float) ($amount / 2), $class.' '.$scope.' margin cost scope');
 		}
 	}
+}
+
+// Exercise the ranking query itself, including the restricted LEFT JOIN aggregation.
+foreach (array('restricted' => array(1, 100), 'expanded' => array(2, 1000), 'shared' => array(3, 6000), 'shared-restricted' => array(1, 100)) as $scope => $expected) {
+	$process = proc_open(array(PHP_BINARY, __DIR__.'/ranking.php', 'sql-'.$scope), array(1 => array('pipe', 'w'), 2 => array('pipe', 'w')), $pipes);
+	$output = stream_get_contents($pipes[1]);
+	$error = stream_get_contents($pipes[2]);
+	fclose($pipes[1]); fclose($pipes[2]);
+	sqlCheck(proc_close($process) === 0 && $error === '', 'ranking SQL capture '.$error);
+	sqlCheck(preg_match('/QUERIES=(.+)/', $output, $matches) === 1, 'ranking query present');
+	$queries = json_decode($matches[1], true, 512, JSON_THROW_ON_ERROR);
+	sqlCheck(count($queries) === 1, 'one ranking aggregation');
+	$rows = $pdo->query($queries[0])->fetchAll(PDO::FETCH_ASSOC);
+	sqlCheck((int) array_sum(array_column($rows, 'total_count')) === $expected[0], 'ranking '.$scope.' count');
+	sqlCheck((float) array_sum(array_column($rows, 'signed_amount')) === (float) $expected[1], 'ranking '.$scope.' amount');
 }
 
 class RegistrationDb extends DoliDB

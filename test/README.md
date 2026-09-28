@@ -22,7 +22,7 @@ Coverage includes all seven widgets, all four permission combinations, independe
 
 `php test/sql.php` additionally requires `pdo_mysql`, `LMDBCRM_TEST_DSN`, `LMDBCRM_TEST_USER` and `LMDBCRM_TEST_PASSWORD`, targeting an **empty disposable MariaDB database**. It creates only `test_*` tables and refuses existing tables. Do not point it at an instance database.
 
-The test executes the widgets' generated SQL against distinguishable customer/entity fixtures and checks aggregate results. It also executes native box/right registration and disable/reactivate cycles through a PDO test adapter. Unrelated activation side effects (menus, module constants, directories, hooks and cron) are isolated. This validates real MariaDB statements, not a complete Dolibarr installation or the live Multicompany plugin.
+The test executes the ranking and widgets' generated SQL against distinguishable customer/entity fixtures and checks aggregate results. It also executes native box/right registration and disable/reactivate cycles through a PDO test adapter. Unrelated activation side effects (menus, module constants, directories, hooks and cron) are isolated. This validates real MariaDB statements, not a complete Dolibarr installation or the live Multicompany plugin.
 
 CI runs both suites with Dolibarr 20.0.0 / 24.0.0 and PHP 8.0 / 8.4. No dependency is installed into a host Dolibarr instance.
 
