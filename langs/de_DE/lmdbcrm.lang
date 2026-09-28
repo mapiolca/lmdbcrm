@@ -80,3 +80,11 @@ LmdbCrmSignedQuotesCurveTooltip = Monatliche Anzahl unterschriebener Angebote im
 LmdbCrmSignedQuotesCurveNoData = Keine unterschriebenen Angebote für den ausgewählten Zeitraum.
 LmdbCrmSignedQuotesLegendCompany = Unternehmen %s
 LmdbCrmSignedQuotesLegendMe = Ich %s
+
+# Access permissions and synthetic previews
+LmdbCrmPermissionRankingMasked = Maskierte Vorschau der Vertriebsrangliste anzeigen
+LmdbCrmPermissionRankingRead = Daten der Vertriebsrangliste lesen
+LmdbCrmPermissionWidgetsMasked = Maskierte Vorschau der CRM-Widgets anzeigen
+LmdbCrmPermissionWidgetsRead = Daten der CRM-Widgets lesen
+LmdbCrmDataMasked = Daten aufgrund Ihrer Berechtigungen ausgeblendet
+LmdbCrmMaskedResult = Ergebnis

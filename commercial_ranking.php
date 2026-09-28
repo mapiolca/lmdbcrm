@@ -71,8 +71,9 @@ if (!$res) {
 * @var User $user
 */
 
-dol_include_once('/core/lib/date.lib.php');
-dol_include_once('/user/class/user.class.php');
+require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
+require_once DOL_DOCUMENT_ROOT.'/user/class/user.class.php';
+require_once __DIR__.'/class/lmdbcrmmaskedbox.class.php';
 
 // Load translation files required by the page
 $langs->loadLangs(array('lmdbcrm@lmdbcrm', 'commercial', 'propal'));
@@ -81,11 +82,23 @@ $langs->loadLangs(array('lmdbcrm@lmdbcrm', 'commercial', 'propal'));
 if (!empty($user->socid)) {
 	accessforbidden();
 }
-if (!isModEnabled('propal')) {
+if (!isModEnabled('lmdbcrm') || !isModEnabled('propal')) {
 	accessforbidden();
 }
-if (empty($user->rights->propal->lire)) {
+if (!$user->hasRight('propal', 'lire')
+	|| (!$user->hasRight('lmdbcrm', 'ranking', 'read') && !$user->hasRight('lmdbcrm', 'ranking', 'readmasked'))) {
 	accessforbidden();
+}
+
+// A preview is independent of records, filters, identities and result counts.
+if (!$user->hasRight('lmdbcrm', 'ranking', 'read')) {
+	$title = $langs->trans('LmdbCrmSalesRepRanking');
+	llxHeader('', $title);
+	print load_fiche_titre($title, '', 'chart');
+	print LmdbCrmMaskedBox::renderPlaceholder('ranking');
+	llxFooter();
+	$db->close();
+	exit;
 }
 
 // Manage sorting and search parameters
@@ -163,6 +176,10 @@ $sql .= " FROM ".$db->prefix()."user as u";
 $sql .= " LEFT JOIN ".$db->prefix()."propal as p ON p.fk_user_author = u.rowid";
 $sql .= " AND p.fk_statut IN (1, 2, 3, 4)";
 $sql .= " AND p.entity IN (".getEntity('propal').")";
+if (!$user->hasRight('societe', 'client', 'voir')) {
+	$sql .= " AND EXISTS (SELECT sc.fk_soc FROM ".MAIN_DB_PREFIX."societe_commerciaux as sc";
+	$sql .= " WHERE sc.fk_soc = p.fk_soc AND sc.fk_user = ".((int) $user->id).")";
+}
 if ($search_date_start > 0) {
 	$sql .= " AND p.datep >= '".$db->idate($search_date_start)."'";
 }

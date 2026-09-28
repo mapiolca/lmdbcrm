@@ -80,3 +80,11 @@ LmdbCrmSignedQuotesCurveTooltip = Número mensual de presupuestos firmados en el
 LmdbCrmSignedQuotesCurveNoData = No hay presupuestos firmados para el periodo seleccionado.
 LmdbCrmSignedQuotesLegendCompany = Empresa %s
 LmdbCrmSignedQuotesLegendMe = Yo %s
+
+# Access permissions and synthetic previews
+LmdbCrmPermissionRankingMasked = Ver una vista previa oculta de la clasificación comercial
+LmdbCrmPermissionRankingRead = Leer los datos de la clasificación comercial
+LmdbCrmPermissionWidgetsMasked = Ver vistas previas ocultas de los widgets CRM
+LmdbCrmPermissionWidgetsRead = Leer los datos de los widgets CRM
+LmdbCrmDataMasked = Datos ocultos según sus permisos
+LmdbCrmMaskedResult = Resultado

@@ -268,6 +268,36 @@ class modLmdbCrm extends DolibarrModules
 
 		// Permissions provided by this module
 		$this->rights = array();
+		$r = 0;
+
+		$r++;
+		$this->rights[$r][0] = $this->numero * 100 + $r;
+		$this->rights[$r][1] = 'LmdbCrmPermissionRankingMasked';
+		$this->rights[$r][3] = 0;
+		$this->rights[$r][4] = 'ranking';
+		$this->rights[$r][5] = 'readmasked';
+
+		$r++;
+		$this->rights[$r][0] = $this->numero * 100 + $r;
+		$this->rights[$r][1] = 'LmdbCrmPermissionRankingRead';
+		$this->rights[$r][3] = 0;
+		$this->rights[$r][4] = 'ranking';
+		$this->rights[$r][5] = 'read';
+
+		$r++;
+		$this->rights[$r][0] = $this->numero * 100 + $r;
+		$this->rights[$r][1] = 'LmdbCrmPermissionWidgetsMasked';
+		$this->rights[$r][3] = 0;
+		$this->rights[$r][4] = 'widgets';
+		$this->rights[$r][5] = 'readmasked';
+
+		$r++;
+		$this->rights[$r][0] = $this->numero * 100 + $r;
+		$this->rights[$r][1] = 'LmdbCrmPermissionWidgetsRead';
+		$this->rights[$r][3] = 0;
+		$this->rights[$r][4] = 'widgets';
+		$this->rights[$r][5] = 'read';
+
 
 		// Main menu entries to add
 		$this->menu = array();
@@ -281,10 +311,10 @@ class modLmdbCrm extends DolibarrModules
 			'url' => '/lmdbcrm/commercial_ranking.php',
 			'langs' => 'lmdbcrm@lmdbcrm',
 			'position' => 1000,
-			'perms' => '$user->rights->propal->lire',
-			'enabled' => 'isModEnabled("lmdbcrm")',
+			'perms' => 'empty($user->socid) && $user->hasRight("propal", "lire") && ($user->hasRight("lmdbcrm", "ranking", "read") || $user->hasRight("lmdbcrm", "ranking", "readmasked"))',
+			'enabled' => 'isModEnabled("lmdbcrm") && isModEnabled("propal")',
 			'target' => '',
-			'user' => 2,
+			'user' => 0,
 		);
 
 		// Export definitions provided by this module
@@ -334,10 +364,14 @@ class modLmdbCrm extends DolibarrModules
 			return -1;
 		}
 		
-		$this->remove($options);
+		$result = $this->remove($options);
+		if ($result <= 0) {
+			return -1;
+		}
 		
 		$sql = array();
 		
+		// Existing definitions are kept by remove(); native insertion is idempotent.
 		return $this->_init($sql, $options);
 	}
 
@@ -352,6 +386,26 @@ class modLmdbCrm extends DolibarrModules
 	public function remove($options = '')
 	{
 		$sql = array();
-		return $this->_remove($sql, $options);
+		// Disabling execution must not erase personalised widget positions.
+		return $this->_remove($sql, $options.' noboxes');
+	}
+
+	/**
+	 * Register rights without the automatic administrator grants requested by _init().
+	 * Existing explicit user/group assignments are preserved by the native mechanism.
+	 * This override implements the module's opt-in policy, not a permission proxy.
+	 *
+	 * @param int $reinitadminperms Ignored: all grants must remain explicit
+	 * @param int|null $force_entity Entity override
+	 * @param int $notrigger Native trigger option
+	 * @param int[]|null $existingrightsdefids Optional native rights IDs on recent core
+	 * @return int Error count
+	 */
+	public function insert_permissions($reinitadminperms = 0, $force_entity = null, $notrigger = 0, $existingrightsdefids = null)
+	{
+		if (version_compare(DOL_VERSION, '25.0.0-alpha', '>=')) {
+			return parent::insert_permissions(0, $force_entity, $notrigger, $existingrightsdefids);
+		}
+		return parent::insert_permissions(0, $force_entity, $notrigger);
 	}
 }

@@ -90,3 +90,11 @@ LmdbCrmSignedQuotesCurveTooltip = Month-by-month signed quotes over the selected
 LmdbCrmSignedQuotesCurveNoData = No signed quotes for the selected period.
 LmdbCrmSignedQuotesLegendCompany = Company %s
 LmdbCrmSignedQuotesLegendMe = Me %s
+
+# Access permissions and synthetic previews
+LmdbCrmPermissionRankingMasked = View a masked preview of the sales rep ranking
+LmdbCrmPermissionRankingRead = Read sales rep ranking data
+LmdbCrmPermissionWidgetsMasked = View masked previews of CRM widgets
+LmdbCrmPermissionWidgetsRead = Read CRM widget data
+LmdbCrmDataMasked = Data hidden according to your permissions
+LmdbCrmMaskedResult = Result

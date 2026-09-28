@@ -23,14 +23,14 @@
  * \brief   Podium widget for signed proposals on last 30 days.
  */
 
-require_once DOL_DOCUMENT_ROOT . '/core/boxes/modules_boxes.php';
+require_once __DIR__.'/../../class/lmdbcrmbox.class.php';
 require_once DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php';
 require_once DOL_DOCUMENT_ROOT . '/user/class/user.class.php';
 
 /**
  * Class to manage the signed proposals podium box
  */
-class lmdbcrm_podium_signedquotes extends ModeleBoxes
+class lmdbcrm_podium_signedquotes extends LmdbCrmBox
 {
 	/**
 	 * @var string Alphanumeric ID. Populated by the constructor.
@@ -71,7 +71,9 @@ class lmdbcrm_podium_signedquotes extends ModeleBoxes
 
 		$this->db = $db;
 		$this->param = $param;
-		$this->hidden = empty($user->rights->propal->lire);
+		$this->hidden = !isModEnabled('lmdbcrm') || !isModEnabled('propal') || !empty($user->socid)
+			|| !$user->hasRight('propal', 'lire')
+			|| (!$user->hasRight('lmdbcrm', 'widgets', 'read') && !$user->hasRight('lmdbcrm', 'widgets', 'readmasked'));
 	}
 
 	/**
@@ -82,9 +84,20 @@ class lmdbcrm_podium_signedquotes extends ModeleBoxes
 	 */
 	public function loadBox($max = 3)
 	{
-		global $langs;
+		global $langs, $conf, $user;
 
 		$langs->loadLangs(array('lmdbcrm@lmdbcrm', 'propal', 'users'));
+
+		$this->info_box_head = array();
+		$this->info_box_contents = array();
+		$this->lmdbcrmDataLoaded = false;
+		$this->hidden = !isModEnabled('lmdbcrm') || !isModEnabled('propal') || !empty($user->socid)
+			|| !$user->hasRight('propal', 'lire')
+			|| (!$user->hasRight('lmdbcrm', 'widgets', 'read') && !$user->hasRight('lmdbcrm', 'widgets', 'readmasked'));
+		if ($this->hidden || !$user->hasRight('lmdbcrm', 'widgets', 'read')) {
+			return;
+		}
+		$this->lmdbcrmDataLoaded = true;
 
 		$this->max = ($max > 0 ? $max : 3);
 
@@ -133,6 +146,10 @@ class lmdbcrm_podium_signedquotes extends ModeleBoxes
 		$sql .= " FROM ".MAIN_DB_PREFIX."propal as p";
 		$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."user as u ON u.rowid = p.fk_user_author";
 		$sql .= " WHERE p.entity IN (".getEntity('propal').")";
+		if (!$user->hasRight('societe', 'client', 'voir')) {
+			$sql .= " AND EXISTS (SELECT sc.fk_soc FROM ".MAIN_DB_PREFIX."societe_commerciaux as sc";
+			$sql .= " WHERE sc.fk_soc = p.fk_soc AND sc.fk_user = ".((int) $user->id).")";
+		}
 		$sql .= " AND p.fk_statut = ".Propal::STATUS_SIGNED;
 		$sql .= " AND p.fk_user_author IS NOT NULL";
 		$sql .= " AND p.date_signature IS NOT NULL";
@@ -157,7 +174,7 @@ class lmdbcrm_podium_signedquotes extends ModeleBoxes
 						$tmpuser->login = $obj->login;
 						$tmpuser->photo = $obj->photo;
 						$tmpuser->statut = $obj->statut;
-						$userlink = $tmpuser->getNomUrl(1);
+						$userlink = $tmpuser->getNomUrl(-1);
 						if (!empty($tmpuser->photo)) {
 							$photourl = dol_buildpath('/viewimage.php', 1).'?modulepart=userphoto&file='.urlencode($tmpuser->photo);
 							$photohtml = '<img class="inline-block" style="max-height:32px;max-width:32px;border-radius:50%;margin-right:6px;" src="'.$photourl.'" alt="'.$langs->trans('Photo').'">';
@@ -180,7 +197,7 @@ class lmdbcrm_podium_signedquotes extends ModeleBoxes
 						1 => array(
 							'td' => 'class="left"',
 							'asis' => 1,
-							'text' => $tmpuser->getNomUrl(-1),
+							'text' => $userlink,
 						),
 						2 => array(
 							'td' => 'class="right"',
@@ -230,6 +247,28 @@ class lmdbcrm_podium_signedquotes extends ModeleBoxes
 	 */
 	public function showBox($head = null, $contents = null, $nooutput = 0)
 	{
+		global $user;
+
+		$this->hidden = !isModEnabled('lmdbcrm') || !isModEnabled('propal') || !empty($user->socid)
+			|| !$user->hasRight('propal', 'lire')
+			|| (!$user->hasRight('lmdbcrm', 'widgets', 'read') && !$user->hasRight('lmdbcrm', 'widgets', 'readmasked'));
+		if ($this->hidden) {
+			$this->info_box_head = array();
+			$this->info_box_contents = array();
+			$this->lmdbcrmDataLoaded = false;
+			return '';
+		}
+		if (!$user->hasRight('lmdbcrm', 'widgets', 'read')) {
+			$this->info_box_head = array();
+			$this->info_box_contents = array();
+			$this->lmdbcrmDataLoaded = false;
+			$preview = new LmdbCrmMaskedBox($this->db);
+			$preview->prepare($this->boxcode, $this->box_id, $this->boxlabel, 'podium');
+			return $preview->showBox($preview->info_box_head, $preview->info_box_contents, $nooutput);
+		}
+		if (!$this->lmdbcrmDataLoaded) {
+			return '';
+		}
 		return parent::showBox($this->info_box_head, $this->info_box_contents, $nooutput);
 	}
 

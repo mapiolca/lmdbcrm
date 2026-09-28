@@ -90,3 +90,11 @@ LmdbCrmSignedQuotesCurveTooltip = Courbe du nombre de devis signés, mois par mo
 LmdbCrmSignedQuotesCurveNoData = Aucun devis signé sur la période sélectionnée.
 LmdbCrmSignedQuotesLegendCompany = Entreprise %s
 LmdbCrmSignedQuotesLegendMe = Moi %s
+
+# Access permissions and synthetic previews
+LmdbCrmPermissionRankingMasked = Voir un aperçu masqué du classement des commerciaux
+LmdbCrmPermissionRankingRead = Lire les données du classement des commerciaux
+LmdbCrmPermissionWidgetsMasked = Voir un aperçu masqué des widgets CRM
+LmdbCrmPermissionWidgetsRead = Lire les données des widgets CRM
+LmdbCrmDataMasked = Données masquées selon vos permissions
+LmdbCrmMaskedResult = Résultat

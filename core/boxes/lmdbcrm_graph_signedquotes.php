@@ -23,7 +23,7 @@
  * \brief   Line graph widget for signed quotes count by month on current year (Company vs Me, N vs N-1), with date filters.
  */
 
-require_once DOL_DOCUMENT_ROOT.'/core/boxes/modules_boxes.php';
+require_once __DIR__.'/../../class/lmdbcrmbox.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/dolgraph.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.form.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
@@ -32,7 +32,7 @@ require_once DOL_DOCUMENT_ROOT.'/comm/propal/class/propal.class.php';
 /**
  * Class to manage the signed quotes count graph box
  */
-class lmdbcrm_graph_signedquotes extends ModeleBoxes
+class lmdbcrm_graph_signedquotes extends LmdbCrmBox
 {
 	/**
 	 * @var string Alphanumeric ID. Populated by the constructor.
@@ -73,7 +73,9 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 
 		$this->db = $db;
 		$this->param = $param;
-		$this->hidden = empty($user->rights->propal->lire);
+		$this->hidden = !isModEnabled('lmdbcrm') || !isModEnabled('propal') || !empty($user->socid)
+			|| !$user->hasRight('propal', 'lire')
+			|| (!$user->hasRight('lmdbcrm', 'widgets', 'read') && !$user->hasRight('lmdbcrm', 'widgets', 'readmasked'));
 	}
 
 	/**
@@ -84,9 +86,20 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 	 */
 	public function loadBox($max = 1)
 	{
-		global $conf, $langs, $user;
+		global $langs, $conf, $user;
 
 		$langs->loadLangs(array('lmdbcrm@lmdbcrm', 'propal', 'main'));
+
+		$this->info_box_head = array();
+		$this->info_box_contents = array();
+		$this->lmdbcrmDataLoaded = false;
+		$this->hidden = !isModEnabled('lmdbcrm') || !isModEnabled('propal') || !empty($user->socid)
+			|| !$user->hasRight('propal', 'lire')
+			|| (!$user->hasRight('lmdbcrm', 'widgets', 'read') && !$user->hasRight('lmdbcrm', 'widgets', 'readmasked'));
+		if ($this->hidden || !$user->hasRight('lmdbcrm', 'widgets', 'read')) {
+			return;
+		}
+		$this->lmdbcrmDataLoaded = true;
 
 		$debug = GETPOSTINT('debug_lmdbcrmsignedquotes');
 
@@ -272,6 +285,28 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 	 */
 	public function showBox($head = null, $contents = null, $nooutput = 0)
 	{
+		global $user;
+
+		$this->hidden = !isModEnabled('lmdbcrm') || !isModEnabled('propal') || !empty($user->socid)
+			|| !$user->hasRight('propal', 'lire')
+			|| (!$user->hasRight('lmdbcrm', 'widgets', 'read') && !$user->hasRight('lmdbcrm', 'widgets', 'readmasked'));
+		if ($this->hidden) {
+			$this->info_box_head = array();
+			$this->info_box_contents = array();
+			$this->lmdbcrmDataLoaded = false;
+			return '';
+		}
+		if (!$user->hasRight('lmdbcrm', 'widgets', 'read')) {
+			$this->info_box_head = array();
+			$this->info_box_contents = array();
+			$this->lmdbcrmDataLoaded = false;
+			$preview = new LmdbCrmMaskedBox($this->db);
+			$preview->prepare($this->boxcode, $this->box_id, $this->boxlabel, 'graph');
+			return $preview->showBox($preview->info_box_head, $preview->info_box_contents, $nooutput);
+		}
+		if (!$this->lmdbcrmDataLoaded) {
+			return '';
+		}
 		return parent::showBox($this->info_box_head, $this->info_box_contents, $nooutput);
 	}
 
@@ -339,6 +374,7 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 	 */
 	protected function fetchSignedQuotesCountByMonth($fromDate, $toDate, $userId = 0)
 	{
+		global $user;
 		$data = array();
 
 		$signedStatus = (defined('Propal::STATUS_SIGNED') ? Propal::STATUS_SIGNED : 2);
@@ -348,6 +384,10 @@ class lmdbcrm_graph_signedquotes extends ModeleBoxes
 		$sql = "SELECT YEAR(p.date_signature) as y, MONTH(p.date_signature) as m, COUNT(p.rowid) as nb";
 		$sql .= " FROM ".MAIN_DB_PREFIX."propal as p";
 		$sql .= " WHERE p.entity IN (".getEntity('propal').")";
+		if (!$user->hasRight('societe', 'client', 'voir')) {
+			$sql .= " AND EXISTS (SELECT sc.fk_soc FROM ".MAIN_DB_PREFIX."societe_commerciaux as sc";
+			$sql .= " WHERE sc.fk_soc = p.fk_soc AND sc.fk_user = ".((int) $user->id).")";
+		}
 		$sql .= " AND p.fk_statut IN (".((int) $signedStatus).",".((int) $billedStatus).")";
 		$sql .= " AND p.date_signature IS NOT NULL";
 		$sql .= " AND p.date_signature >= '".$this->db->idate($fromDate)."'";

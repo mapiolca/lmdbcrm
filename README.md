@@ -17,8 +17,27 @@ Divers widgets et fonctionnalités CRM pour compléter votre Dolibarr préféré
 - Traductions fournies : en_US, fr_FR, de_DE, it_IT, es_ES.
 
 ## Compatibilité Dolibarr
-- Version minimale : Dolibarr 20.0 (module testé sur 20.x et supérieur).
+- Version minimale : Dolibarr 20.0. Les contrôles automatisés et les limites des essais sont décrits dans [test/README.md](test/README.md).
 - PHP minimal : 8.0.
+
+## Permissions du classement et des widgets
+
+Les permissions LMDBCRM se règlent dans les fiches natives **Utilisateurs / Groupes**. Le classement et les sept widgets (y compris les commandes livrées non facturées) sont indépendants :
+
+| Ensemble | Aperçu masqué | Lecture complète |
+|---|---|---|
+| Classement des commerciaux | `ranking.readmasked` | `ranking.read` |
+| Widgets CRM | `widgets.readmasked` | `widgets.read` |
+
+Sans aucun droit de l’ensemble, son menu/widget est absent et son accès direct est refusé. L’aperçu masqué conserve uniquement les titres et des formes neutres : aucune identité, aucun rang réel, montant, compteur, lien métier ou série graphique n’est chargé. La lecture complète suffit seule et prend priorité lorsque les deux droits sont accordés, y compris via des groupes différents.
+
+Ces permissions concernent les utilisateurs internes. Elles s’ajoutent à la lecture native des devis (classement et six widgets) ou des commandes (widget des commandes). Les lectures complètes respectent les entités partagées et, sans le droit natif de voir tous les clients, les tiers affectés au commercial. Les indicateurs « entreprise » représentent alors le périmètre accessible, pas nécessairement toute l’entreprise.
+
+**Après mise à jour :** désactiver/réactiver LMDBCRM depuis la gestion native des modules pour enregistrer les quatre droits, puis les attribuer explicitement aux utilisateurs ou groupes concernés. Aucun droit n’est accordé automatiquement, même aux administrateurs. Les identifiants `45001101` à `45001104`, les attributions explicites et les placements de widgets restent stables lors des réactivations. Aucun droit sur les autres modules n’est modifié.
+
+Les aperçus utilisent un cache natif séparé, alimenté exclusivement par des formes neutres. Les affichages complets sont recalculés et leur ancien cache est invalidé à chaque rendu pour prendre en compte un changement de droits, de périmètre ou de filtre ; cela concerne uniquement les widgets LMDBCRM. Une erreur d’invalidation empêche l’affichage et est journalisée. La configuration globale du cache est conservée.
+
+Les changements de droits prennent effet lors d’une nouvelle requête après leur rechargement natif par Dolibarr ; ils ne retirent pas rétroactivement un contenu déjà téléchargé dans un navigateur.
 
 ## Installation
 ### Depuis un paquet ZIP
@@ -85,8 +104,18 @@ Various CRM widgets and features to complement your favorite Dolibarr.
 - Provided translations: en_US, fr_FR, de_DE, it_IT, es_ES.
 
 ## Dolibarr compatibility
-- Minimum version: Dolibarr 20.0 (module tested on 20.x and above).
+- Minimum version: Dolibarr 20.0. See [test/README.md](test/README.md) for automated checks and their limits.
 - Minimum PHP version: 8.0.
+
+## Ranking and widget permissions
+
+Configure LMDBCRM rights in the native **Users / Groups** permission screens. Ranking (`ranking.readmasked`, `ranking.read`) and all seven CRM widgets (`widgets.readmasked`, `widgets.read`) form two independent groups. No right means no access; masked preview shows only titles and fixed neutral shapes; full read takes precedence if both rights are granted.
+
+Preview mode does not fetch or transmit real names, rankings, amounts, counts, business links or chart data. These interfaces are for internal users and also require the native proposal/order read permission. Full results respect shared entities and customer assignments; company indicators are limited to the viewer’s accessible scope.
+
+**Upgrade:** disable/re-enable LMDBCRM through the native module manager to register the four rights, then explicitly assign them to users or groups. No automatic grants are made, including to administrators. Permission IDs `45001101`–`45001104`, explicit assignments and personalised widget positions survive reactivation.
+
+Masked previews have a separate native cache containing synthetic content only. Full CRM widgets invalidate their own previous cache and render fresh authorised results without writing a new full-data cache. The global cache configuration is preserved; a failed invalidation suppresses output and is logged. Changes apply to subsequent requests after native permission reloading, not to content already downloaded.
 
 ## Installation
 ### From a ZIP package

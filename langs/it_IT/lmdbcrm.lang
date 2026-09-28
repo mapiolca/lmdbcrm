@@ -80,3 +80,11 @@ LmdbCrmSignedQuotesCurveTooltip = Numero mensile di preventivi firmati nel perio
 LmdbCrmSignedQuotesCurveNoData = Nessun preventivo firmato per il periodo selezionato.
 LmdbCrmSignedQuotesLegendCompany = Azienda %s
 LmdbCrmSignedQuotesLegendMe = Io %s
+
+# Access permissions and synthetic previews
+LmdbCrmPermissionRankingMasked = Visualizzare un’anteprima oscurata della classifica commerciale
+LmdbCrmPermissionRankingRead = Leggere i dati della classifica commerciale
+LmdbCrmPermissionWidgetsMasked = Visualizzare anteprime oscurate dei widget CRM
+LmdbCrmPermissionWidgetsRead = Leggere i dati dei widget CRM
+LmdbCrmDataMasked = Dati nascosti in base ai tuoi permessi
+LmdbCrmMaskedResult = Risultato
