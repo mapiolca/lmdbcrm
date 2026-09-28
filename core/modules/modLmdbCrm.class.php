@@ -264,7 +264,8 @@ class modLmdbCrm extends DolibarrModules
 			7 => array(
 				'file' => 'lmdbcrm_graph_signedturnover_entities.php@lmdbcrm',
 				'note' => 'LmdbCrmSignedTurnoverEntitiesTooltip',
-				'enabledbydefaulton' => '',
+				// Empty means every page in native insert_boxes(); use a non-page value.
+				'enabledbydefaulton' => 'none',
 			),
 		);
 
