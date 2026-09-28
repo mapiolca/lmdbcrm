@@ -137,6 +137,52 @@ if (!$permissiontoreadall) {
 	$sortorder = 'DESC';
 }
 
+// Resolve eligible sales representatives before ranking, using native effective rights.
+$eligibleUserIds = array();
+$entityAccess = null;
+if (isModEnabled('multicompany')) {
+	dol_include_once('/multicompany/class/dao_multicompany.class.php');
+	if (!class_exists('DaoMulticompany')) {
+		accessforbidden();
+	}
+	$entityAccess = new DaoMulticompany($db);
+}
+$candidateSql = "SELECT u.rowid FROM ".MAIN_DB_PREFIX."user as u WHERE u.statut = 1";
+$candidateSql .= " AND (u.fk_soc IS NULL OR u.fk_soc = 0)";
+$candidateSql .= " AND (u.entity IN (0,".((int) $conf->entity).")";
+if (isModEnabled('multicompany') && getDolGlobalInt('MULTICOMPANY_TRANSVERSE_MODE')) {
+	$candidateSql .= " OR EXISTS (SELECT ug.fk_user FROM ".MAIN_DB_PREFIX."usergroup_user as ug";
+	$candidateSql .= " WHERE ug.fk_user = u.rowid AND ug.entity = ".((int) $conf->entity).")";
+}
+$candidateSql .= ")";
+$candidates = $db->query($candidateSql);
+if (!$candidates) {
+	dol_print_error($db);
+	exit();
+}
+while (is_object($candidateRow = $db->fetch_object($candidates))) {
+	$candidateId = (int) $candidateRow->rowid;
+	if ($entityAccess !== null) {
+		$accessResult = $entityAccess->verifyRight((int) $conf->entity, $candidateId);
+		if ($accessResult < 0) {
+			dol_print_error($db);
+			exit();
+		}
+		if ($accessResult == 0) {
+			continue;
+		}
+	}
+	// loadRights() loads direct and group grants in the current entity on Dolibarr 20+.
+	$candidate = new User($db);
+	$candidate->id = $candidateId;
+	$candidate->loadRights('propal');
+	if ($candidate->hasRight('propal', 'creer')) {
+		$eligibleUserIds[] = $candidateId;
+	}
+}
+$db->free($candidates);
+$search_user = array_values(array_intersect($search_user, $eligibleUserIds));
+
 // Prepare url parameters for listing
 $param = '';
 if ($search_date_start > 0) {
@@ -189,7 +235,7 @@ if ($search_date_start > 0) {
 if ($search_date_end > 0) {
 	$sql .= " AND p.datep <= '".$db->idate($search_date_end)."'";
 }
-$sql .= " WHERE u.entity IN (".getEntity('user').")";
+$sql .= " WHERE u.rowid IN (".implode(',', $eligibleUserIds ?: array(-1)).")";
 if (!empty($search_user)) {
 	$sql .= " AND u.rowid IN (".$db->sanitize(join(',', $search_user)).")";
 }
@@ -245,7 +291,7 @@ $search_user,
 0,               // show_empty
 null,            // exclude
 0,               // disabled
-'',              // include
+$eligibleUserIds ?: array(-1), // include only eligible sales representatives
 '',              // enableonly
 getEntity('user'), // force_entity
 0,               // maxlength
@@ -323,7 +369,7 @@ if ($num > 0) {
 		print '</tr>';
 	}
 } else {
-	print '<tr class="oddeven"><td colspan="7" class="opacitymedium center">'.$langs->trans('LmdbCrmNoRankingData').'</td></tr>';
+	print '<tr class="oddeven"><td colspan="7" class="opacitymedium center">'.$langs->trans('NoRecordFound').'</td></tr>';
 }
 
 print '</table>';

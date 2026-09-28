@@ -6,6 +6,7 @@ class PersonalRenderDb extends DoliDB
 {
 	public function query($sql, $ignore = 0)
 	{
+		if (strpos($sql, 'SELECT u.rowid FROM test_user as u') === 0) return parent::query($sql);
 		$this->queries[] = $sql;
 		if (strpos($sql, 'as userid') !== false) {
 			$rows = array();

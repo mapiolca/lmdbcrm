@@ -45,6 +45,7 @@ class DoliDB
 	public function query($sql, $ignore = 0) {
 		$this->queries[] = $sql;
 		if ($this->failQuery) return false;
+		if (strpos($sql, 'SELECT u.rowid FROM test_user as u') === 0) return new TestResult(array_map(function ($id) { return (object) array('rowid' => $id); }, array(7, 8, 9, 10)));
 		if (strpos($sql, ' as value') !== false) return new TestResult(array((object) array('value' => 1)));
 		if (strpos($sql, 'count(*) as nb') !== false) return new TestResult(array((object) array('nb' => 0)));
 		return new TestResult();
@@ -70,6 +71,7 @@ class User
 	public $grants = array();
 	public function __construct($db = null) {}
 	public function hasRight($module, $first, $second = '') { return in_array($module.'.'.$first.($second === '' ? '' : '.'.$second), $this->grants, true); }
+	public function loadRights($module = '', $force = 0) { $this->grants = isset($GLOBALS['candidateRightsLoader']) ? ($GLOBALS['candidateRightsLoader'])($this->id) : ($GLOBALS['candidateGrants'][$this->id] ?? array('propal.creer')); }
 	public function getNomUrl(...$args) { return '<a>'.dol_escape_htmltag($this->login ?? 'OWN_USER').'</a>'; }
 	public function addrights(...$args) { throw new RuntimeException('Automatic grant attempted'); }
 	public function clearrights() { throw new RuntimeException('Implicit administrator grant reload'); }
@@ -81,7 +83,7 @@ class Form
 {
 	public function __construct($db) {}
 	public function selectDate(...$args) { return '<input class="test-date">'; }
-	public function select_dolusers(...$args) { return 'REAL_USER_SELECTOR'; }
+	public function select_dolusers(...$args) { $GLOBALS['selectedUserArgs'] = $args; return 'REAL_USER_SELECTOR'; }
 	public function showFilterButtons(...$args) { return '<button>Filter</button>'; }
 }
 class Translate

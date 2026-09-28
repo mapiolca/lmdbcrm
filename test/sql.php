@@ -107,8 +107,8 @@ foreach (array('restricted' => array(1, 100), 'expanded' => array(2, 1000), 'sha
 	sqlCheck(proc_close($process) === 0 && $error === '', 'ranking SQL capture '.$error);
 	sqlCheck(preg_match('/QUERIES=(.+)/', $output, $matches) === 1, 'ranking query present');
 	$queries = json_decode($matches[1], true, 512, JSON_THROW_ON_ERROR);
-	sqlCheck(count($queries) === 1, 'one ranking aggregation');
-	$rows = $pdo->query($queries[0])->fetchAll(PDO::FETCH_ASSOC);
+	sqlCheck(count($queries) === 2, 'candidate query then one ranking aggregation');
+	$rows = $pdo->query($queries[1])->fetchAll(PDO::FETCH_ASSOC);
 	sqlCheck((int) array_sum(array_column($rows, 'total_count')) === $expected[0], 'ranking '.$scope.' count');
 	sqlCheck((float) array_sum(array_column($rows, 'signed_amount')) === (float) $expected[1], 'ranking '.$scope.' amount');
 }
@@ -186,4 +186,5 @@ sqlCheck($beforeFailure === $pdo->query('SELECT * FROM test_user_rights ORDER BY
 $db->failMigration = false;
 sqlCheck($module->init() === 1, 'migration retry');
 sqlCheck((int) $pdo->query('SELECT fk_id FROM test_user_rights WHERE entity=2 AND fk_user=17')->fetchColumn() === 45001105, 'retry preserves restricted access');
+require __DIR__.'/eligibility_sql.php';
 print 'OK: '.$checks.' MariaDB assertions; native registration, isolated activation side effects.'.PHP_EOL;

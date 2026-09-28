@@ -2,6 +2,8 @@
 
 ## 1.5.0 — 28/09/2026
 
+- Filtre permanent du classement et de son sélecteur : utilisateurs internes actifs, ayant accès à l’entité courante et le droit natif de créer/modifier les propositions commerciales, y compris par groupe. / Permanent ranking and selector filter: active internal users with access to the current entity and native proposal creation permission, including group grants.
+
 - Permissions natives indépendantes pour le classement commercial et les widgets : lecture personnelle avec classement anonymisé, ou lecture complète dans le périmètre commercial et Multicompany autorisé. Protection serveur des accès, diagnostics et caches, sans attribution automatique. / Independent native permissions for rankings and widgets: personal read with anonymized rankings, or full read within authorized sales and Multicompany scopes. Server-side access, diagnostics and cache protection, without automatic grants.
 - Nouveau widget de CA signé mensuel par entité partagée, limité à l’exercice courant, disponible dans le catalogue sans placement automatique. Correction du calcul de fin d’exercice. / New monthly signed revenue widget with one curve per shared entity for the current fiscal year, available in the catalogue without automatic placement. Fixed fiscal year end calculation.
 - Correction des tableaux de podium vides et de la condition de menu rejetée par l’évaluateur natif Dolibarr 24 ; le filtrage des utilisateurs internes et les contrôles serveur sont conservés. / Fixed empty podium tables and the menu condition rejected by the Dolibarr 24 native evaluator; internal-user filtering and server checks are preserved.

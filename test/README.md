@@ -24,7 +24,7 @@ Coverage includes all eight widgets, all four permission combinations, independe
 
 The test executes the ranking and widgets' generated SQL against distinguishable customer/entity fixtures and checks aggregate results. It also executes native box/right registration and disable/reactivate cycles through a PDO test adapter. Legacy user/group rights, entity-scoped migration, repeated activation and durable revocation are checked. Unrelated activation side effects (menus, module constants, directories, hooks and cron) are isolated. This validates real MariaDB statements, not a complete Dolibarr installation or the live Multicompany plugin.
 
-CI runs both suites with Dolibarr 20.0.0 / 24.0.0 and PHP 8.0 / 8.4. No dependency is installed into a host Dolibarr instance.
+CI targets Dolibarr 20.0.0 with PHP 8.0/8.4, and 21.0.0, 22.0.0, 23.0.0, 24.0.0 and 25.0.0-alpha with PHP 8.4. Immutable source commits are listed in `.github/workflows/php.yml`; v25 uses development commit `2d2e5779a8e6b036d09383987e2d5ef2a49a8ff2`, not a final release. No dependency is installed into a host Dolibarr instance.
 
 ## Manual acceptance on a deployed test instance
 
@@ -50,3 +50,9 @@ Source inspection: Multicompany 24.0.2, local commit `44e62e9`, `sql/llx_entity.
 ## Native menu evaluator
 
 `php test/menu.php` extracts and executes the unmodified `dol_eval()` / `dol_eval_standard()` functions from the selected core source, with simulated session/helpers. The old `empty($user->socid)` expression is rejected by the default Dolibarr 24.0.0 allowlist despite granted rights. The corrected expression checks only native/CRM rights; native `user => 0` still restricts the menu to internal users, and the page independently rejects external users. The test covers 32 combinations of internal `socid` values, personal/full rights and the native proposal right, including an administrator without functional grants. This is not a live menu-manager/browser test.
+
+## Permanent ranking eligibility
+
+`eligibility_sql.php`, included by `sql.php`, renders the actual ranking page against MariaDB and executes unchanged native `User::loadRights()` and `User::hasRight()` methods extracted from each selected core revision. Cases cover direct/group grants, a foreign-entity grant, inactive/external users, foreign-origin transverse membership, global users, an administrator without proposal creation rights, group revocation, forged selector values, personal anonymity and the empty state. SQL filters and ranking rendering execute; the form and Multicompany access service are doubles. This does not validate a deployed instance or the complete native selector/Multicompany lifecycle.
+
+Source inspection: Multicompany 24.0.2 (`44e62e9`), `DaoMulticompany::verifyRight()` checks global users, home-entity access and current-entity group membership in transverse mode. Functional permission checks remain separate. Candidate rights are loaded using the core API for each candidate (two permission queries per user); the SQL preselection excludes inactive/external users before these calls. Confirm response time on large user directories, real native selector contents and the installed Multicompany version during acceptance testing.
