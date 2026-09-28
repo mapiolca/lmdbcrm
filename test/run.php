@@ -151,7 +151,8 @@ $user->admin = 1;
 $db->queries = array();
 check($descriptor->insert_permissions(1) === 0, 'native permission registration');
 check(count(array_filter($db->queries, function ($sql) { return strpos($sql, 'INSERT INTO test_rights_def') === 0; })) === 4, 'four definitions registered');
-check(count(array_filter($db->queries, function ($sql) { return strpos($sql, 'admin = 1') !== false || strpos($sql, 'user_rights') !== false; })) === 0, 'no implicit admin grants');
+check(count(array_filter($db->queries, function ($sql) { return strpos($sql, 'admin = 1') !== false; })) === 4, 'native registration selects administrators for every right');
+check(!empty($nativeRightsReloads), 'native registration reloads current administrator permissions');
 
 foreach (array('none', 'masked', 'full', 'both', 'widgets-only', 'external', 'disabled', 'native-denied') as $scenario) {
 	$command = array(PHP_BINARY, __DIR__.'/ranking.php', $scenario);

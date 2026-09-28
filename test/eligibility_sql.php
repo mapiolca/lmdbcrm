@@ -27,7 +27,7 @@ foreach (array(101,102,103,104,105,106,107,108,109) as $fixtureId) {
 	$fixtureEntity = in_array($fixtureId, array(104,108), true) ? 2 : ($fixtureId === 107 ? 0 : 1);
 	$fixtureStatus = $fixtureId === 103 ? 0 : 1;
 	$fixtureSoc = $fixtureId === 105 ? 10 : 0;
-	$pdo->exec("INSERT INTO test_user VALUES ($fixtureId,'Sales$fixtureId','','sales$fixtureId','','',$fixtureStatus,$fixtureEntity,$fixtureSoc)");
+	$pdo->exec("INSERT INTO test_user (rowid,lastname,firstname,login,photo,email,statut,entity,fk_soc) VALUES ($fixtureId,'Sales$fixtureId','','sales$fixtureId','','',$fixtureStatus,$fixtureEntity,$fixtureSoc)");
 }
 $pdo->exec("INSERT INTO test_rights_def (id, entity, module, perms, subperms) VALUES (22,1,'propale','creer',NULL),(22,2,'propale','creer',NULL)");
 foreach (array(101,103,104,105,107,108) as $fixtureId) $pdo->exec('INSERT INTO test_user_rights VALUES ('.$fixtureId.',22,1)');

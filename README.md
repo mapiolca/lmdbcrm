@@ -39,7 +39,7 @@ Les droits natifs utilisateurs/groupes apparaissent dans cet ordre :
 3. **Lire les widgets CRM (uniquement ses données en clair)** — `widgets.read`.
 4. **Lire toutes les données des widgets CRM en clair** — `widgets.readall`.
 
-Les deux ensembles sont indépendants. Sans droit : accès refusé. Le droit complet suffit seul et prend priorité lorsque les deux sont attribués. Aucune attribution automatique aux utilisateurs, groupes ou administrateurs.
+Les deux ensembles sont indépendants. Sans droit : accès refusé. Le droit complet suffit seul et prend priorité lorsque les deux sont attribués. À chaque activation/réactivation, Dolibarr attribue nativement les quatre droits LMDBCRM aux administrateurs dans l’entité active. Les utilisateurs ordinaires et les groupes restent soumis à une attribution manuelle. Les contrôles serveur utilisent toujours `hasRight()` ; les droits sources et restrictions de données restent applicables.
 
 La lecture personnelle affiche sa propre ligne en clair, à sa position réelle dans le périmètre accessible. Les autres commerciaux et leurs valeurs sont remplacés côté serveur par des libellés et formes neutres ; leurs identités et valeurs ne sont pas envoyées au navigateur. Le classement personnel est fixé au nombre de devis signés décroissant, avec départage stable par identifiant utilisateur ; les filtres d’identité et le tri transmis dans l’URL sont ignorés. Les filtres de dates restent disponibles. Les podiums conservent le top 3 anonymisé et ajoutent sa propre ligne lorsqu’elle se trouve plus bas. Sans devis signé, un message signale l’absence de classement personnel.
 
@@ -58,7 +58,7 @@ Tous les rendus de widgets, personnels ou complets, invalident leur ancien cache
 | 45001103 — widgets masqués | 45001107 — widgets personnels |
 | 45001104 — widgets complets | 45001108 — widgets complets |
 
-La migration traite utilisateurs et groupes dans l’entité active, sans doublon, et retire les anciennes attributions pour ne pas rétablir un droit ultérieurement révoqué. Les placements des widgets sont conservés. Les anciens accès masqués ne deviennent jamais des accès complets. Après migration, les réglages restent administrables dans les écrans natifs.
+La migration traite utilisateurs et groupes dans l’entité active, sans doublon, et retire les anciennes attributions pour ne pas rétablir un droit ultérieurement révoqué. Les placements des widgets sont conservés. Les anciens accès masqués des utilisateurs ordinaires et groupes ne deviennent jamais des accès complets ; les administrateurs reçoivent les droits complets par défaut lors de l’activation. Après migration, les réglages restent administrables dans les écrans natifs.
 
 ## Installation
 ### Depuis un paquet ZIP
@@ -132,7 +132,7 @@ Various CRM widgets and features to complement your favorite Dolibarr.
 
 ## Ranking and widget permissions
 
-Native rights are ordered as: personal ranking (`ranking.read`), full ranking (`ranking.readall`), personal widgets (`widgets.read`), full widgets (`widgets.readall`). The two groups are independent; full read takes precedence and is sufficient alone. No right means no access. No automatic grants, including to administrators.
+Native rights are ordered as: personal ranking (`ranking.read`), full ranking (`ranking.readall`), personal widgets (`widgets.read`), full widgets (`widgets.readall`). The two groups are independent; full read takes precedence and is sufficient alone. No right means no access. On each activation/reactivation, Dolibarr natively grants all four LMDBCRM rights to administrators in the active entity. Standard users and groups still require manual assignment. Server checks continue to use `hasRight()`; source permissions and data scopes still apply.
 
 Personal reading displays the viewer’s own values and actual position within the accessible scope. Other names and values are hidden server-side. The personal ranking uses signed proposal count descending with user ID as stable tie-breaker; identity filters and custom sorting are ignored, while date filters remain available. Podiums retain the anonymous top three and include the viewer even below third place. Personal charts query only the viewer’s series, not company totals. Personal proposals are authored by the viewer; personal orders belong to their assigned customers.
 

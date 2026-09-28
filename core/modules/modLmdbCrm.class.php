@@ -439,22 +439,4 @@ class modLmdbCrm extends DolibarrModules
 		return 1;
 	}
 
-	/**
-	 * Register rights without the automatic administrator grants requested by _init().
-	 * Existing explicit user/group assignments are preserved by the native mechanism.
-	 * This override implements the module's opt-in policy, not a permission proxy.
-	 *
-	 * @param int $reinitadminperms Ignored: all grants must remain explicit
-	 * @param int|null $force_entity Entity override
-	 * @param int $notrigger Native trigger option
-	 * @param int[]|null $existingrightsdefids Optional native rights IDs on recent core
-	 * @return int Error count
-	 */
-	public function insert_permissions($reinitadminperms = 0, $force_entity = null, $notrigger = 0, $existingrightsdefids = null)
-	{
-		if (version_compare(DOL_VERSION, '25.0.0-alpha', '>=')) {
-			return parent::insert_permissions(0, $force_entity, $notrigger, $existingrightsdefids);
-		}
-		return parent::insert_permissions(0, $force_entity, $notrigger);
-	}
 }

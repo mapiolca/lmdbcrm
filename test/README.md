@@ -60,3 +60,9 @@ Source inspection: Multicompany 24.0.2 (`44e62e9`), `DaoMulticompany::verifyRigh
 ### Proposal permission storage name regression
 
 `php test/proposalrights.php` renders the actual page and executes unchanged native `loadRights()` / `hasRight()` methods with simulated direct/group grant queries. The fixture uses `rights_def.module = propale`, verified against `modPropale::rights_class` in the selected core descriptor. The loader argument from the page is forwarded unchanged to the native method. Before correction this test returns no eligible users; after correction both the direct and group-granted users qualify, while an administrator without grants remains excluded. The MariaDB suite uses native creation right ID 22 and the same historical module name, with real user/group grant joins. The previous fixture incorrectly stored `propal` and ignored the page's loader argument; it could not detect this defect.
+
+## Administrator defaults
+
+The module inherits `DolibarrModules::insert_permissions()` without suppressing its native administrator grants. Activation/reactivation grants the four CRM permissions in the active entity, while their `bydefault` flags remain zero for standard users. Functional checks still call `hasRight()` directly; there is no runtime administrator bypass.
+
+The MariaDB activation tests now execute native `User::addrights()` as well as native permission registration. User fetching and session permission reloads remain simulated. They verify all four admin grants, no automatic standard-user grants, entity-scoped writes, idempotent reactivation and restoration of revoked admin defaults on reactivation. Revocations for standard users remain durable. The pure rendering tests still verify that an administrator with `hasRight()` false cannot bypass a functional check before rights have been reloaded. On a deployed instance, reactivate LMDBCRM in each relevant entity and reload the administrator session to apply these defaults.

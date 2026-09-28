@@ -69,12 +69,15 @@ class User
 	public $socid = 0;
 	public $admin = 0;
 	public $grants = array();
-	public function __construct($db = null) {}
+	public $db;
+	public function __construct($db = null) { $this->db = $db; }
+	public function fetch($id) { $result = $this->db->query("SELECT rowid FROM ".MAIN_DB_PREFIX."user WHERE rowid = ".((int) $id)); $row = $this->db->fetch_object($result); if (!$row) return 0; $this->id = (int) $row->rowid; return 1; }
 	public function hasRight($module, $first, $second = '') { return in_array($module.'.'.$first.($second === '' ? '' : '.'.$second), $this->grants, true); }
 	public function loadRights($module = '', $force = 0) { $this->grants = isset($GLOBALS['candidateRightsLoader']) ? ($GLOBALS['candidateRightsLoader'])($this->id, $module) : ($GLOBALS['candidateGrants'][$this->id] ?? array('propal.creer')); }
+	public function getrights() { $this->loadRights(); }
 	public function getNomUrl(...$args) { return '<a>'.dol_escape_htmltag($this->login ?? 'OWN_USER').'</a>'; }
-	public function addrights(...$args) { throw new RuntimeException('Automatic grant attempted'); }
-	public function clearrights() { throw new RuntimeException('Implicit administrator grant reload'); }
+	public function addrights(...$args) { if (!isset($GLOBALS['adminRightsLoader'])) throw new RuntimeException('Unexpected grant'); return ($GLOBALS['adminRightsLoader'])($this->id, $this->db, $args); }
+	public function clearrights() { $this->grants = array(); $GLOBALS['nativeRightsReloads'] = ($GLOBALS['nativeRightsReloads'] ?? 0) + 1; }
 }
 class Propal { const STATUS_SIGNED = 2; const STATUS_BILLED = 4; }
 class Commande { const STATUS_CLOSED = 3; public function __construct($db) {} }

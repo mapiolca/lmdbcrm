@@ -145,6 +145,15 @@ class RegistrationModule extends modLmdbCrm
 	public function create_dirs() { return 0; }
 	public function delete_dirs() { return 0; }
 }
+require_once __DIR__.'/nativeuser.php';
+$adminRightsLoader = function ($id, $database, $args) {
+	$native = new EligibilityNativeUser();
+	$native->id = $id;
+	$native->db = $database;
+	return $native->addrights(...$args);
+};
+$pdo->exec('ALTER TABLE test_user ADD admin int NOT NULL DEFAULT 0');
+$pdo->exec('UPDATE test_user SET admin=1 WHERE rowid=8');
 resetContext();
 $user->admin = 1;
 $db = new RegistrationDb($pdo);
@@ -153,6 +162,9 @@ $module = new RegistrationModule($db);
 $pdo->exec('INSERT INTO test_user_rights VALUES (7,45001102,1),(7,45001106,1),(11,45001101,1),(7,45001102,2)');
 $pdo->exec('INSERT INTO test_usergroup_rights VALUES (3,45001103,1),(4,45001104,1)');
 sqlCheck($module->init() === 1, 'first activation');
+sqlCheck((int) $pdo->query('SELECT COUNT(*) FROM test_user_rights WHERE fk_user=8 AND entity=1')->fetchColumn() === 4, 'administrator receives all four native CRM rights');
+sqlCheck((int) $pdo->query('SELECT COUNT(*) FROM test_user_rights WHERE fk_user=9')->fetchColumn() === 0, 'standard user receives no automatic grant');
+sqlCheck((int) $pdo->query('SELECT COUNT(*) FROM test_user_rights WHERE fk_user=8 AND entity=2')->fetchColumn() === 0, 'activation grants only in the active entity');
 sqlCheck((int) $pdo->query('SELECT COUNT(*) FROM test_rights_def')->fetchColumn() === 4, 'four native rights');
 sqlCheck((int) $pdo->query('SELECT COUNT(*) FROM test_boxes')->fetchColumn() === 7, 'seven default boxes');
 $pdo->exec("UPDATE test_boxes SET box_order='B4', fk_user=7 WHERE rowid=1");
@@ -166,18 +178,23 @@ for ($i = 0; $i < 2; $i++) {
 	sqlCheck($before === $pdo->query('SELECT * FROM test_boxes ORDER BY rowid')->fetchAll(PDO::FETCH_ASSOC), 'positions retained');
 	sqlCheck((int) $pdo->query('SELECT COUNT(*) FROM test_rights_def')->fetchColumn() === 4, 'no duplicate rights');
 	sqlCheck((int) $pdo->query('SELECT COUNT(*) FROM test_boxes_def')->fetchColumn() === 8, 'no duplicate definitions');
-	sqlCheck((int) $pdo->query('SELECT COUNT(*) FROM test_user_rights')->fetchColumn() === 3, 'explicit user assignment retained');
+	sqlCheck((int) $pdo->query('SELECT COUNT(*) FROM test_user_rights')->fetchColumn() === 7, 'standard assignments and four native administrator grants retained');
 	sqlCheck((int) $pdo->query('SELECT COUNT(*) FROM test_usergroup_rights')->fetchColumn() === 2, 'explicit group assignment retained');
 }
+$pdo->exec('DELETE FROM test_user_rights WHERE fk_user=8 AND entity=1 AND fk_id=45001106');
+sqlCheck($module->init() === 1, 'administrator defaults restored on reactivation');
+sqlCheck((int) $pdo->query('SELECT COUNT(*) FROM test_user_rights WHERE fk_user=8 AND entity=1')->fetchColumn() === 4, 'native reactivation restores administrator full read');
 $pdo->exec('DELETE FROM test_user_rights WHERE fk_user=11 AND entity=1');
 sqlCheck($module->init() === 1, 'reactivate after explicit revocation');
 sqlCheck((int) $pdo->query('SELECT COUNT(*) FROM test_user_rights WHERE fk_user=11')->fetchColumn() === 0, 'migration never restores revoked rights');
-sqlCheck((int) $pdo->query('SELECT fk_id FROM test_user_rights WHERE entity=2')->fetchColumn() === 45001102, 'other entity unmigrated');
+sqlCheck((int) $pdo->query('SELECT fk_id FROM test_user_rights WHERE entity=2 AND fk_user=7')->fetchColumn() === 45001102, 'other entity unmigrated');
 $conf->entity = 2;
 sqlCheck($module->init() === 1, 'second entity activation');
+sqlCheck((int) $pdo->query('SELECT COUNT(*) FROM test_user_rights WHERE fk_user=8 AND entity=2')->fetchColumn() === 4, 'administrator defaults granted in second entity');
+sqlCheck((int) $pdo->query('SELECT COUNT(*) FROM test_user_rights WHERE fk_user=8 AND entity=1')->fetchColumn() === 4, 'first entity administrator grants preserved');
 sqlCheck((int) $pdo->query('SELECT COUNT(*) FROM test_rights_def')->fetchColumn() === 8, 'rights registered by entity');
 sqlCheck($before === $pdo->query('SELECT * FROM test_boxes WHERE entity=1 ORDER BY rowid')->fetchAll(PDO::FETCH_ASSOC), 'first entity unchanged');
-sqlCheck((int) $pdo->query('SELECT fk_id FROM test_user_rights WHERE entity=2')->fetchColumn() === 45001106, 'migration follows the active entity');
+sqlCheck((int) $pdo->query('SELECT fk_id FROM test_user_rights WHERE entity=2 AND fk_user=7')->fetchColumn() === 45001106, 'migration follows the active entity');
 $pdo->exec('INSERT INTO test_user_rights VALUES (17,45001101,2)');
 $beforeFailure = $pdo->query('SELECT * FROM test_user_rights ORDER BY entity, fk_user, fk_id')->fetchAll(PDO::FETCH_ASSOC);
 $db->failMigration = true;
