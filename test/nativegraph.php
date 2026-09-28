@@ -6,7 +6,7 @@ require $moduleRoot.'/core/boxes/lmdbcrm_graph_signedturnover_entities.php';
 function getNonce() { return 'test-nonce'; }
 function dol_string_nospecial($value, ...$args) { return preg_replace('/[^a-zA-Z0-9_]/', '', $value); }
 function dol_string_unaccent($value) { return $value; }
-function dol_getThemeFilePath($file) { return ''; }
+function dol_getThemeFilePath($file) { return $file === 'theme_vars.inc.php' ? DOL_DOCUMENT_ROOT.'/theme/eldy/'.$file : ''; }
 function dol_escape_js($value, ...$args) { return str_replace(array("\\", "'", "<", ">"), array("\\\\", "\\'", "\\x3c", "\\x3e"), (string) $value); }
 function dol_string_nohtmltag($value, ...$args) { return strip_tags($value); }
 class NativeGraphDb extends DoliDB
