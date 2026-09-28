@@ -1,5 +1,7 @@
 # LMDBCRM pour [Dolibarr ERP & CRM](https://www.dolibarr.org)
 
+**Version en préparation : 1.5.0.** Voir [ChangeLog.md](ChangeLog.md).
+
 Divers widgets et fonctionnalités CRM pour compléter votre Dolibarr préféré.
 
 ## Fonctionnalités
@@ -106,6 +108,8 @@ La migration traite utilisateurs et groupes dans l’entité active, sans doublo
 ---
 
 # LMDBCRM for [Dolibarr ERP & CRM](https://www.dolibarr.org)
+
+**Upcoming version: 1.5.0.** See [ChangeLog.md](ChangeLog.md).
 
 Various CRM widgets and features to complement your favorite Dolibarr.
 ## Features
