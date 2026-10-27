@@ -22,6 +22,8 @@ Divers widgets et fonctionnalités CRM pour compléter votre Dolibarr préféré
 - Version minimale : Dolibarr 20.0. Les contrôles automatisés et les limites des essais sont décrits dans [test/README.md](test/README.md).
 - PHP minimal : 8.0.
 
+Les réglages reprennent la présentation native de TimesheetWeek : tableaux des règles et des accès, onglet Compatibilité avec environnement détecté et disponibilité technique de la source, onglet À propos en deux colonnes avec métadonnées du descripteur, documentation, historique et dépôt. `setup.php` reste l’unique entrée de configuration ; ces pages ne modifient aucune donnée métier.
+
 ## Conversion des leads avec LMDB Lead
 
 Lorsque LMDB Lead est actif, le graphique utilisateur/entreprise et la colonne du classement utilisent **convertis ÷ (convertis + perdus) × 100**. Les autres états actuels sont exclus, y compris les disqualifiés, annulés et archivés. La période suit la date de création ; le résultat appartient au commercial actuellement affecté. Un lead compte une fois, quels que soient ses devis. Les leads sans affectation comptent uniquement dans le comparatif entreprise.

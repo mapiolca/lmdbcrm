@@ -69,62 +69,128 @@ require_once __DIR__.'/../core/modules/modLmdbCrm.class.php';
  */
 
 // Translations
-$langs->loadLangs(array("admin", "lmdbcrm@lmdbcrm"));
+$langs->loadLangs(array('admin', 'other', 'lmdbcrm@lmdbcrm'));
 
 // Access control
 if (!$user->admin) {
 	accessforbidden();
 }
 
-$action = GETPOST('action', 'aZ09');
-$backtopage = GETPOST('backtopage', 'alpha');
-
-$help_url = '';
-$title = "LmdbCrmSetup";
-
-llxHeader('', $langs->trans($title), $help_url, '', 0, 0, '', '', '', 'mod-lmdbcrm page-admin');
-
-// Subheader
-$linkback = '<a href="'.($backtopage ? $backtopage : DOL_URL_ROOT.'/admin/modules.php?restore_lastsearch_values=1').'">'.img_picto($langs->trans("BackToModuleList"), 'back', 'class="pictofixedwidth"').'<span class="hideonsmartphone">'.$langs->trans("BackToModuleList").'</span></a>';
-
-print load_fiche_titre($langs->trans($title), $linkback, 'title_setup');
-
-// Configuration header
+// All three routes share the same administrator guard and native navigation.
 $lmdbcrmAdminTab = isset($lmdbcrmAdminTab) && in_array($lmdbcrmAdminTab, array('compatibility', 'about'), true) ? $lmdbcrmAdminTab : 'settings';
-$head = lmdbcrmAdminPrepareHead();
-print dol_get_fiche_head($head, $lmdbcrmAdminTab, $langs->trans($title), -1, "lmdbcrm@lmdbcrm");
-
+$titles = array('settings' => 'LmdbCrmSetup', 'compatibility' => 'LmdbCrmCompatibility', 'about' => 'LmdbCrmAbout');
+$title = $langs->trans($titles[$lmdbcrmAdminTab]);
 $descriptor = new modLmdbCrm($db);
+$phpmin = implode('.', $descriptor->phpmin);
+$dolmin = implode('.', $descriptor->need_dolibarr_version);
+$linkback = '<a href="'.DOL_URL_ROOT.'/admin/modules.php?search_keyword=lmdbcrm">'.$langs->trans('BackToModuleList').'</a>';
+
+llxHeader('', $title, '', '', 0, 0, '', '', '', 'mod-lmdbcrm page-admin');
+print load_fiche_titre($title, $linkback, $lmdbcrmAdminTab === 'about' ? 'info' : 'title_setup');
+$head = lmdbcrmAdminPrepareHead();
+print dol_get_fiche_head($head, $lmdbcrmAdminTab, $title, -1, $descriptor->picto);
+
 if ($lmdbcrmAdminTab === 'settings') {
-	print '<p>'.dol_escape_htmltag($langs->trans('LmdbCrmNoSetupNeeded')).'</p>';
-	print '<p>'.dol_escape_htmltag($langs->trans('LmdbCrmConversionIntegrationHelp')).'</p>';
-} else {
-	$phpmin = implode('.', $descriptor->phpmin);
-	$dolmin = implode('.', $descriptor->need_dolibarr_version);
-	$rows = array();
-	if ($lmdbcrmAdminTab === 'compatibility') {
-		$source = LmdbCrmConversion::source();
-		$rows = array('PHP' => PHP_VERSION, 'Dolibarr' => DOL_VERSION,
-			'LmdbCrmMinimumPHP' => $phpmin, 'LmdbCrmMinimumDolibarr' => $dolmin,
-			'LmdbCrmTargetVersions' => '20, 21, 22, 23, 24, 25',
-			'LmdbCrmConversionSource' => $langs->trans($source['label']),
-			'Status' => $langs->trans($source['available'] ? 'Available' : 'NotAvailable'));
-		if ($source['reason'] !== '') { $rows['Description'] = $langs->trans($source['reason']); }
-		print '<p>'.dol_escape_htmltag($langs->trans('LmdbCrmConversionIntegrationHelp')).'</p>';
-		print '<p>'.dol_escape_htmltag($langs->trans('LmdbCrmValidationLimits')).'</p>';
-	} else {
-		$rows = array('Module' => $descriptor->name, 'Version' => $descriptor->version,
-			'Author' => $descriptor->module_author, 'Description' => $langs->trans($descriptor->description),
-			'License' => $descriptor->module_license, 'LmdbCrmMinimumPHP' => $phpmin,
-			'LmdbCrmMinimumDolibarr' => $dolmin, 'Dependencies' => implode(', ', $descriptor->depends),
-			'LmdbCrmRepository' => $descriptor->module_repository);
-		print '<p>'.dol_escape_htmltag($langs->trans('LmdbCrmAboutFeatures')).'</p>';
-	}
+	$source = LmdbCrmConversion::source();
+	print '<div class="underbanner opacitymedium">'.dol_escape_htmltag($langs->trans('LmdbCrmNoSetupNeeded')).'</div><br>';
 	print '<div class="div-table-responsive-no-min"><table class="noborder centpercent">';
+	print '<tr class="liste_titre"><th colspan="2">'.$langs->trans('LmdbCrmConversionRate').'</th></tr>';
+	$rows = array(
+		'LmdbCrmConversionSource' => $langs->trans($source['label']),
+		'Status' => $langs->trans($source['available'] ? 'Available' : 'NotAvailable'),
+		'LmdbCrmSourceSelection' => $langs->trans('LmdbCrmSourceSelectionHelp'),
+		'LmdbCrmCalculation' => $langs->trans('LmdbCrmCalculationHelp'),
+		'LmdbCrmLeadScope' => $langs->trans('LmdbCrmLeadScopeHelp'),
+		'LmdbCrmOtherIndicators' => $langs->trans('LmdbCrmOtherIndicatorsHelp'),
+	);
+	if ($source['reason'] !== '') {
+		$rows['Reason'] = $langs->trans($source['reason']);
+	}
 	foreach ($rows as $label => $value) {
-		print '<tr class="oddeven"><td>'.dol_escape_htmltag($langs->trans($label)).'</td><td>'.dol_escape_htmltag($value).'</td></tr>';
+		print '<tr class="oddeven"><td class="titlefield">'.$langs->trans($label).'</td><td>'.dol_escape_htmltag($value).'</td></tr>';
+	}
+	print '</table></div><br>';
+	print '<div class="div-table-responsive-no-min"><table class="noborder centpercent">';
+	print '<tr class="liste_titre"><th>'.$langs->trans('LmdbCrmAccessAndWidgets').'</th><th>'.$langs->trans('Description').'</th></tr>';
+	$rows = array(
+		'LmdbCrmWidgetsSettings' => 'LmdbCrmWidgetsSettingsHelp',
+		'Rights' => 'LmdbCrmPermissionsHelp',
+		'LmdbCrmLeadAccess' => 'LmdbCrmLeadAccessHelp',
+	);
+	foreach ($rows as $label => $help) {
+		print '<tr class="oddeven"><td class="titlefield">'.$langs->trans($label).'</td><td>'.dol_escape_htmltag($langs->trans($help)).'</td></tr>';
 	}
 	print '</table></div>';
+} elseif ($lmdbcrmAdminTab === 'compatibility') {
+	$source = LmdbCrmConversion::source();
+	print '<div class="underbanner opacitymedium">'.dol_escape_htmltag($langs->trans('LmdbCrmCompatibilityHelp')).'</div><br>';
+	print '<div class="div-table-responsive-no-min"><table class="noborder centpercent">';
+	print '<tr class="liste_titre"><th colspan="2">'.$langs->trans('LmdbCrmEnvironment').'</th></tr>';
+	$rows = array(
+		'LmdbCrmDetectedDolibarr' => DOL_VERSION,
+		'LmdbCrmDetectedPHP' => PHP_VERSION,
+		'LmdbCrmMinimumDolibarr' => $dolmin,
+		'LmdbCrmMinimumPHP' => $phpmin,
+		'LmdbCrmTargetVersions' => '20, 21, 22, 23, 24, 25',
+	);
+	foreach ($rows as $label => $value) {
+		print '<tr class="oddeven"><td class="titlefield">'.$langs->trans($label).'</td><td>'.dol_escape_htmltag($value).'</td></tr>';
+	}
+	print '</table></div><br>';
+	print '<div class="div-table-responsive-no-min"><table class="noborder centpercent">';
+	print '<tr class="liste_titre">';
+	foreach (array('Code', 'Label', 'Description', 'LmdbCrmAvailableFrom', 'Status', 'Reason') as $label) {
+		print '<th>'.$langs->trans($label).'</th>';
+	}
+	print '</tr><tr class="oddeven">';
+	// The runtime source resolver is also the authority for this diagnostic.
+	$values = array('conversion_statistics', $langs->trans('LmdbCrmConversionRate'),
+		$langs->trans($source['label']), 'Dolibarr '.$dolmin.' / PHP '.$phpmin,
+		$langs->trans($source['available'] ? 'Available' : 'NotAvailable'),
+		$langs->trans($source['reason'] !== '' ? $source['reason'] : 'OK'));
+	foreach ($values as $value) {
+		print '<td>'.dol_escape_htmltag($value).'</td>';
+	}
+	print '</tr></table></div><br>';
+	print '<div class="opacitymedium">'.dol_escape_htmltag($langs->trans('LmdbCrmConversionIntegrationHelp')).'</div><br>';
+	print '<div class="opacitymedium">'.dol_escape_htmltag($langs->trans('LmdbCrmValidationLimits')).'</div>';
+} else {
+	print '<div class="underbanner opacitymedium">'.dol_escape_htmltag($langs->trans('LmdbCrmAboutHelp')).'</div><br>';
+	print '<div class="fichecenter"><div class="fichehalfleft">';
+	print '<div class="div-table-responsive-no-min"><table class="noborder centpercent">';
+	print '<tr class="liste_titre"><th colspan="2">'.$langs->trans('LmdbCrmAboutGeneral').'</th></tr>';
+	$rows = array(
+		'Module' => $descriptor->name,
+		'Version' => $descriptor->version,
+		'Family' => $descriptor->family,
+		'Description' => $langs->trans($descriptor->description),
+		'LmdbCrmPublisher' => $descriptor->editor_name,
+		'Author' => $descriptor->module_author,
+		'DolibarrLicense' => $descriptor->module_license,
+		'LmdbCrmMinimumDolibarr' => $dolmin,
+		'LmdbCrmMinimumPHP' => $phpmin,
+		'DependsOn' => $descriptor->depends ? implode(', ', $descriptor->depends) : $langs->trans('None'),
+	);
+	foreach ($rows as $label => $value) {
+		print '<tr class="oddeven"><td class="titlefield">'.$langs->trans($label).'</td><td>'.dol_escape_htmltag($value).'</td></tr>';
+	}
+	print '</table></div></div><div class="fichehalfright">';
+	print '<div class="div-table-responsive-no-min"><table class="noborder centpercent">';
+	print '<tr class="liste_titre"><th colspan="2">'.$langs->trans('LmdbCrmAboutResources').'</th></tr>';
+	$links = array(
+		'LmdbCrmDocumentation' => array(dol_buildpath('/lmdbcrm/README.md', 1), 'README.md'),
+		'LmdbCrmChangeLog' => array(dol_buildpath('/lmdbcrm/ChangeLog.md', 1), 'ChangeLog.md'),
+		'LmdbCrmRepository' => array($descriptor->module_repository, $descriptor->module_repository),
+		'LmdbCrmPublisher' => array('https://'.$descriptor->editor_url, $descriptor->editor_name),
+	);
+	foreach ($links as $label => $link) {
+		print '<tr class="oddeven"><td class="titlefield">'.$langs->trans($label).'</td><td><a href="'.dol_escape_htmltag($link[0]).'" target="_blank" rel="noopener noreferrer">'.dol_escape_htmltag($link[1]).'</a></td></tr>';
+	}
+	print '</table></div><br>';
+	print '<div class="div-table-responsive-no-min"><table class="noborder centpercent">';
+	print '<tr class="liste_titre"><th>'.$langs->trans('LmdbCrmAboutMainFeatures').'</th></tr>';
+	print '<tr class="oddeven"><td>'.dol_escape_htmltag($langs->trans('LmdbCrmAboutFeatures')).'</td></tr>';
+	print '</table></div></div></div><div class="clearboth"></div>';
 }
 
 print dol_get_fiche_end();
