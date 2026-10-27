@@ -140,7 +140,7 @@ function dol_readcachefile($directory, $filename) { return json_decode(file_get_
 function dol_delete_file($file, ...$args) { return empty($GLOBALS['failCacheDelete']) ? unlink($file) : false; }
 function llxHeader(...$args) { print '<html><body>'; }
 function llxFooter(...$args) { print '</body></html>'; }
-function load_fiche_titre($title, ...$args) { return '<h1>'.$title.'</h1>'; }
+function load_fiche_titre($title, ...$args) { return '<h1>'.$title.'</h1>'.($args[0] ?? ''); }
 function print_liste_field_titre($title, ...$args) { print '<th>'.$title.'</th>'; }
 function dol_print_error(...$args) { throw new RuntimeException('SQL error'); }
 function price($value, ...$args) { return (string) $value; }

@@ -24,9 +24,10 @@
  */
 
 require_once __DIR__.'/../../class/lmdbcrmbox.class.php';
+require_once __DIR__.'/../../class/lmdbcrmconversion.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.form.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/dolgraph.class.php';
-require_once DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php';
+
 
 /**
  * Class to manage the conversion rates graph box
@@ -56,7 +57,13 @@ class lmdbcrm_graph_conversionrates extends LmdbCrmBox
 	/**
 	 * @var string[] Module dependencies
 	 */
-	public $depends = array('lmdbcrm', 'propal');
+	public $depends = array('lmdbcrm');
+
+	/** @var string Source and authorization context used by loadBox(). */
+	protected $conversionContext = '';
+
+	/** @var string Current source code. */
+	protected $conversionSource = 'proposal';
 
 	/**
 	 * Constructor
@@ -72,8 +79,9 @@ class lmdbcrm_graph_conversionrates extends LmdbCrmBox
 
 		$this->db = $db;
 		$this->param = $param;
-		$this->hidden = !isModEnabled('lmdbcrm') || !isModEnabled('propal') || !empty($user->socid)
-			|| !$user->hasRight('propal', 'lire')
+		$source = LmdbCrmConversion::source();
+		$this->hidden = !isModEnabled('lmdbcrm') || !empty($user->socid)
+			|| ($source['code'] === 'proposal' && (!isModEnabled('propal') || !$user->hasRight('propal', 'lire')))
 			|| (!$user->hasRight('lmdbcrm', 'widgets', 'readall') && !$user->hasRight('lmdbcrm', 'widgets', 'read'));
 	}
 
@@ -92,14 +100,17 @@ class lmdbcrm_graph_conversionrates extends LmdbCrmBox
 		$this->info_box_head = array();
 		$this->info_box_contents = array();
 		$this->lmdbcrmDataLoaded = false;
-		$this->hidden = !isModEnabled('lmdbcrm') || !isModEnabled('propal') || !empty($user->socid)
-			|| !$user->hasRight('propal', 'lire')
+		$source = LmdbCrmConversion::source();
+		$this->hidden = !isModEnabled('lmdbcrm') || !empty($user->socid)
+			|| ($source['code'] === 'proposal' && (!isModEnabled('propal') || !$user->hasRight('propal', 'lire')))
 			|| (!$user->hasRight('lmdbcrm', 'widgets', 'readall') && !$user->hasRight('lmdbcrm', 'widgets', 'read'));
 		if ($this->hidden) {
 			return;
 		}
 		$this->lmdbcrmDataLoaded = true;
 		$this->lmdbcrmLoadedAll = $user->hasRight('lmdbcrm', 'widgets', 'readall');
+		$this->conversionSource = $source['code'];
+		$this->conversionContext = $this->renderContext();
 
 		$now = dol_now();
 
@@ -124,15 +135,17 @@ class lmdbcrm_graph_conversionrates extends LmdbCrmBox
 		$form = new Form($this->db);
 
 		$this->info_box_head = array(
-			'text' => $langs->trans('LmdbCrmConversionRatesTitle'),
+			'text' => $langs->trans($this->conversionSource === 'lead' ? 'LmdbCrmConversionLeadsTitle' : 'LmdbCrmConversionRatesTitle'),
 			'limit' => 0,
 			'subpicto' => 'help',
-			'subtext'  => dol_escape_htmltag($langs->transnoentitiesnoconv('LmdbCrmConversionRatesTooltip')),
+			'subtext'  => dol_escape_htmltag($langs->transnoentitiesnoconv($this->conversionSource === 'lead' ? 'LmdbCrmConversionLeadsTooltip' : 'LmdbCrmConversionRatesTooltip')),
 			'subclass' => 'classfortooltip',
 		);
 
 		$userData = $this->fetchConversionData($fromdate, $todate, (int) $user->id);
-		$companyData = $user->hasRight('lmdbcrm', 'widgets', 'readall') ? $this->fetchConversionData($fromdate, $todate, 0) : array();
+		$companyAllowed = $user->hasRight('lmdbcrm', 'widgets', 'readall')
+			&& ($this->conversionSource !== 'lead' || $user->hasRight('lmdblead', 'lead', 'readall'));
+		$companyData = $companyAllowed ? $this->fetchConversionData($fromdate, $todate, 0) : null;
 
 		$filterform = '<form method="GET" action="'.dol_escape_htmltag($_SERVER['PHP_SELF']).'" class="nocellnopadding">';
 		$filterform .= '<div class="center">';
@@ -145,8 +158,8 @@ class lmdbcrm_graph_conversionrates extends LmdbCrmBox
 		$filterform .= '</form>';
 
 		$userGraph = $this->renderPieGraph($userData, 'user', $langs->trans('LmdbCrmConversionUserLabel'));
-		$companyGraph = $user->hasRight('lmdbcrm', 'widgets', 'readall')
-			? $this->renderPieGraph($companyData, 'company', $langs->trans('LmdbCrmConversionCompanyLabel'))
+		$companyGraph = $companyAllowed
+			? $this->renderPieGraph($companyData, 'company', $langs->trans($this->conversionSource === 'lead' ? 'LmdbCrmConversionCompanyScope' : 'LmdbCrmConversionCompanyLabel'))
 			: LmdbCrmMaskedBox::renderPlaceholder('graph');
 
 		$graphsHtml = '<div class="center">'.$filterform.'<div class="flexcontainer wrap center">';
@@ -187,8 +200,9 @@ class lmdbcrm_graph_conversionrates extends LmdbCrmBox
 	{
 		global $user;
 
-		$this->hidden = !isModEnabled('lmdbcrm') || !isModEnabled('propal') || !empty($user->socid)
-			|| !$user->hasRight('propal', 'lire')
+		$source = LmdbCrmConversion::source();
+		$this->hidden = !isModEnabled('lmdbcrm') || !empty($user->socid)
+			|| ($source['code'] === 'proposal' && (!isModEnabled('propal') || !$user->hasRight('propal', 'lire')))
 			|| (!$user->hasRight('lmdbcrm', 'widgets', 'readall') && !$user->hasRight('lmdbcrm', 'widgets', 'read'));
 		if ($this->hidden) {
 			$this->info_box_head = array();
@@ -197,7 +211,7 @@ class lmdbcrm_graph_conversionrates extends LmdbCrmBox
 			return '';
 		}
 		// Never reuse a previously loaded scope after a permission transition.
-		if ($this->lmdbcrmLoadedAll !== $user->hasRight('lmdbcrm', 'widgets', 'readall')) {
+		if ($this->conversionContext !== $this->renderContext()) {
 			$this->info_box_head = array();
 			$this->info_box_contents = array();
 			$this->lmdbcrmDataLoaded = false;
@@ -208,10 +222,24 @@ class lmdbcrm_graph_conversionrates extends LmdbCrmBox
 		return parent::showBox($this->info_box_head, $this->info_box_contents, $nooutput);
 	}
 
+	/** @return string Authorization/source snapshot; never used to grant a permission. */
+	protected function renderContext(): string
+	{
+		global $user, $conf;
+		$source = LmdbCrmConversion::source();
+		$children = getDolGlobalInt('MAIN_SEE_SUBORDINATES') ? $user->getAllChildIds() : array();
+		return (string) json_encode(array($source, (int) $conf->entity, (int) $user->id, $user->status ?? null, $user->entity ?? null,
+			$user->hasRight('lmdbcrm', 'widgets', 'readall'), $user->hasRight('propal', 'lire'),
+			$user->hasRight('lmdblead', 'lead', 'read'), $user->hasRight('lmdblead', 'lead', 'readall'),
+			$user->hasRight('lmdblead', 'lead', 'export'), $user->hasRight('societe', 'lire'),
+			$user->hasRight('societe', 'client', 'voir'), getEntity('propal'), getEntity('societe'), getEntity('user'),
+			getDolGlobalInt('MAIN_NEED_EXPORT_PERMISSION_TO_READ_STATISTICS'), getDolGlobalInt('MAIN_SEE_SUBORDINATES'), $children));
+	}
+
 	/**
 	 * Build a pie graph with conversion rates.
 	 *
-	 * @param array{total:int<0,max>,signed:int<0,max>} $data Conversion data
+	 * @param array{total:int<0,max>,signed:int<0,max>}|null $data Conversion data
 	 * @param string $suffix Suffix for temporary file names
 	 * @param string $title Title for the graph
 	 * @return string
@@ -220,18 +248,21 @@ class lmdbcrm_graph_conversionrates extends LmdbCrmBox
 	{
 		global $langs, $conf, $user;
 
+		if ($data === null) {
+			return '<div class="opacitymedium">'.dol_escape_htmltag($langs->trans('LmdbCrmConversionUnavailable')).'</div>';
+		}
 		$total = (int) $data['total'];
 		$signed = (int) $data['signed'];
 		$unsigned = max(0, $total - $signed);
 
 		if ($total <= 0) {
-			return '<div class="opacitymedium">'.$langs->trans('LmdbCrmConversionNoData').'</div>';
+			return '<div class="opacitymedium">'.$langs->trans($this->conversionSource === 'lead' ? 'LmdbCrmConversionLeadsNoData' : 'LmdbCrmConversionNoData').'</div>';
 		}
 
 		$graph = new DolGraph();
 		$graph->SetData(array(
-		    array($langs->transnoentities('LmdbCrmConversionSigned'), $signed),
-		    array($langs->transnoentities('LmdbCrmConversionUnsigned'), $unsigned),
+		    array($langs->transnoentities($this->conversionSource === 'lead' ? 'LmdbCrmConversionConverted' : 'LmdbCrmConversionSigned'), $signed),
+		    array($langs->transnoentities($this->conversionSource === 'lead' ? 'LmdbCrmConversionLost' : 'LmdbCrmConversionUnsigned'), $unsigned),
 		));
 		$graph->SetDataColor(array('#76a7fa', '#c0c0c0'));
 		$graph->setShowLegend(1);
@@ -248,7 +279,7 @@ class lmdbcrm_graph_conversionrates extends LmdbCrmBox
 		$graph->draw($graphid);
 
 		$percent = round(($signed / $total) * 100, 2);
-		$label = '<div class="center"><strong>'.$title.'</strong><br>'.dol_escape_htmltag($percent).' %</div>';
+		$label = '<div class="center"><strong>'.$title.'</strong><br>'.dol_escape_htmltag((string) $percent).' %</div>';
 
 		return $label.$graph->show(0);
 	}
@@ -259,7 +290,7 @@ class lmdbcrm_graph_conversionrates extends LmdbCrmBox
 	 * @param int $fromdate Timestamp start date
 	 * @param int $todate Timestamp end date
 	 * @param int $userid User identifier (0 for all users)
-	 * @return array{total:int<0,max>,signed:int<0,max>}
+	 * @return array{total:int<0,max>,signed:int<0,max>}|null
 	 */
 	protected function fetchConversionData($fromdate, $todate, $userid = 0)
 	{
@@ -267,6 +298,22 @@ class lmdbcrm_graph_conversionrates extends LmdbCrmBox
 		$total = 0;
 		$signed = 0;
 
+		$source = LmdbCrmConversion::source();
+		if ($source['code'] === 'lead') {
+			if (!$source['available'] || !$user->hasRight('lmdblead', 'lead', 'read')
+				|| (getDolGlobalInt('MAIN_NEED_EXPORT_PERMISSION_TO_READ_STATISTICS') && !$user->hasRight('lmdblead', 'lead', 'export'))
+				|| ($userid === 0 && (!$user->hasRight('lmdbcrm', 'widgets', 'readall') || !$user->hasRight('lmdblead', 'lead', 'readall')))) { return null; }
+			$lead = new LmdbLead_Lead($this->db);
+			$projection = $lead->conversionStatisticsSql($user, $fromdate, $todate, $userid > 0 ? array((int) $userid) : null);
+			if ($projection === null) { return null; }
+			$res = $this->db->query('SELECT SUM(c.total) AS total, SUM(c.converted) AS signed FROM ('.$projection.') AS c');
+			if (!$res) { dol_syslog(__METHOD__.' lead aggregation failed', LOG_ERR); return null; }
+			$row = $this->db->fetch_object($res);
+			$this->db->free($res);
+			if (!is_object($row)) { return null; }
+			return array('total' => max(0, (int) $row->total), 'signed' => max(0, (int) $row->signed));
+		}
+		require_once DOL_DOCUMENT_ROOT.'/comm/propal/class/propal.class.php';
 		$sql = "SELECT SUM(CASE WHEN p.fk_statut IN (2,3,4) THEN 1 ELSE 0 END) as total, SUM(CASE WHEN p.fk_statut = ".Propal::STATUS_SIGNED." THEN 1 ELSE 0 END) as signed"; //COUNT(p.rowid) as total
 		$sql .= " FROM ".MAIN_DB_PREFIX."propal as p";
 		$sql .= " WHERE p.entity IN (".getEntity('propal').")";

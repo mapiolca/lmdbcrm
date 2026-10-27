@@ -74,6 +74,7 @@ if (!$res) {
 require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/user/class/user.class.php';
 require_once __DIR__.'/class/lmdbcrmmaskedbox.class.php';
+require_once __DIR__.'/class/lmdbcrmconversion.class.php';
 
 // Load translation files required by the page
 $langs->loadLangs(array('lmdbcrm@lmdbcrm', 'commercial', 'propal'));
@@ -135,6 +136,25 @@ if (!$permissiontoreadall) {
 	$search_user_keyword = '';
 	$sortfield = 'signed_count';
 	$sortorder = 'DESC';
+}
+
+// Optional lead metrics do not change proposal amounts or ranking eligibility.
+$conversionSource = LmdbCrmConversion::source();
+$leadProjection = null;
+$leadRatesAll = false;
+$conversionError = '';
+if ($conversionSource['code'] === 'lead') {
+	$leadRatesAll = $permissiontoreadall && $user->hasRight('lmdblead', 'lead', 'readall');
+	if ($conversionSource['available'] && $user->hasRight('lmdblead', 'lead', 'read')
+		&& (!getDolGlobalInt('MAIN_NEED_EXPORT_PERMISSION_TO_READ_STATISTICS') || $user->hasRight('lmdblead', 'lead', 'export'))) {
+		$lead = new LmdbLead_Lead($db);
+		$leadProjection = $lead->conversionStatisticsSql($user,
+			$search_date_start > 0 ? (int) $search_date_start : null,
+			$search_date_end > 0 ? (int) $search_date_end : null,
+			$leadRatesAll ? null : array((int) $user->id));
+	}
+	if ($leadProjection === null) { $conversionError = $conversionSource['reason'] ?: 'LmdbCrmConversionUnavailable'; }
+	if ($sortfield === 'conversion_rate' && (!$leadRatesAll || $leadProjection === null)) { $sortfield = 'signed_count'; }
 }
 
 // Resolve eligible sales representatives before ranking, using native effective rights.
@@ -220,7 +240,11 @@ $sql .= ", COUNT(p.rowid) as total_count";
 $sql .= ", SUM(CASE WHEN p.fk_statut IN (2, 4) THEN 1 ELSE 0 END) as signed_count";
 $sql .= ", SUM(p.total_ht) as total_amount";
 $sql .= ", SUM(CASE WHEN p.fk_statut IN (2, 4) THEN p.total_ht ELSE 0 END) as signed_amount";
-$sql .= ", CASE WHEN COUNT(p.rowid) > 0 THEN (SUM(CASE WHEN p.fk_statut IN (2, 4) THEN 1 ELSE 0 END) / COUNT(p.rowid)) * 100 ELSE 0 END as conversion_rate";
+$conversionExpression = 'CASE WHEN COUNT(p.rowid) > 0 THEN (SUM(CASE WHEN p.fk_statut IN (2, 4) THEN 1 ELSE 0 END) / COUNT(p.rowid)) * 100 ELSE 0 END';
+if ($conversionSource['code'] === 'lead') {
+	$conversionExpression = $leadProjection === null ? 'NULL' : 'CASE WHEN MAX(lconv.total) > 0 THEN MAX(lconv.converted) * 100.0 / MAX(lconv.total) ELSE NULL END';
+}
+$sql .= ', '.$conversionExpression.' as conversion_rate';
 $sql .= " FROM ".$db->prefix()."user as u";
 $sql .= " LEFT JOIN ".$db->prefix()."propal as p ON p.fk_user_author = u.rowid";
 $sql .= " AND p.fk_statut IN (1, 2, 3, 4)";
@@ -235,7 +259,9 @@ if ($search_date_start > 0) {
 if ($search_date_end > 0) {
 	$sql .= " AND p.datep <= '".$db->idate($search_date_end)."'";
 }
-$sql .= " WHERE u.rowid IN (".implode(',', $eligibleUserIds ?: array(-1)).")";
+$leadJoin = $leadProjection === null ? '' : ' LEFT JOIN ('.$leadProjection.') AS lconv ON lconv.userid = u.rowid';
+$sql .= $leadJoin;
+$sql .= " WHERE u.rowid IN (".$db->sanitize(implode(',', $eligibleUserIds ?: array(-1))).")";
 if (!empty($search_user)) {
 	$sql .= " AND u.rowid IN (".$db->sanitize(join(',', $search_user)).")";
 }
@@ -244,10 +270,20 @@ if ($search_user_keyword !== '') {
 }
 $sql .= " GROUP BY u.rowid, u.lastname, u.firstname, u.login, u.photo, u.email";
 
-$sql .= $db->order($sortfield, $sortorder);
-$sql .= ", u.rowid ASC";
+$conversionSort = $conversionSource['code'] === 'lead' && $sortfield === 'conversion_rate';
+// MariaDB cannot use an aggregate alias inside an ORDER BY expression.
+if ($conversionSort) { $sql = 'SELECT * FROM ('.$sql.') AS crmranking'; }
+$sql .= $conversionSort ? ' ORDER BY conversion_rate IS NULL ASC, conversion_rate '.$sortorder : $db->order($sortfield, $sortorder);
+$sql .= $conversionSort ? ', userid ASC' : ', u.rowid ASC';
 
 $resql = $db->query($sql);
+if (!$resql && $leadJoin !== '') {
+	// Keep proposal indicators readable after a lead read failure, with no rate fallback.
+	dol_syslog('LMDBCRM lead ranking aggregation failed', LOG_ERR);
+	$conversionError = 'LmdbCrmConversionUnavailable';
+	$sql = str_replace(array($leadJoin, $conversionExpression.' as conversion_rate'), array('', 'NULL as conversion_rate'), $sql);
+	$resql = $db->query($sql);
+}
 if (!$resql) {
 	dol_print_error($db);
 	exit();
@@ -263,6 +299,11 @@ print '<input type="hidden" name="sortorder" value="'.$sortorder.'">';
 
 if (!$permissiontoreadall) {
 	print '<div class="info">'.dol_escape_htmltag($langs->trans('LmdbCrmOwnRankingNotice')).'</div>';
+}
+
+if ($conversionSource['code'] === 'lead') {
+	print '<div class="info">'.dol_escape_htmltag($langs->trans('LmdbCrmConversionLeadsTooltip')).'</div>';
+	if ($conversionError !== '') { print '<div class="warning">'.dol_escape_htmltag($langs->trans($conversionError)).'</div>'; }
 }
 
 print '<div class="div-table-responsive">';
@@ -335,7 +376,7 @@ print_liste_field_titre($langs->trans('LmdbCrmProposalsCount'), $_SERVER['PHP_SE
 print_liste_field_titre($langs->trans('LmdbCrmSignedProposalsCount'), $_SERVER['PHP_SELF'], $permissiontoreadall ? 'signed_count' : '', '', $param, '', $sortfield, $sortorder, 'center ');
 print_liste_field_titre($langs->trans('LmdbCrmQuotedAmount'), $_SERVER['PHP_SELF'], $permissiontoreadall ? 'total_amount' : '', '', $param, '', $sortfield, $sortorder, 'right ');
 print_liste_field_titre($langs->trans('LmdbCrmSignedAmount'), $_SERVER['PHP_SELF'], $permissiontoreadall ? 'signed_amount' : '', '', $param, '', $sortfield, $sortorder, 'right ');
-print_liste_field_titre($langs->trans('LmdbCrmConversionRate'), $_SERVER['PHP_SELF'], $permissiontoreadall ? 'conversion_rate' : '', '', $param, '', $sortfield, $sortorder, 'center ');
+print_liste_field_titre($langs->trans($conversionSource['code'] === 'lead' ? 'LmdbCrmConversionLeadRate' : 'LmdbCrmConversionRate'), $_SERVER['PHP_SELF'], $permissiontoreadall && ($conversionSource['code'] !== 'lead' || ($leadRatesAll && $leadProjection !== null && $conversionError === '')) ? 'conversion_rate' : '', '', $param, '', $sortfield, $sortorder, 'center ');
 print '</tr>';
 
 if ($num > 0) {
@@ -364,8 +405,9 @@ if ($num > 0) {
 		print '<td class="center">'.(int) $obj->signed_count.'</td>';
 		print '<td class="right">'.price($obj->total_amount, 0, $langs, 0, 0, -1, $conf->currency).'</td>';
 		print '<td class="right">'.price($obj->signed_amount, 0, $langs, 0, 0, -1, $conf->currency).'</td>';
-		$conversionDisplay = price($obj->conversion_rate, 0, $langs, 0, 0, 2, '', 1, 0);
-		print '<td class="center">'.$conversionDisplay.' %</td>';
+		$conversionDisplay = $obj->conversion_rate === null ? dol_escape_htmltag($langs->trans('NotAvailable'))
+			: price($obj->conversion_rate, 0, $langs, 0, 0, 2, '').' %';
+		print '<td class="center">'.$conversionDisplay.'</td>';
 		print '</tr>';
 	}
 } else {

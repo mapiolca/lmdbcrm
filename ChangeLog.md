@@ -1,5 +1,13 @@
 # Journal des modifications / ChangeLog - LMDBCRM
 
+## 1.6.0 — 27/10/2026
+
+- Taux du graphique et du classement calculés sur les leads convertis / (convertis + perdus) lorsque LMDB Lead est actif ; autres états exclus, période par date de création et attribution au commercial actuellement affecté. / Widget and ranking rates use converted / (converted + lost) leads when LMDB Lead is enabled, by creation date and current assignee.
+- Conservation des calculs sur devis lorsque LMDB Lead est désactivé et des volumes/montants des devis dans tous les cas. Absence de données et indisponibilité distinguées d’un taux nul ; aucun repli après erreur de la source leads. / Existing proposal calculations retained when Lead is disabled; proposal counts/amounts remain unchanged. Empty/unavailable rates remain distinct from valid zero, without a lead-error fallback.
+- Droits croisés, restrictions d’entité et de tiers, lecture personnelle et exigence native d’export respectés ; graphique de conversion utilisable sans Devis en mode leads. / Both modules’ permissions, entity/parent scope, personal reading and the native export requirement apply; lead graphs work without Proposals.
+- Réglages, Compatibilité et À propos organisés selon le modèle natif TimesheetWeek : tableaux de fonctionnement et de disponibilité, informations et ressources en deux colonnes, métadonnées issues du descripteur et traductions dans les cinq langues. / Settings, Compatibility and About follow the native TimesheetWeek layout: operation and availability tables, two-column information/resources, descriptor metadata and five-language translations.
+- Déployer d’abord LMDB Lead 1.0.0 contenant l’interface conversionStatisticsSql(), puis LMDBCRM 1.6.0 ; aucune migration de données. / Deploy LMDB Lead 1.0.0 containing conversionStatisticsSql() before LMDBCRM 1.6.0; no data migration.
+
 ## 1.5.0 — 28/09/2026
 
 - Filtre permanent du classement et de son sélecteur : utilisateurs internes actifs, ayant accès à l’entité courante et le droit natif de créer/modifier les propositions commerciales, y compris par groupe, avec chargement sous le nom natif historique `propale`. / Permanent ranking and selector filter: active internal users with access to the current entity and native proposal creation permission, including group grants loaded under the historical native name `propale`.
