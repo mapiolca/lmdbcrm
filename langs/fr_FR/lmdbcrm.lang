@@ -106,3 +106,25 @@ LmdbCrmOwnNoSignedProposal = Aucun devis signé à votre nom sur cette période.
 
 LmdbCrmSignedTurnoverEntitiesTitle=CA signé par mois multi-entités
 LmdbCrmSignedTurnoverEntitiesTooltip=Une courbe de CA signé HT par entité partageant ses devis, sur l’exercice courant de l’entité consultée. Les droits commerciaux et CRM restent appliqués. Aucun exercice précédent.
+
+# Optional lead conversion and administration
+LmdbCrmConversionLeadsTitle=Taux de conversion des leads (utilisateur / entreprise)
+LmdbCrmConversionLeadRate=Taux de conversion des leads
+LmdbCrmConversionLeadsTooltip=Taux = leads convertis ÷ (leads convertis + perdus) × 100. Seuls ces deux états actuels comptent ; non qualifiés, disqualifiés, en cours, annulés et archivés sont exclus. Période selon la date de création ; attribution au commercial actuellement affecté. Les leads sans affectation comptent uniquement dans le comparatif entreprise, limité au périmètre accessible.
+LmdbCrmConversionConverted=Convertis
+LmdbCrmConversionLost=Perdus
+LmdbCrmConversionLeadsNoData=Aucun lead converti ou perdu pour cette période
+LmdbCrmConversionUnavailable=Taux de conversion indisponible : vérifier les droits, la compatibilité et la lecture de la source.
+LmdbCrmConversionLeadUpdateRequired=Mettre à jour LMDB Lead 1.0.0 avec l’interface de conversion requise par LMDBCRM 1.6.0.
+LmdbCrmConversionSourceLead=Leads convertis et perdus
+LmdbCrmConversionSourceProposal=Propositions commerciales
+LmdbCrmConversionCompanyScope=Taux de conversion de l’entreprise (périmètre accessible)
+LmdbCrmCompatibility=Compatibilité
+LmdbCrmMinimumPHP=PHP minimal
+LmdbCrmMinimumDolibarr=Dolibarr minimal
+LmdbCrmTargetVersions=Versions Dolibarr ciblées
+LmdbCrmConversionSource=Source des taux de conversion
+LmdbCrmRepository=Dépôt
+LmdbCrmConversionIntegrationHelp=Source automatique : LMDB Lead actif utilise les leads convertis et perdus ; sinon les calculs sur les devis sont conservés. Agrégation disponible dès Dolibarr 20 / PHP 8.0 avec l’interface requise de LMDB Lead 1.0.0. Les droits des deux modules et les restrictions des tiers restent applicables. Une source active indisponible ne provoque aucun repli sur les devis.
+LmdbCrmValidationLimits=Cible : Dolibarr 20 à 25. Les tests automatisés utilisent des sources figées, dont une préversion v25 ; ils ne certifient pas une instance réelle. Voir test/README.md pour la matrice et les limites.
+LmdbCrmAboutFeatures=Widgets commerciaux, classement des commerciaux, taux de conversion et suivi du chiffre d’affaires signé.

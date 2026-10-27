@@ -57,7 +57,9 @@ if (!$res) {
 
 // Libraries
 require_once DOL_DOCUMENT_ROOT."/core/lib/admin.lib.php";
-require_once '../lib/lmdbcrm.lib.php';
+require_once __DIR__.'/../lib/lmdbcrm.lib.php';
+require_once __DIR__.'/../class/lmdbcrmconversion.class.php';
+require_once __DIR__.'/../core/modules/modLmdbCrm.class.php';
 
 /**
  * @var Conf $conf
@@ -88,17 +90,42 @@ $linkback = '<a href="'.($backtopage ? $backtopage : DOL_URL_ROOT.'/admin/module
 print load_fiche_titre($langs->trans($title), $linkback, 'title_setup');
 
 // Configuration header
+$lmdbcrmAdminTab = isset($lmdbcrmAdminTab) && in_array($lmdbcrmAdminTab, array('compatibility', 'about'), true) ? $lmdbcrmAdminTab : 'settings';
 $head = lmdbcrmAdminPrepareHead();
-print dol_get_fiche_head($head, 'settings', $langs->trans($title), -1, "lmdbcrm@lmdbcrm");
+print dol_get_fiche_head($head, $lmdbcrmAdminTab, $langs->trans($title), -1, "lmdbcrm@lmdbcrm");
 
-// EN: This module has no additional settings
-// FR: Ce module ne possède pas de paramètres supplémentaires
-print '<div class="fichecenter">';
-print '<div class="fichehalfleft">';
-print '<div class="underbanner clearboth"></div>';
-print '<p>'.$langs->trans('LmdbCrmNoSetupNeeded').'</p>';
-print '</div>';
-print '</div>';
+$descriptor = new modLmdbCrm($db);
+if ($lmdbcrmAdminTab === 'settings') {
+	print '<p>'.dol_escape_htmltag($langs->trans('LmdbCrmNoSetupNeeded')).'</p>';
+	print '<p>'.dol_escape_htmltag($langs->trans('LmdbCrmConversionIntegrationHelp')).'</p>';
+} else {
+	$phpmin = implode('.', $descriptor->phpmin);
+	$dolmin = implode('.', $descriptor->need_dolibarr_version);
+	$rows = array();
+	if ($lmdbcrmAdminTab === 'compatibility') {
+		$source = LmdbCrmConversion::source();
+		$rows = array('PHP' => PHP_VERSION, 'Dolibarr' => DOL_VERSION,
+			'LmdbCrmMinimumPHP' => $phpmin, 'LmdbCrmMinimumDolibarr' => $dolmin,
+			'LmdbCrmTargetVersions' => '20, 21, 22, 23, 24, 25',
+			'LmdbCrmConversionSource' => $langs->trans($source['label']),
+			'Status' => $langs->trans($source['available'] ? 'Available' : 'NotAvailable'));
+		if ($source['reason'] !== '') { $rows['Description'] = $langs->trans($source['reason']); }
+		print '<p>'.dol_escape_htmltag($langs->trans('LmdbCrmConversionIntegrationHelp')).'</p>';
+		print '<p>'.dol_escape_htmltag($langs->trans('LmdbCrmValidationLimits')).'</p>';
+	} else {
+		$rows = array('Module' => $descriptor->name, 'Version' => $descriptor->version,
+			'Author' => $descriptor->module_author, 'Description' => $langs->trans($descriptor->description),
+			'License' => $descriptor->module_license, 'LmdbCrmMinimumPHP' => $phpmin,
+			'LmdbCrmMinimumDolibarr' => $dolmin, 'Dependencies' => implode(', ', $descriptor->depends),
+			'LmdbCrmRepository' => $descriptor->module_repository);
+		print '<p>'.dol_escape_htmltag($langs->trans('LmdbCrmAboutFeatures')).'</p>';
+	}
+	print '<div class="div-table-responsive-no-min"><table class="noborder centpercent">';
+	foreach ($rows as $label => $value) {
+		print '<tr class="oddeven"><td>'.dol_escape_htmltag($langs->trans($label)).'</td><td>'.dol_escape_htmltag($value).'</td></tr>';
+	}
+	print '</table></div>';
+}
 
 print dol_get_fiche_end();
 

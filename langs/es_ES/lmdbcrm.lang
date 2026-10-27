@@ -96,3 +96,25 @@ LmdbCrmOwnNoSignedProposal = No hay presupuestos firmados a su nombre en este pe
 
 LmdbCrmSignedTurnoverEntitiesTitle=Facturación firmada mensual por entidad
 LmdbCrmSignedTurnoverEntitiesTooltip=Una curva de importes firmados sin impuestos por entidad con presupuestos compartidos, durante el ejercicio actual de la entidad consultada. Se mantienen los permisos comerciales y CRM. Sin ejercicios anteriores.
+
+# Optional lead conversion and administration
+LmdbCrmConversionLeadsTitle=Tasa de conversión de leads (usuario / empresa)
+LmdbCrmConversionLeadRate=Tasa de conversión de leads
+LmdbCrmConversionLeadsTooltip=Tasa = leads convertidos ÷ (convertidos + perdidos) × 100. Solo cuentan estos estados actuales; se excluyen los no cualificados, descalificados, en curso, cancelados y archivados. Periodo por fecha de creación y atribución al comercial actualmente asignado. Los leads sin asignación solo cuentan en la comparación empresarial, dentro del ámbito accesible.
+LmdbCrmConversionConverted=Convertidos
+LmdbCrmConversionLost=Perdidos
+LmdbCrmConversionLeadsNoData=No hay leads convertidos o perdidos para este periodo
+LmdbCrmConversionUnavailable=Tasa de conversión no disponible: compruebe los permisos, la compatibilidad y el acceso al origen.
+LmdbCrmConversionLeadUpdateRequired=Actualice LMDB Lead 1.0.0 con la interfaz de conversión requerida por LMDBCRM 1.6.0.
+LmdbCrmConversionSourceLead=Leads convertidos y perdidos
+LmdbCrmConversionSourceProposal=Propuestas comerciales
+LmdbCrmConversionCompanyScope=Tasa de conversión empresarial (ámbito accesible)
+LmdbCrmCompatibility=Compatibilidad
+LmdbCrmMinimumPHP=PHP mínimo
+LmdbCrmMinimumDolibarr=Dolibarr mínimo
+LmdbCrmTargetVersions=Versiones de Dolibarr objetivo
+LmdbCrmConversionSource=Origen de la tasa de conversión
+LmdbCrmRepository=Repositorio
+LmdbCrmConversionIntegrationHelp=Origen automático: LMDB Lead activo utiliza leads convertidos y perdidos; en caso contrario se conservan los cálculos de propuestas. Disponible desde Dolibarr 20 / PHP 8.0 con la interfaz requerida de LMDB Lead 1.0.0. Se mantienen los permisos de ambos módulos y las restricciones de terceros. Un origen activo no disponible no cambia a propuestas.
+LmdbCrmValidationLimits=Objetivo: Dolibarr 20–25. Las pruebas automatizadas usan revisiones fijas, incluida una versión preliminar v25; no certifican una instancia real. Matriz y límites: test/README.md.
+LmdbCrmAboutFeatures=Widgets comerciales, clasificación de comerciales, tasas de conversión y seguimiento de la facturación firmada.

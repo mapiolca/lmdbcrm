@@ -45,6 +45,11 @@ function lmdbcrmAdminPrepareHead()
 	$head[$h][2] = 'settings';
 	$h++;
 
+	foreach (array('compatibility' => 'LmdbCrmCompatibility', 'about' => 'About') as $tab => $label) {
+		$head[$h] = array(dol_buildpath('/lmdbcrm/admin/'.$tab.'.php', 1), $langs->trans($label), $tab);
+		$h++;
+	}
+
 	/*
 	$head[$h][0] = dolBuildUrl(dol_buildpath("/lmdbcrm/admin/myobject_extrafields.php", 1));
 	$head[$h][1] = $langs->trans("ExtraFields");

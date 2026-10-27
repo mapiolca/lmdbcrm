@@ -96,3 +96,25 @@ LmdbCrmOwnNoSignedProposal = Nessun preventivo firmato a proprio nome in questo 
 
 LmdbCrmSignedTurnoverEntitiesTitle=Fatturato firmato mensile per entità
 LmdbCrmSignedTurnoverEntitiesTooltip=Una curva degli importi firmati al netto delle imposte per entità con preventivi condivisi, durante l’esercizio corrente dell’entità consultata. Restano applicati i permessi commerciali e CRM. Nessun esercizio precedente.
+
+# Optional lead conversion and administration
+LmdbCrmConversionLeadsTitle=Tasso di conversione dei lead (utente / azienda)
+LmdbCrmConversionLeadRate=Tasso di conversione dei lead
+LmdbCrmConversionLeadsTooltip=Tasso = lead convertiti ÷ (convertiti + persi) × 100. Contano solo questi stati attuali; esclusi i lead non qualificati, squalificati, in corso, annullati e archiviati. Periodo per data di creazione e attribuzione al commerciale attualmente assegnato. I lead non assegnati contano solo nel confronto aziendale, entro il perimetro accessibile.
+LmdbCrmConversionConverted=Convertiti
+LmdbCrmConversionLost=Persi
+LmdbCrmConversionLeadsNoData=Nessun lead convertito o perso nel periodo
+LmdbCrmConversionUnavailable=Tasso di conversione non disponibile: verificare permessi, compatibilità e accesso alla fonte.
+LmdbCrmConversionLeadUpdateRequired=Aggiornare LMDB Lead 1.0.0 con l’interfaccia di conversione richiesta da LMDBCRM 1.6.0.
+LmdbCrmConversionSourceLead=Lead convertiti e persi
+LmdbCrmConversionSourceProposal=Proposte commerciali
+LmdbCrmConversionCompanyScope=Tasso di conversione aziendale (perimetro accessibile)
+LmdbCrmCompatibility=Compatibilità
+LmdbCrmMinimumPHP=PHP minimo
+LmdbCrmMinimumDolibarr=Dolibarr minimo
+LmdbCrmTargetVersions=Versioni Dolibarr previste
+LmdbCrmConversionSource=Fonte del tasso di conversione
+LmdbCrmRepository=Repository
+LmdbCrmConversionIntegrationHelp=Fonte automatica: LMDB Lead attivo usa lead convertiti e persi; altrimenti restano i calcoli sulle proposte. Disponibile da Dolibarr 20 / PHP 8.0 con l’interfaccia richiesta di LMDB Lead 1.0.0. Restano validi i permessi di entrambi i moduli e le restrizioni sui terzi. Una fonte attiva non disponibile non viene sostituita dalle proposte.
+LmdbCrmValidationLimits=Obiettivo: Dolibarr 20–25. I test automatici usano revisioni fisse, inclusa una versione preliminare v25; non certificano un’istanza reale. Matrice e limiti: test/README.md.
+LmdbCrmAboutFeatures=Widget commerciali, classifiche dei commerciali, tassi di conversione e monitoraggio del fatturato firmato.

@@ -34,6 +34,13 @@ include_once DOL_DOCUMENT_ROOT.'/core/modules/DolibarrModules.class.php';
  */
 class modLmdbCrm extends DolibarrModules
 {
+	/** @var string Author metadata shared with the About page. */
+	public $module_author = 'Pierre Ardoin <developpeur@lesmetiersdubatiment.fr>';
+	/** @var string */
+	public $module_license = 'GPL-3.0-or-later';
+	/** @var string */
+	public $module_repository = 'https://github.com/mapiolca/lmdbcrm';
+
 	/**
 	 * Constructor. Define names, constants, directories, boxes, permissions
 	 *
@@ -76,7 +83,7 @@ class modLmdbCrm extends DolibarrModules
 		$this->editor_squarred_logo = '';					// Must be image filename into the module/img directory followed with @modulename. Example: 'myimage.png@lmdbcrm'
 
 		// Possible values for version are: 'development', 'experimental', 'dolibarr', 'dolibarr_deprecated', 'experimental_deprecated' or a version string like 'x.y.z'
-		$this->version = '1.5.0';
+		$this->version = '1.6.0';
 		// Url to the file with your last numberversion of this module
 		//$this->url_last_version = 'http://www.example.com/versionmodule.txt';
 
@@ -112,7 +119,7 @@ class modLmdbCrm extends DolibarrModules
 		$this->dirs = array("/lmdbcrm/temp");
 
 		// Config pages. Put here list of php page, stored into lmdbcrm/admin directory, to use to setup module.
-		//$this->config_page_url = array("setup.php@lmdbcrm");
+		$this->config_page_url = array("setup.php@lmdbcrm");
 
 		// Dependencies
 		// A condition to hide module

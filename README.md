@@ -1,6 +1,6 @@
 # LMDBCRM pour [Dolibarr ERP & CRM](https://www.dolibarr.org)
 
-**Version : 1.5.0.** Voir [ChangeLog.md](ChangeLog.md).
+**Version : 1.6.0.** Voir [ChangeLog.md](ChangeLog.md).
 
 Divers widgets et fonctionnalités CRM pour compléter votre Dolibarr préféré.
 
@@ -21,6 +21,16 @@ Divers widgets et fonctionnalités CRM pour compléter votre Dolibarr préféré
 ## Compatibilité Dolibarr
 - Version minimale : Dolibarr 20.0. Les contrôles automatisés et les limites des essais sont décrits dans [test/README.md](test/README.md).
 - PHP minimal : 8.0.
+
+## Conversion des leads avec LMDB Lead
+
+Lorsque LMDB Lead est actif, le graphique utilisateur/entreprise et la colonne du classement utilisent **convertis ÷ (convertis + perdus) × 100**. Les autres états actuels sont exclus, y compris les disqualifiés, annulés et archivés. La période suit la date de création ; le résultat appartient au commercial actuellement affecté. Un lead compte une fois, quels que soient ses devis. Les leads sans affectation comptent uniquement dans le comparatif entreprise.
+
+Déployer d’abord **LMDB Lead 1.0.0 avec la méthode `conversionStatisticsSql()`**, puis LMDBCRM 1.6.0. Le numéro 1.0.0 seul ne garantit pas la présence de cette interface. Aucune migration ni nouvel octroi de droits n’est nécessaire. Les onglets internes Compatibilité et À propos indiquent la source disponible et les métadonnées du descripteur.
+
+La lecture des leads est nécessaire ; les données des autres commerciaux et le comparatif entreprise nécessitent aussi la lecture complète dans les deux modules. Le droit d’export reste exigé si la configuration native l’impose aux statistiques. Entités, tiers accessibles et restrictions commerciales restent ceux de LMDB Lead ; son partage de leads non pris en charge reste bloqué. Sans lead retenu, le taux est indisponible, distinct de 0 % lorsqu’il existe seulement des pertes. Une erreur ou un droit manquant ne déclenche aucun repli vers les devis.
+
+LMDB Lead désactivé conserve les anciens calculs sur les devis. Les nombres et montants de devis, podiums et critères d’éligibilité des commerciaux restent inchangés. Le graphique de conversion peut fonctionner sans le module Devis en mode leads. Les autres graphiques et le classement conservent leurs dépendances natives.
 
 ## CA signé par mois multi-entités
 
@@ -45,7 +55,7 @@ La lecture personnelle affiche sa propre ligne en clair, à sa position réelle 
 
 Les graphiques montrent uniquement les séries de l’utilisateur ; les comparatifs entreprise sont masqués et ne sont pas interrogés. Les propositions personnelles sont celles dont l’utilisateur est auteur. Pour les commandes livrées non facturées, le périmètre personnel correspond aux tiers affectés commercialement à l’utilisateur.
 
-Les utilisateurs doivent rester internes et posséder la lecture native des devis (classement et sept widgets) ou des commandes (widget des commandes livrées). Les entités accessibles et restrictions commerciales natives s’appliquent avant les agrégations, même avec `readall`. Une position n’est donc pas nécessairement celle de toute l’entreprise.
+Les utilisateurs doivent rester internes et posséder la lecture native des devis (classement et widgets sur devis ; exception du graphique de conversion en mode leads) ou des commandes (widget des commandes livrées). Les entités accessibles et restrictions commerciales natives s’appliquent avant les agrégations, même avec `readall`. Une position n’est donc pas nécessairement celle de toute l’entreprise.
 
 Tous les rendus de widgets, personnels ou complets, invalident leur ancien cache HTML et sont recalculés sans écrire de nouveau cache métier. Les formes neutres ne contiennent aucune valeur réelle. Un changement de niveau de permission entre chargement et rendu refuse le contenu déjà chargé. Les droits s’appliquent après leur rechargement natif lors d’une nouvelle requête. Après mise à jour du descripteur, réactiver LMDBCRM pour actualiser la condition du menu enregistrée en base : elle utilise les appels `hasRight()` compatibles avec l’évaluateur natif, tandis que le type de menu « Interne » et la page protègent l’accès des utilisateurs externes.
 
@@ -109,7 +119,7 @@ La migration traite utilisateurs et groupes dans l’entité active, sans doublo
 
 # LMDBCRM for [Dolibarr ERP & CRM](https://www.dolibarr.org)
 
-**Version: 1.5.0.** See [ChangeLog.md](ChangeLog.md).
+**Version: 1.6.0.** See [ChangeLog.md](ChangeLog.md).
 
 Various CRM widgets and features to complement your favorite Dolibarr.
 ## Features
@@ -129,6 +139,13 @@ Various CRM widgets and features to complement your favorite Dolibarr.
 ## Dolibarr compatibility
 - Minimum version: Dolibarr 20.0. See [test/README.md](test/README.md) for automated checks and their limits.
 - Minimum PHP version: 8.0.
+
+## Lead conversion with LMDB Lead
+
+With LMDB Lead enabled, the comparison widget and ranking rate use **converted ÷ (converted + lost) × 100**, based on current states, lead creation dates and the current assignee. All other states are excluded. Each lead counts once; unassigned leads contribute only to the company comparison. Proposal counts, amounts, podiums and salesperson eligibility remain unchanged.
+
+Deploy **LMDB Lead 1.0.0 containing `conversionStatisticsSql()` first**, followed by LMDBCRM 1.6.0. The version number alone does not identify this interface. No data migration or new grants are required. Both modules’ permissions and Lead’s entity/third-party scope apply; company and peer rates require full read in both modules. The native statistics export requirement is respected. Empty cohorts are unavailable, while lost-only cohorts have a valid zero rate. An unavailable active Lead source never falls back to proposals. Disabling Lead restores the existing proposal calculations; the Lead-based widget works without proposals enabled.
+
 
 ## Ranking and widget permissions
 

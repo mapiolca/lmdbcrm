@@ -39,7 +39,7 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: pdo_mysql
+          extensions: pdo_mysql, pdo_sqlite
           coverage: none
       - uses: actions/checkout@v4
         with:
@@ -63,6 +63,10 @@ jobs:
           php test/nativegraph.php
           php test/menu.php
           php test/proposalrights.php
+          php test/conversion.php
+          php test/admin.php
+          php test/conversionavailability.php
+          php test/conversionavailability.php old
       - name: MariaDB scope and native registration tests
         env:
           LMDBCRM_CORE_SOURCE: ${{ github.workspace }}/.test-cache/dolibarr/htdocs
@@ -71,6 +75,17 @@ jobs:
           LMDBCRM_TEST_USER: root
           LMDBCRM_TEST_PASSWORD: test-only
         run: php test/sql.php
+      - name: MariaDB lead conversion ranking tests
+        env:
+          LMDBCRM_CORE_SOURCE: ${{ github.workspace }}/.test-cache/dolibarr/htdocs
+          LMDBCRM_CORE_VERSION: ${{ matrix.dolibarr }}
+          LMDBCRM_TEST_DSN: 'mysql:host=127.0.0.1;port=3306;dbname=lmdbcrm_test'
+          LMDBCRM_CONVERSION_DSN: 'mysql:host=127.0.0.1;port=3306;dbname=lmdbcrm_conversion'
+          LMDBCRM_TEST_USER: root
+          LMDBCRM_TEST_PASSWORD: test-only
+        run: |
+          php -r '$pdo = new PDO(getenv("LMDBCRM_TEST_DSN"), getenv("LMDBCRM_TEST_USER"), getenv("LMDBCRM_TEST_PASSWORD")); $pdo->exec("CREATE DATABASE lmdbcrm_conversion");'
+          php test/conversion.php
 
   build:
 

@@ -106,3 +106,25 @@ LmdbCrmOwnNoSignedProposal = No signed proposal in your name for this period.
 
 LmdbCrmSignedTurnoverEntitiesTitle=Monthly signed turnover by entity
 LmdbCrmSignedTurnoverEntitiesTooltip=One signed turnover line excluding tax per shared proposal entity, over the viewing entity’s current fiscal year. Commercial and CRM permissions still apply. No previous years.
+
+# Optional lead conversion and administration
+LmdbCrmConversionLeadsTitle=Lead conversion rate (user / company)
+LmdbCrmConversionLeadRate=Lead conversion rate
+LmdbCrmConversionLeadsTooltip=Rate = converted leads ÷ (converted + lost leads) × 100. Only these current states count; unqualified, disqualified, ongoing, cancelled and archived leads are excluded. Period uses creation date; results belong to the current assignee. Unassigned leads count only in the company comparison, within the accessible scope.
+LmdbCrmConversionConverted=Converted
+LmdbCrmConversionLost=Lost
+LmdbCrmConversionLeadsNoData=No converted or lost leads for this period
+LmdbCrmConversionUnavailable=Conversion rate unavailable: check permissions, compatibility and source access.
+LmdbCrmConversionLeadUpdateRequired=Update LMDB Lead 1.0.0 with the conversion interface required by LMDBCRM 1.6.0.
+LmdbCrmConversionSourceLead=Converted and lost leads
+LmdbCrmConversionSourceProposal=Commercial proposals
+LmdbCrmConversionCompanyScope=Company conversion rate (accessible scope)
+LmdbCrmCompatibility=Compatibility
+LmdbCrmMinimumPHP=Minimum PHP
+LmdbCrmMinimumDolibarr=Minimum Dolibarr
+LmdbCrmTargetVersions=Target Dolibarr versions
+LmdbCrmConversionSource=Conversion rate source
+LmdbCrmRepository=Repository
+LmdbCrmConversionIntegrationHelp=Automatic source: active LMDB Lead uses converted and lost leads; otherwise existing proposal calculations are retained. Aggregation is available from Dolibarr 20 / PHP 8.0 with the required LMDB Lead 1.0.0 interface. Both modules’ permissions and third-party restrictions still apply. An unavailable active source never falls back to proposals.
+LmdbCrmValidationLimits=Target: Dolibarr 20–25. Automated tests use pinned sources, including a v25 prerelease; they do not certify a live instance. See test/README.md for the matrix and limits.
+LmdbCrmAboutFeatures=Sales widgets, sales representative rankings, conversion rates and signed revenue tracking.
